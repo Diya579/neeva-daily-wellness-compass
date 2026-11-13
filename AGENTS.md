@@ -28,3 +28,12 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules (Neeva)
+
+- App shell, onboarding and Toaster live in `src/routes/__root.tsx` via `AppShell`; each page is its own route file — keeps nav, crisis button and privacy footer consistent.
+- Pages use container queries (`@container` on `<main>`, `@3xl:`/`@4xl:` variants) rather than viewport breakpoints — so the phone-frame preview mode lays out like a real phone.
+- User data (moods, journal, points, chat, preferences) is stored on-device in `NeevaProvider` (localStorage), read only after hydration — no backend accounts yet.
+- AI chat streams plain text from the `/api/chat` server route; journal analysis is a server function with a strict JSON schema and an on-device fallback — model calls stay server-side.
+- Employer analytics must pass through `anonymizeCohorts` in `src/lib/privacy.ts` (tested) — organisations never see small groups or individuals.
+- Charts render only after hydration and use CSS token colours — avoids SSR/client mismatches and keeps theming.
