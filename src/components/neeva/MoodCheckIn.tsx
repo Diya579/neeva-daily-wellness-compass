@@ -37,34 +37,36 @@ export function MoodCheckIn() {
 
   return (
     <div>
-      <div className="grid grid-cols-5 gap-2 @lg:gap-3">
-        {MOODS.map((m) => {
-          const active = picked === m.key;
-          return (
-            <button
-              key={m.key}
-              onClick={() => setPicked(active ? null : m.key)}
-              className={cn(
-                "group flex flex-col items-center gap-1.5 rounded-2xl border border-transparent p-2 pb-3 transition-all duration-300 hover:-translate-y-1",
-                active
-                  ? cn(toneBg[m.tone], "border-primary/20 shadow-soft")
-                  : "bg-muted/60 hover:bg-muted",
-              )}
-              aria-pressed={active}
-            >
-              <MoodFace
-                mood={m.key}
+      <div className="@container">
+        <div className="grid grid-cols-5 gap-1.5 @sm:gap-2 @lg:gap-3">
+          {MOODS.map((m) => {
+            const active = picked === m.key;
+            return (
+              <button
+                key={m.key}
+                onClick={() => setPicked(active ? null : m.key)}
                 className={cn(
-                  "size-12 transition-transform duration-300 @lg:size-16",
-                  active && "scale-110",
+                  "group flex flex-col items-center gap-1.5 rounded-2xl border border-transparent px-1 pb-3 pt-2 transition-all duration-300 hover:-translate-y-1",
+                  active
+                    ? cn(toneBg[m.tone], "border-primary/20 shadow-soft")
+                    : "bg-muted/60 hover:bg-muted",
                 )}
-              />
-              <span className="w-full break-words text-center text-[11px] font-semibold leading-tight hyphens-manual @lg:text-xs">
-                {m.key === "overwhelmed" ? "Over\u00ADwhelmed" : m.label}
-              </span>
-            </button>
-          );
-        })}
+                aria-pressed={active}
+              >
+                <MoodFace
+                  mood={m.key}
+                  className={cn(
+                    "size-12 transition-transform duration-300 @lg:size-16",
+                    active && "scale-110",
+                  )}
+                />
+                <span className="w-full text-center text-[10px] font-semibold leading-tight hyphens-manual @sm:text-[11px] @lg:text-xs">
+                  {m.key === "overwhelmed" ? "Over\u00ADwhelmed" : m.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {picked && (

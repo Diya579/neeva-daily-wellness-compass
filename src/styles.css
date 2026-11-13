@@ -75,6 +75,7 @@
   --animate-drift: drift 18s ease-in-out infinite;
   --animate-drift-slow: drift 26s ease-in-out infinite reverse;
   --animate-pulse-ring: pulse-ring 2.4s ease-out infinite;
+  --animate-pulse-soft: pulse-soft 2.6s ease-out infinite;
   --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @keyframes drift {
@@ -84,6 +85,10 @@
   @keyframes pulse-ring {
     0% { transform: scale(0.9); opacity: 0.7; }
     100% { transform: scale(1.6); opacity: 0; }
+  }
+  @keyframes pulse-soft {
+    0% { transform: scale(1); opacity: 0.45; }
+    100% { transform: scaleX(1.12) scaleY(1.35); opacity: 0; }
   }
   @keyframes rise {
     from { opacity: 0; transform: translateY(10px); }

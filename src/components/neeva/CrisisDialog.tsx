@@ -31,7 +31,7 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
           )}
         >
           <span
-            className="absolute inset-0 rounded-full bg-crisis animate-pulse-ring"
+            className="absolute inset-0 rounded-full bg-crisis animate-pulse-soft"
             aria-hidden
           />
           <LifeBuoy className="relative size-4" />
