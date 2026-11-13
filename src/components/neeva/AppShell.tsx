@@ -172,7 +172,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <img src={mark} alt="Neeva" className="size-9" width={816} height={816} />
             <span>
               <span className="block text-xl font-bold leading-none tracking-tight">Neeva</span>
-              <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="block whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
                 Wellness, reimagined
               </span>
             </span>
@@ -237,7 +237,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <main className="@container relative min-h-0 flex-1 overflow-y-auto">{children}</main>
 
-          <SecurityBanner />
+          <SecurityBanner compact={framed} />
 
           {/* Bottom nav */}
           <nav
