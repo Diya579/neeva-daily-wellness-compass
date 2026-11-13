@@ -12,44 +12,36 @@ const PHASES = [
 export function BreathingCircle() {
   const { addPoints } = useNeeva();
   const [running, setRunning] = useState(false);
-  const [phase, setPhase] = useState(0);
-  const [left, setLeft] = useState<number>(PHASES[0].secs);
-  const [cycles, setCycles] = useState(0);
-  const tick = useRef<number | null>(null);
+  const [{ phase, left, cycles }, setS] = useState({ phase: 0, left: PHASES[0].secs as number, cycles: 0 });
+  const rewarded = useRef(0);
 
   useEffect(() => {
     if (!running) return;
-    tick.current = window.setInterval(() => {
-      setLeft((l) => {
-        if (l > 1) return l - 1;
-        setPhase((p) => {
-          const next = (p + 1) % PHASES.length;
-          if (next === 0) {
-            setCycles((c) => {
-              if ((c + 1) % 4 === 0) addPoints(10);
-              return c + 1;
-            });
-          }
-          setLeft(PHASES[next].secs);
-          return next;
-        });
-        return l;
+    const id = window.setInterval(() => {
+      setS((s) => {
+        if (s.left > 1) return { ...s, left: s.left - 1 };
+        const next = (s.phase + 1) % PHASES.length;
+        return { phase: next, left: PHASES[next].secs, cycles: next === 0 ? s.cycles + 1 : s.cycles };
       });
     }, 1000);
-    return () => {
-      if (tick.current) window.clearInterval(tick.current);
-    };
-  }, [running, addPoints]);
+    return () => window.clearInterval(id);
+  }, [running]);
+
+  // +10 points for every 4 full breathing cycles
+  useEffect(() => {
+    const earned = Math.floor(cycles / 4);
+    if (earned > rewarded.current) {
+      addPoints(10 * (earned - rewarded.current));
+      rewarded.current = earned;
+    }
+  }, [cycles, addPoints]);
 
   const P = PHASES[phase];
   const scale = running ? P.scale : 1;
   const dur = running ? P.secs : 0.6;
 
   const toggle = () => {
-    if (!running) {
-      setPhase(0);
-      setLeft(PHASES[0].secs);
-    }
+    if (!running) setS((s) => ({ ...s, phase: 0, left: PHASES[0].secs }));
     setRunning((r) => !r);
   };
 

@@ -26,17 +26,17 @@ export function MeditationPlayer() {
   useEffect(() => {
     if (!playing) return;
     const id = window.setInterval(() => {
-      setPos((p) => {
-        if (p + 1 >= total) {
-          setPlaying(false);
-          addPoints(20);
-          return total;
-        }
-        return p + 1;
-      });
+      setPos((p) => Math.min(total, p + 1));
     }, 1000);
     return () => window.clearInterval(id);
-  }, [playing, total, addPoints]);
+  }, [playing, total]);
+
+  useEffect(() => {
+    if (playing && pos >= total) {
+      setPlaying(false);
+      addPoints(20);
+    }
+  }, [pos, total, playing, addPoints]);
 
   const select = (i: number) => {
     setIdx(i);
