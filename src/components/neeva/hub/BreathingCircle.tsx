@@ -12,7 +12,7 @@ const PHASES = [
 export function BreathingCircle() {
   const { addPoints } = useNeeva();
   const [running, setRunning] = useState(false);
-  const [{ phase, left, cycles }, setS] = useState({ phase: 0, left: PHASES[0].secs as number, cycles: 0 });
+  const [{ phase, left, cycles }, setS] = useState({ phase: 0, left: PHASES[0]!.secs as number, cycles: 0 });
   const rewarded = useRef(0);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function BreathingCircle() {
       setS((s) => {
         if (s.left > 1) return { ...s, left: s.left - 1 };
         const next = (s.phase + 1) % PHASES.length;
-        return { phase: next, left: PHASES[next].secs, cycles: next === 0 ? s.cycles + 1 : s.cycles };
+        return { phase: next, left: PHASES[next]!.secs, cycles: next === 0 ? s.cycles + 1 : s.cycles };
       });
     }, 1000);
     return () => window.clearInterval(id);
@@ -36,12 +36,12 @@ export function BreathingCircle() {
     }
   }, [cycles, addPoints]);
 
-  const P = PHASES[phase];
+  const P = PHASES[phase]!;
   const scale = running ? P.scale : 1;
   const dur = running ? P.secs : 0.6;
 
   const toggle = () => {
-    if (!running) setS((s) => ({ ...s, phase: 0, left: PHASES[0].secs }));
+    if (!running) setS((s) => ({ ...s, phase: 0, left: PHASES[0]!.secs }));
     setRunning((r) => !r);
   };
 

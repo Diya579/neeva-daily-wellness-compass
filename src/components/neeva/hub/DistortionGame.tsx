@@ -10,7 +10,7 @@ export function DistortionGame() {
   const [round, setRound] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [score, setScore] = useState(0);
-  const R = DISTORTION_ROUNDS[round];
+  const R = DISTORTION_ROUNDS[round]!;
   const finished = round >= DISTORTION_ROUNDS.length;
 
   const options = useMemo(() => {

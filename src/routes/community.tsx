@@ -49,7 +49,7 @@ function CommunityPage() {
 
   const share = () => {
     if (draft.trim().length < 5) return;
-    setPosts((p) => [{ id: Math.random().toString(36).slice(2), alias: ALIASES[p.length % ALIASES.length], group: postGroup, minutesAgo: 0, text: draft.trim(), support: 0, replies: 0 }, ...p]);
+    setPosts((p) => [{ id: Math.random().toString(36).slice(2), alias: ALIASES[p.length % ALIASES.length]!, group: postGroup, minutesAgo: 0, text: draft.trim(), support: 0, replies: 0 }, ...p]);
     setDraft("");
     toast.success("Shared anonymously", { description: "Peer listeners will see it shortly." });
   };

@@ -15,7 +15,7 @@ export function MeditationPlayer() {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [pos, setPos] = useState(0);
-  const track = MEDITATIONS[idx];
+  const track = MEDITATIONS[idx]!;
   const total = track.minutes * 60;
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export function MeditationPlayer() {
         </div>
       </div>
       <div className="p-5">
-        <Slider value={[pos]} max={total} step={1} onValueChange={([v]) => setPos(v)} aria-label="Progress" />
+        <Slider value={[pos]} max={total} step={1} onValueChange={([v]) => setPos(v ?? 0)} aria-label="Progress" />
         <div className="mt-2 flex justify-between text-[11px] tabular-nums text-muted-foreground">
           <span>{fmt(pos)}</span>
           <span>-{fmt(total - pos)}</span>

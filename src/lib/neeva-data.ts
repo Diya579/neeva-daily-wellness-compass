@@ -90,7 +90,7 @@ const TRIGGER_TIPS: Record<string, string> = {
 };
 
 export function wellnessTip(mood: MoodKey, triggers: string[], seed = 0): string {
-  const base = TIPS[mood][seed % TIPS[mood].length];
+  const base = TIPS[mood][seed % TIPS[mood].length]!;
   const t = triggers.find((x) => TRIGGER_TIPS[x]);
   return t ? `${base} ${TRIGGER_TIPS[t]}` : base;
 }
@@ -109,11 +109,11 @@ export function simulatedHistory(today: Date, days = 30) {
   for (let i = days; i >= 1; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const mood = SIM_MOODS[Math.floor(seeded(i) * SIM_MOODS.length)];
+    const mood = SIM_MOODS[Math.floor(seeded(i) * SIM_MOODS.length)]!;
     const weekend = d.getDay() === 0 || d.getDay() === 6;
     const score = Math.min(10, Math.max(2, moodByKey(mood).score + (weekend ? 0.8 : -0.3) + (seeded(i + 7) - 0.5) * 1.6));
-    const triggers = [TRIGGERS[Math.floor(seeded(i + 3) * 4)]];
-    if (seeded(i + 11) > 0.6) triggers.push(TRIGGERS[2 + Math.floor(seeded(i + 5) * 6)]);
+    const triggers: string[] = [TRIGGERS[Math.floor(seeded(i + 3) * 4)]!];
+    if (seeded(i + 11) > 0.6) triggers.push(TRIGGERS[2 + Math.floor(seeded(i + 5) * 6)]!);
     out.push({ date: d.toISOString().slice(0, 10), mood, score: Math.round(score * 10) / 10, triggers });
   }
   return out;

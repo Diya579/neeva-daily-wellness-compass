@@ -115,7 +115,7 @@ function AnalysisView({ a, offline }: { a: JournalAnalysis; offline?: boolean })
 
 function JournalPage() {
   const { journal, update, addPoints, hydrated } = useNeeva();
-  const [prompt, setPrompt] = useState(JOURNAL_PROMPTS[0]);
+  const [prompt, setPrompt] = useState<string>(JOURNAL_PROMPTS[0]!);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState<{ entry: JournalEntry; offline: boolean } | null>(null);

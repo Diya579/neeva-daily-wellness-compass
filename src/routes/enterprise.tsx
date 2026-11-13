@@ -98,12 +98,12 @@ function EnterprisePage() {
   const org = ORGS[key];
   const eng = org.engagement.at(-1)!;
   const stressNow = org.stress.at(-1)!;
-  const stressDelta = stressNow - org.stress[0];
+  const stressDelta = stressNow - org.stress[0]!;
   const safe = anonymizeCohorts(org.cohorts);
 
   const kpis: { label: string; value: string; sub: string; icon: typeof Users; tone: Tone }[] = [
     { label: "Enrolled members", value: org.seats.toLocaleString("en-IN"), sub: "Licensed seats", icon: Users, tone: "sage" },
-    { label: "Anonymised engagement", value: `${eng}%`, sub: `+${eng - org.engagement[0]} pts in 12 weeks`, icon: Activity, tone: "lilac" },
+    { label: "Anonymised engagement", value: `${eng}%`, sub: `+${eng - org.engagement[0]!} pts in 12 weeks`, icon: Activity, tone: "lilac" },
     { label: "Avg. stress index", value: `${stressNow}/100`, sub: `${stressDelta}% over 6 months`, icon: TrendingDown, tone: "rose" },
     { label: "Monthly investment", value: `₹${((org.seats * 99) / 100000).toFixed(1)}L`, sub: "₹99 per member / month", icon: IndianRupee, tone: "periwinkle" },
   ];

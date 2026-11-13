@@ -63,7 +63,7 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
           {step < GROUNDING.length ? (
             <div className="mt-3 flex items-center gap-4">
               {(() => {
-                const G = GROUNDING[step];
+                const G = GROUNDING[step]!;
                 const Icon = G.icon;
                 return (
                   <>

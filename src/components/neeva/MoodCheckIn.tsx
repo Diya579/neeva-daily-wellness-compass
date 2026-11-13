@@ -57,7 +57,7 @@ export function MoodCheckIn() {
               <span>How strongly?</span>
               <span className="text-foreground">{["", "A little", "Somewhat", "Noticeably", "Strongly", "Intensely"][intensity]}</span>
             </div>
-            <Slider value={[intensity]} min={1} max={5} step={1} onValueChange={([v]) => setIntensity(v)} />
+            <Slider value={[intensity]} min={1} max={5} step={1} onValueChange={([v]) => setIntensity(v ?? 3)} />
           </div>
           <div>
             <p className="mb-2 text-xs font-medium text-muted-foreground">What's connected to it? (optional)</p>

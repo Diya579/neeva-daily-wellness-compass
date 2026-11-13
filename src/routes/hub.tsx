@@ -18,7 +18,7 @@ type HubTab = (typeof TABS)[number]["key"];
 
 export const Route = createFileRoute("/hub")({
   validateSearch: (s: Record<string, unknown>): { tab?: HubTab } => {
-    const t = s.tab;
+    const t = s["tab"];
     return TABS.some((x) => x.key === t) ? { tab: t as HubTab } : {};
   },
   head: () => ({

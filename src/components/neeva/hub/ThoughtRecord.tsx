@@ -65,7 +65,7 @@ export function ThoughtRecord() {
     );
   }
 
-  const S = STEPS[step];
+  const S = STEPS[step]!;
   return (
     <div>
       <div className="mb-5 grid grid-cols-4 gap-2">
@@ -98,7 +98,7 @@ export function ThoughtRecord() {
             </div>
             <div>
               <div className="mb-2 flex justify-between text-xs"><span className="text-muted-foreground">How intense is “{f.emotion.toLowerCase()}”?</span><b className="tabular-nums">{f.before}%</b></div>
-              <Slider value={[f.before]} max={100} step={5} onValueChange={([v]) => set("before", v)} />
+              <Slider value={[f.before]} max={100} step={5} onValueChange={([v]) => set("before", v ?? 70)} />
             </div>
           </>
         )}
@@ -130,7 +130,7 @@ export function ThoughtRecord() {
             <textarea className={cn(field, "min-h-24")} value={f.realistic} onChange={(e) => set("realistic", e.target.value)} placeholder="e.g. I made a few mistakes in one report. That's feedback, not a verdict on my career." />
             <div>
               <div className="mb-2 flex justify-between text-xs"><span className="text-muted-foreground">Re-rate “{f.emotion.toLowerCase()}” now</span><b className="tabular-nums">{f.after}%</b></div>
-              <Slider value={[f.after]} max={100} step={5} onValueChange={([v]) => set("after", v)} />
+              <Slider value={[f.after]} max={100} step={5} onValueChange={([v]) => set("after", v ?? 40)} />
             </div>
           </>
         )}

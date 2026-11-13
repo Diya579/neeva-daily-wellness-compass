@@ -43,7 +43,7 @@ export function analyzeLocally(text: string): JournalAnalysis {
     })),
     reframes: [
       {
-        original: absolutes.length ? `Things ${absolutes[0].toLowerCase()} go wrong for me.` : "I should be doing better.",
+        original: absolutes.length ? `Things ${absolutes[0]!.toLowerCase()} go wrong for me.` : "I should be doing better.",
         reframe: "Some things are hard right now, and I'm still showing up. That counts.",
       },
     ],

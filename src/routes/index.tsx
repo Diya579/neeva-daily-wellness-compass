@@ -56,7 +56,7 @@ const QUICK: Rec[] = [
 ];
 
 function RecLink({ r, children, className }: { r: Rec; children: React.ReactNode; className?: string }) {
-  if (r.to === "/hub") return <Link to="/hub" search={{ tab: r.tab }} className={className}>{children}</Link>;
+  if (r.to === "/hub") return <Link to="/hub" search={r.tab ? { tab: r.tab } : {}} className={className}>{children}</Link>;
   return <Link to={r.to} className={className}>{children}</Link>;
 }
 
