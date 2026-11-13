@@ -62,7 +62,6 @@ export function MoodFace({ mood, className }: { mood: MoodKey; className?: strin
           </>
         )}
       </g>
-      {(mood === "anxious" || mood === "peaceful") && null}
       {(mood === "joyful" || mood === "peaceful") && (
         <g fill="var(--terracotta)" opacity={0.45}>
           <circle cx="26" cy="58" r="5" />
