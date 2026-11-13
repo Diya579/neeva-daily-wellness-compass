@@ -1,7 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Activity, EyeOff, HeartPulse, IndianRupee, Lock, ShieldCheck, TrendingDown, Users } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  Activity,
+  EyeOff,
+  HeartPulse,
+  IndianRupee,
+  Lock,
+  ShieldCheck,
+  TrendingDown,
+  Users,
+} from "lucide-react";
 import { Panel, PanelTitle } from "@/components/neeva/Card";
 import { IconBadge, type Tone } from "@/components/neeva/IconBadge";
 import { useNeeva } from "@/lib/neeva-store";
@@ -12,9 +33,17 @@ export const Route = createFileRoute("/enterprise")({
   head: () => ({
     meta: [
       { title: "Employer & University Portal · Neeva for Organisations" },
-      { name: "description", content: "Privacy-first, aggregate wellbeing analytics for HR teams and universities — engagement, stress trends and top programmes, never individual data." },
+      {
+        name: "description",
+        content:
+          "Privacy-first, aggregate wellbeing analytics for HR teams and universities — engagement, stress trends and top programmes, never individual data.",
+      },
       { property: "og:title", content: "Neeva for Organisations · Wellbeing analytics" },
-      { property: "og:description", content: "Anonymised engagement and stress insights for HR and universities, at ₹99 per member per month." },
+      {
+        property: "og:description",
+        content:
+          "Anonymised engagement and stress insights for HR and universities, at ₹99 per member per month.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -87,10 +116,20 @@ const ORGS: Record<"uni" | "corp", Org> = {
 };
 
 const tip = {
-  contentStyle: { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 16, fontSize: 12, boxShadow: "var(--elev-float)" },
+  contentStyle: {
+    background: "var(--popover)",
+    border: "1px solid var(--border)",
+    borderRadius: 16,
+    fontSize: 12,
+    boxShadow: "var(--elev-float)",
+  },
   labelStyle: { fontWeight: 600, color: "var(--foreground)" },
 };
-const axis = { tickLine: false, axisLine: false, tick: { fontSize: 11, fill: "var(--muted-foreground)" } };
+const axis = {
+  tickLine: false,
+  axisLine: false,
+  tick: { fontSize: 11, fill: "var(--muted-foreground)" },
+};
 
 function EnterprisePage() {
   const { hydrated } = useNeeva();
@@ -102,23 +141,56 @@ function EnterprisePage() {
   const safe = anonymizeCohorts(org.cohorts);
 
   const kpis: { label: string; value: string; sub: string; icon: typeof Users; tone: Tone }[] = [
-    { label: "Enrolled members", value: org.seats.toLocaleString("en-IN"), sub: "Licensed seats", icon: Users, tone: "sage" },
-    { label: "Anonymised engagement", value: `${eng}%`, sub: `+${eng - org.engagement[0]!} pts in 12 weeks`, icon: Activity, tone: "lilac" },
-    { label: "Avg. stress index", value: `${stressNow}/100`, sub: `${stressDelta}% over 6 months`, icon: TrendingDown, tone: "rose" },
-    { label: "Monthly investment", value: `₹${((org.seats * 99) / 100000).toFixed(1)}L`, sub: "₹99 per member / month", icon: IndianRupee, tone: "periwinkle" },
+    {
+      label: "Enrolled members",
+      value: org.seats.toLocaleString("en-IN"),
+      sub: "Licensed seats",
+      icon: Users,
+      tone: "sage",
+    },
+    {
+      label: "Anonymised engagement",
+      value: `${eng}%`,
+      sub: `+${eng - org.engagement[0]!} pts in 12 weeks`,
+      icon: Activity,
+      tone: "lilac",
+    },
+    {
+      label: "Avg. stress index",
+      value: `${stressNow}/100`,
+      sub: `${stressDelta}% over 6 months`,
+      icon: TrendingDown,
+      tone: "rose",
+    },
+    {
+      label: "Monthly investment",
+      value: `₹${((org.seats * 99) / 100000).toFixed(1)}L`,
+      sub: "₹99 per member / month",
+      icon: IndianRupee,
+      tone: "periwinkle",
+    },
   ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 @3xl:p-8">
       <div className="flex flex-col gap-4 animate-rise @3xl:flex-row @3xl:items-end">
         <div className="flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Enterprise HR view</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Enterprise HR view
+          </p>
           <h2 className="mt-1 font-display text-4xl @3xl:text-5xl">{org.name}</h2>
           <p className="text-sm text-muted-foreground">{org.kind} · Aggregate data only</p>
         </div>
         <div className="inline-flex self-start rounded-full bg-muted p-1">
           {(["uni", "corp"] as const).map((k) => (
-            <button key={k} onClick={() => setKey(k)} className={cn("rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300", key === k ? "bg-card text-foreground shadow-soft" : "text-muted-foreground")}>
+            <button
+              key={k}
+              onClick={() => setKey(k)}
+              className={cn(
+                "rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300",
+                key === k ? "bg-card text-foreground shadow-soft" : "text-muted-foreground",
+              )}
+            >
               {ORGS[k].name}
             </button>
           ))}
@@ -128,7 +200,9 @@ function EnterprisePage() {
       <div className="flex items-start gap-3 rounded-3xl border border-sage-deep/40 bg-sage/50 p-4">
         <Lock className="mt-0.5 size-5 shrink-0 text-sage-foreground" />
         <p className="text-sm text-sage-foreground">
-          <b>Privacy guaranteed.</b> Organisations only ever see anonymised, aggregated trends. Conversations, journals and mood logs never leave a member's account, and any group smaller than {MIN_COHORT_SIZE} people is automatically hidden.
+          <b>Privacy guaranteed.</b> Organisations only ever see anonymised, aggregated trends.
+          Conversations, journals and mood logs never leave a member's account, and any group
+          smaller than {MIN_COHORT_SIZE} people is automatically hidden.
         </p>
       </div>
 
@@ -149,12 +223,21 @@ function EnterprisePage() {
           <div className="h-56">
             {hydrated && (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={org.engagement.map((v, i) => ({ w: WEEKS[i], v }))} margin={{ left: -20, right: 8, top: 8 }}>
+                <LineChart
+                  data={org.engagement.map((v, i) => ({ w: WEEKS[i], v }))}
+                  margin={{ left: -20, right: 8, top: 8 }}
+                >
                   <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 6" />
                   <XAxis dataKey="w" {...axis} />
                   <YAxis domain={[0, 100]} unit="%" {...axis} />
                   <Tooltip {...tip} formatter={(v) => [`${v}%`, "Engagement"]} />
-                  <Line type="monotone" dataKey="v" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--card)", stroke: "var(--primary)", strokeWidth: 2 }} />
+                  <Line
+                    type="monotone"
+                    dataKey="v"
+                    stroke="var(--primary)"
+                    strokeWidth={2.5}
+                    dot={{ r: 3, fill: "var(--card)", stroke: "var(--primary)", strokeWidth: 2 }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -165,7 +248,10 @@ function EnterprisePage() {
           <div className="h-56">
             {hydrated && (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={org.stress.map((v, i) => ({ m: MONTHS[i], v }))} margin={{ left: -20, right: 8, top: 8 }}>
+                <AreaChart
+                  data={org.stress.map((v, i) => ({ m: MONTHS[i], v }))}
+                  margin={{ left: -20, right: 8, top: 8 }}
+                >
                   <defs>
                     <linearGradient id="stressFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--terracotta)" stopOpacity={0.5} />
@@ -176,12 +262,23 @@ function EnterprisePage() {
                   <XAxis dataKey="m" {...axis} />
                   <YAxis domain={[30, 90]} {...axis} />
                   <Tooltip {...tip} formatter={(v) => [`${v}/100`, "Stress index"]} />
-                  <Area type="monotone" dataKey="v" stroke="var(--terracotta)" strokeWidth={2.5} fill="url(#stressFill)" />
+                  <Area
+                    type="monotone"
+                    dataKey="v"
+                    stroke="var(--terracotta)"
+                    strokeWidth={2.5}
+                    fill="url(#stressFill)"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
-          {key === "uni" && <p className="mt-2 text-[11px] text-muted-foreground">September spike aligns with mid-semester exams — Exam Stress Toolkit usage rose 3× that month.</p>}
+          {key === "uni" && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              September spike aligns with mid-semester exams — Exam Stress Toolkit usage rose 3×
+              that month.
+            </p>
+          )}
         </Panel>
       </div>
 
@@ -194,9 +291,24 @@ function EnterprisePage() {
                 <BarChart data={org.programs} layout="vertical" margin={{ left: 0, right: 16 }}>
                   <CartesianGrid horizontal={false} stroke="var(--border)" strokeDasharray="4 6" />
                   <XAxis type="number" {...axis} />
-                  <YAxis type="category" dataKey="name" width={150} {...axis} tick={{ fontSize: 11, fill: "var(--foreground)" }} />
-                  <Tooltip {...tip} cursor={{ fill: "var(--muted)" }} formatter={(v) => [Number(v).toLocaleString("en-IN"), "Sessions"]} />
-                  <Bar dataKey="sessions" fill="var(--sage-deep)" radius={[0, 10, 10, 0]} barSize={18} />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    width={150}
+                    {...axis}
+                    tick={{ fontSize: 11, fill: "var(--foreground)" }}
+                  />
+                  <Tooltip
+                    {...tip}
+                    cursor={{ fill: "var(--muted)" }}
+                    formatter={(v) => [Number(v).toLocaleString("en-IN"), "Sessions"]}
+                  />
+                  <Bar
+                    dataKey="sessions"
+                    fill="var(--sage-deep)"
+                    radius={[0, 10, 10, 0]}
+                    barSize={18}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -206,22 +318,50 @@ function EnterprisePage() {
           <PanelTitle eyebrow={`By ${org.cohortLabel.toLowerCase()}`} title="Cohort wellbeing" />
           <div className="space-y-2">
             {safe.map((c) => (
-              <div key={c.name} className={cn("rounded-2xl border border-border/70 p-3", c.suppressed && "bg-muted/60")}>
+              <div
+                key={c.name}
+                className={cn(
+                  "rounded-2xl border border-border/70 p-3",
+                  c.suppressed && "bg-muted/60",
+                )}
+              >
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-semibold">{c.name}</span>
-                  <span className="text-[11px] text-muted-foreground">{c.suppressed ? `< ${MIN_COHORT_SIZE} members` : `${c.size.toLocaleString("en-IN")} members`}</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {c.suppressed
+                      ? `< ${MIN_COHORT_SIZE} members`
+                      : `${c.size.toLocaleString("en-IN")} members`}
+                  </span>
                 </div>
                 {c.suppressed ? (
-                  <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground"><EyeOff className="size-3.5" /> Hidden to protect individual privacy</p>
+                  <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <EyeOff className="size-3.5" /> Hidden to protect individual privacy
+                  </p>
                 ) : (
                   <div className="mt-2 grid grid-cols-2 gap-3 text-[11px]">
                     <div>
-                      <div className="mb-1 flex justify-between"><span className="text-muted-foreground">Stress</span><b className="tabular-nums">{c.stress}</b></div>
-                      <div className="h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-terracotta" style={{ width: `${c.stress}%` }} /></div>
+                      <div className="mb-1 flex justify-between">
+                        <span className="text-muted-foreground">Stress</span>
+                        <b className="tabular-nums">{c.stress}</b>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-terracotta"
+                          style={{ width: `${c.stress}%` }}
+                        />
+                      </div>
                     </div>
                     <div>
-                      <div className="mb-1 flex justify-between"><span className="text-muted-foreground">Engagement</span><b className="tabular-nums">{c.engagement}%</b></div>
-                      <div className="h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-sage-deep" style={{ width: `${c.engagement}%` }} /></div>
+                      <div className="mb-1 flex justify-between">
+                        <span className="text-muted-foreground">Engagement</span>
+                        <b className="tabular-nums">{c.engagement}%</b>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-sage-deep"
+                          style={{ width: `${c.engagement}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -233,9 +373,24 @@ function EnterprisePage() {
 
       <div className="grid gap-5 @4xl:grid-cols-3">
         {[
-          { icon: ShieldCheck, tone: "sage" as Tone, title: "Zero individual data", text: "HR never sees names, chats, journals or moods — only aggregate trends." },
-          { icon: HeartPulse, tone: "rose" as Tone, title: `${org.referrals} confidential referrals`, text: "Members connected to licensed counsellors this quarter, privately." },
-          { icon: Lock, tone: "lilac" as Tone, title: "Enterprise-grade security", text: "End-to-end encryption, GDPR & HIPAA-aligned controls, India data residency." },
+          {
+            icon: ShieldCheck,
+            tone: "sage" as Tone,
+            title: "Zero individual data",
+            text: "HR never sees names, chats, journals or moods — only aggregate trends.",
+          },
+          {
+            icon: HeartPulse,
+            tone: "rose" as Tone,
+            title: `${org.referrals} confidential referrals`,
+            text: "Members connected to licensed counsellors this quarter, privately.",
+          },
+          {
+            icon: Lock,
+            tone: "lilac" as Tone,
+            title: "Enterprise-grade security",
+            text: "End-to-end encryption, GDPR & HIPAA-aligned controls, India data residency.",
+          },
         ].map((c) => (
           <Panel key={c.title} className="flex gap-4">
             <IconBadge icon={c.icon} tone={c.tone} />

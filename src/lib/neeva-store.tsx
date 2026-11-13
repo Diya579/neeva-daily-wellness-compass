@@ -1,9 +1,30 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Goal, LangCode, MoodKey } from "./neeva-data";
 import type { JournalAnalysis } from "./journal-types";
 
-export type MoodLog = { id: string; mood: MoodKey; intensity: number; triggers: string[]; at: string };
-export type JournalEntry = { id: string; prompt: string; text: string; at: string; analysis?: JournalAnalysis };
+export type MoodLog = {
+  id: string;
+  mood: MoodKey;
+  intensity: number;
+  triggers: string[];
+  at: string;
+};
+export type JournalEntry = {
+  id: string;
+  prompt: string;
+  text: string;
+  at: string;
+  analysis?: JournalAnalysis;
+};
 export type ThoughtEntry = {
   id: string;
   situation: string;
@@ -93,13 +114,19 @@ export function NeevaProvider({ children }: { children: ReactNode }) {
   const update = useCallback((fn: (s: State) => Partial<State>) => {
     setState((s) => ({ ...s, ...fn(s) }));
   }, []);
-  const addPoints = useCallback((n: number) => setState((s) => ({ ...s, points: s.points + n })), []);
+  const addPoints = useCallback(
+    (n: number) => setState((s) => ({ ...s, points: s.points + n })),
+    [],
+  );
   const reset = useCallback(() => {
     window.localStorage.removeItem(KEY);
     setState(DEFAULT);
   }, []);
 
-  const value = useMemo(() => ({ ...state, hydrated, update, addPoints, reset }), [state, hydrated, update, addPoints, reset]);
+  const value = useMemo(
+    () => ({ ...state, hydrated, update, addPoints, reset }),
+    [state, hydrated, update, addPoints, reset],
+  );
   return <NeevaContext.Provider value={value}>{children}</NeevaContext.Provider>;
 }
 

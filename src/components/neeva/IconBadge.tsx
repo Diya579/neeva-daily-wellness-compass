@@ -14,10 +14,32 @@ const TONES: Record<Tone, string> = {
 };
 
 /** Dual-tone pastel circle behind a Lucide icon. */
-export function IconBadge({ icon: Icon, tone = "sage", size = "md", className }: { icon: LucideIcon; tone?: Tone; size?: "sm" | "md" | "lg"; className?: string }) {
-  const dims = size === "sm" ? "size-8 [&_svg]:size-4" : size === "lg" ? "size-14 [&_svg]:size-6" : "size-11 [&_svg]:size-5";
+export function IconBadge({
+  icon: Icon,
+  tone = "sage",
+  size = "md",
+  className,
+}: {
+  icon: LucideIcon;
+  tone?: Tone;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+}) {
+  const dims =
+    size === "sm"
+      ? "size-8 [&_svg]:size-4"
+      : size === "lg"
+        ? "size-14 [&_svg]:size-6"
+        : "size-11 [&_svg]:size-5";
   return (
-    <span className={cn("relative inline-flex shrink-0 items-center justify-center rounded-full ring-4", TONES[tone], dims, className)}>
+    <span
+      className={cn(
+        "relative inline-flex shrink-0 items-center justify-center rounded-full ring-4",
+        TONES[tone],
+        dims,
+        className,
+      )}
+    >
       <Icon strokeWidth={1.8} />
     </span>
   );

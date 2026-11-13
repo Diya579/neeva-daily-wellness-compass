@@ -20,9 +20,16 @@ export function MoodCheckIn() {
 
   const save = () => {
     if (!picked) return;
-    update((s) => ({ moods: [...s.moods, { id: uid(), mood: picked, intensity, triggers, at: new Date().toISOString() }] }));
+    update((s) => ({
+      moods: [
+        ...s.moods,
+        { id: uid(), mood: picked, intensity, triggers, at: new Date().toISOString() },
+      ],
+    }));
     addPoints(10);
-    toast.success(`Logged: ${moodByKey(picked).label}`, { description: "+10 wellness points. Thank you for checking in." });
+    toast.success(`Logged: ${moodByKey(picked).label}`, {
+      description: "+10 wellness points. Thank you for checking in.",
+    });
     setPicked(null);
     setTriggers([]);
     setIntensity(3);
@@ -39,11 +46,19 @@ export function MoodCheckIn() {
               onClick={() => setPicked(active ? null : m.key)}
               className={cn(
                 "group flex flex-col items-center gap-1.5 rounded-2xl border border-transparent p-2 pb-3 transition-all duration-300 hover:-translate-y-1",
-                active ? cn(toneBg[m.tone], "border-primary/20 shadow-soft") : "bg-muted/60 hover:bg-muted",
+                active
+                  ? cn(toneBg[m.tone], "border-primary/20 shadow-soft")
+                  : "bg-muted/60 hover:bg-muted",
               )}
               aria-pressed={active}
             >
-              <MoodFace mood={m.key} className={cn("size-12 transition-transform duration-300 @lg:size-16", active && "scale-110")} />
+              <MoodFace
+                mood={m.key}
+                className={cn(
+                  "size-12 transition-transform duration-300 @lg:size-16",
+                  active && "scale-110",
+                )}
+              />
               <span className="text-[11px] font-semibold @lg:text-xs">{m.label}</span>
             </button>
           );
@@ -55,12 +70,22 @@ export function MoodCheckIn() {
           <div>
             <div className="mb-2 flex justify-between text-xs font-medium text-muted-foreground">
               <span>How strongly?</span>
-              <span className="text-foreground">{["", "A little", "Somewhat", "Noticeably", "Strongly", "Intensely"][intensity]}</span>
+              <span className="text-foreground">
+                {["", "A little", "Somewhat", "Noticeably", "Strongly", "Intensely"][intensity]}
+              </span>
             </div>
-            <Slider value={[intensity]} min={1} max={5} step={1} onValueChange={([v]) => setIntensity(v ?? 3)} />
+            <Slider
+              value={[intensity]}
+              min={1}
+              max={5}
+              step={1}
+              onValueChange={([v]) => setIntensity(v ?? 3)}
+            />
           </div>
           <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">What's connected to it? (optional)</p>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">
+              What's connected to it? (optional)
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {TRIGGERS.map((t) => {
                 const on = triggers.includes(t);
@@ -68,7 +93,12 @@ export function MoodCheckIn() {
                   <button
                     key={t}
                     onClick={() => setTriggers((x) => (on ? x.filter((y) => y !== t) : [...x, t]))}
-                    className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-all duration-300", on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-sage-deep")}
+                    className={cn(
+                      "rounded-full border px-3 py-1 text-xs font-medium transition-all duration-300",
+                      on
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card hover:border-sage-deep",
+                    )}
                   >
                     {t}
                   </button>
@@ -76,7 +106,10 @@ export function MoodCheckIn() {
               })}
             </div>
           </div>
-          <button onClick={save} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground transition-all duration-300 hover:opacity-90">
+          <button
+            onClick={save}
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground transition-all duration-300 hover:opacity-90"
+          >
             <Check className="size-4" /> Save check-in
           </button>
         </div>
@@ -88,8 +121,12 @@ export function MoodCheckIn() {
             <Leaf className="size-4" />
           </span>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sage-foreground">AI wellness tip · feeling {moodByKey(latest.mood).label.toLowerCase()}</p>
-            <p className="mt-1 text-sm leading-relaxed">{wellnessTip(latest.mood, latest.triggers, todays.length)}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sage-foreground">
+              AI wellness tip · feeling {moodByKey(latest.mood).label.toLowerCase()}
+            </p>
+            <p className="mt-1 text-sm leading-relaxed">
+              {wellnessTip(latest.mood, latest.triggers, todays.length)}
+            </p>
           </div>
         </div>
       )}

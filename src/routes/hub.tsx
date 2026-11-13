@@ -24,9 +24,16 @@ export const Route = createFileRoute("/hub")({
   head: () => ({
     meta: [
       { title: "Behavioral Hub · Meditation, CBT & Focus — Neeva" },
-      { name: "description", content: "Guided meditations, 4-7-8 breathing, CBT thought records, thinking-trap games and an ADHD-friendly Pomodoro timer." },
+      {
+        name: "description",
+        content:
+          "Guided meditations, 4-7-8 breathing, CBT thought records, thinking-trap games and an ADHD-friendly Pomodoro timer.",
+      },
       { property: "og:title", content: "Behavioral Hub · Neeva" },
-      { property: "og:description", content: "Evidence-based tools to calm, reframe and focus — all in one gentle space." },
+      {
+        property: "og:description",
+        content: "Evidence-based tools to calm, reframe and focus — all in one gentle space.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -41,8 +48,12 @@ function HubPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 @3xl:p-8">
       <div className="animate-rise">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Behavioral hub</p>
-        <h2 className="mt-1 font-display text-4xl @3xl:text-5xl">Small practices, <em className="text-terracotta">real change.</em></h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          Behavioral hub
+        </p>
+        <h2 className="mt-1 font-display text-4xl @3xl:text-5xl">
+          Small practices, <em className="text-terracotta">real change.</em>
+        </h2>
       </div>
 
       <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
@@ -50,7 +61,12 @@ function HubPage() {
           <button
             key={key}
             onClick={() => navigate({ search: { tab: key }, replace: true })}
-            className={cn("inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300", tab === key ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-sage-deep")}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300",
+              tab === key
+                ? "border-primary bg-primary text-primary-foreground shadow-soft"
+                : "border-border bg-card hover:border-sage-deep",
+            )}
           >
             <Icon className="size-4" /> {label}
           </button>
@@ -67,7 +83,8 @@ function HubPage() {
               <PanelTitle eyebrow="Breathing" title="4-7-8 calming breath" />
               <BreathingCircle />
               <p className="mt-2 rounded-2xl bg-muted/60 p-3 text-xs text-muted-foreground">
-                A longer exhale activates the parasympathetic nervous system — the body's natural “rest and digest” mode. Four cycles is plenty to start.
+                A longer exhale activates the parasympathetic nervous system — the body's natural
+                “rest and digest” mode. Four cycles is plenty to start.
               </p>
             </Panel>
           </div>

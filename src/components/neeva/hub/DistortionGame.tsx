@@ -18,7 +18,9 @@ export function DistortionGame() {
     const others = DISTORTIONS.filter((d) => d.key !== R.answer)
       .sort((a, b) => seeded(round * 13 + a.key.length) - seeded(round * 13 + b.key.length))
       .slice(0, 3);
-    return [...others, DISTORTIONS.find((d) => d.key === R.answer)!].sort((a, b) => seeded(round + a.label.length) - seeded(round + b.label.length));
+    return [...others, DISTORTIONS.find((d) => d.key === R.answer)!].sort(
+      (a, b) => seeded(round + a.label.length) - seeded(round + b.label.length),
+    );
   }, [R, round]);
 
   const choose = (k: string) => {
@@ -33,9 +35,22 @@ export function DistortionGame() {
   if (finished) {
     return (
       <div className="animate-rise py-6 text-center">
-        <p className="font-display text-5xl">{score}/{DISTORTION_ROUNDS.length}</p>
-        <p className="mt-2 text-sm text-muted-foreground">{score >= 5 ? "Sharp eye, detective. Spotting traps is the first step to escaping them." : "Every trap you learn to spot gets easier to step around. Try another round?"}</p>
-        <button onClick={() => { setRound(0); setScore(0); setPicked(null); }} className="mt-5 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground">
+        <p className="font-display text-5xl">
+          {score}/{DISTORTION_ROUNDS.length}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {score >= 5
+            ? "Sharp eye, detective. Spotting traps is the first step to escaping them."
+            : "Every trap you learn to spot gets easier to step around. Try another round?"}
+        </p>
+        <button
+          onClick={() => {
+            setRound(0);
+            setScore(0);
+            setPicked(null);
+          }}
+          className="mt-5 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground"
+        >
           <RotateCcw className="size-4" /> Play again
         </button>
       </div>
@@ -45,12 +60,18 @@ export function DistortionGame() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between text-xs font-semibold text-muted-foreground">
-        <span>Round {round + 1} of {DISTORTION_ROUNDS.length}</span>
-        <span>Score <b className="text-foreground">{score}</b></span>
+        <span>
+          Round {round + 1} of {DISTORTION_ROUNDS.length}
+        </span>
+        <span>
+          Score <b className="text-foreground">{score}</b>
+        </span>
       </div>
       <div key={round} className="animate-rise">
         <div className="rounded-3xl bg-rose/60 p-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-rose-foreground">The thought</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-rose-foreground">
+            The thought
+          </p>
           <p className="mt-2 font-display text-3xl leading-tight">“{R.thought}”</p>
         </div>
         <p className="my-4 text-sm font-semibold">Which thinking trap is this?</p>
@@ -59,7 +80,19 @@ export function DistortionGame() {
             const correct = picked && o.key === R.answer;
             const wrong = picked === o.key && o.key !== R.answer;
             return (
-              <button key={o.key} onClick={() => choose(o.key)} className={cn("flex items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-300", correct ? "border-sage-deep bg-sage" : wrong ? "border-terracotta bg-rose" : "border-border hover:border-sage-deep hover:bg-muted/50", picked && !correct && !wrong && "opacity-50")}>
+              <button
+                key={o.key}
+                onClick={() => choose(o.key)}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-300",
+                  correct
+                    ? "border-sage-deep bg-sage"
+                    : wrong
+                      ? "border-terracotta bg-rose"
+                      : "border-border hover:border-sage-deep hover:bg-muted/50",
+                  picked && !correct && !wrong && "opacity-50",
+                )}
+              >
                 <span className="flex-1">
                   <span className="block text-sm font-semibold">{o.label}</span>
                   <span className="text-xs text-muted-foreground">{o.hint}</span>
@@ -73,7 +106,13 @@ export function DistortionGame() {
         {picked && (
           <div className="mt-4 flex animate-rise items-start gap-3 rounded-2xl bg-muted/70 p-4">
             <p className="flex-1 text-sm">{R.why}</p>
-            <button onClick={() => { setRound((r) => r + 1); setPicked(null); }} className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
+            <button
+              onClick={() => {
+                setRound((r) => r + 1);
+                setPicked(null);
+              }}
+              className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
               {round === DISTORTION_ROUNDS.length - 1 ? "See score" : "Next"}
             </button>
           </div>

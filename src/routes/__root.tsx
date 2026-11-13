@@ -83,11 +83,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Neeva — Mental Wellness Reimagined for Everyone" },
-      { name: "description", content: "Neeva is India's ₹99/month mental wellness companion: empathetic AI chat, guided journaling, CBT tools and peer support." },
+      {
+        name: "description",
+        content:
+          "Neeva is India's ₹99/month mental wellness companion: empathetic AI chat, guided journaling, CBT tools and peer support.",
+      },
       { name: "author", content: "Neeva" },
       { name: "theme-color", content: "#FAF7F0" },
       { property: "og:title", content: "Neeva — Mental Wellness Reimagined for Everyone" },
-      { property: "og:description", content: "Empathetic AI support, journaling, CBT tools and community — in your language, for ₹99/month." },
+      {
+        property: "og:description",
+        content:
+          "Empathetic AI support, journaling, CBT tools and community — in your language, for ₹99/month.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

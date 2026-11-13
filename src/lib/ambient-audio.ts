@@ -31,7 +31,14 @@ function noise(c: AudioContext, kind: "white" | "brown") {
   return src;
 }
 
-function chirp(c: AudioContext, out: AudioNode, base: number, type: OscillatorType = "sine", dur = 0.18, vol = 0.05) {
+function chirp(
+  c: AudioContext,
+  out: AudioNode,
+  base: number,
+  type: OscillatorType = "sine",
+  dur = 0.18,
+  vol = 0.05,
+) {
   const o = c.createOscillator();
   const g = c.createGain();
   o.type = type;
@@ -83,7 +90,10 @@ function build(kind: Ambient): Voice {
         window.setTimeout(() => chirp(c, master, f * 1.1), 160);
       }
     }, 1400);
-    stops.push(() => n.stop(), () => window.clearInterval(id));
+    stops.push(
+      () => n.stop(),
+      () => window.clearInterval(id),
+    );
   }
   if (kind === "cafe") {
     const n = noise(c, "brown");
@@ -102,9 +112,14 @@ function build(kind: Ambient): Voice {
     n.start();
     lfo.start();
     const id = window.setInterval(() => {
-      if (Math.random() < 0.3) chirp(c, master, 2800 + Math.random() * 1200, "triangle", 0.12, 0.025);
+      if (Math.random() < 0.3)
+        chirp(c, master, 2800 + Math.random() * 1200, "triangle", 0.12, 0.025);
     }, 2200);
-    stops.push(() => n.stop(), () => lfo.stop(), () => window.clearInterval(id));
+    stops.push(
+      () => n.stop(),
+      () => lfo.stop(),
+      () => window.clearInterval(id),
+    );
   }
   if (kind === "drone") {
     [174, 261.6, 392].forEach((f, i) => {
@@ -121,7 +136,10 @@ function build(kind: Ambient): Voice {
       o.connect(g).connect(master);
       o.start();
       lfo.start();
-      stops.push(() => o.stop(), () => lfo.stop());
+      stops.push(
+        () => o.stop(),
+        () => lfo.stop(),
+      );
     });
   }
 

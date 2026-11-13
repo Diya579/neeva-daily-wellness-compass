@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Ear, Eye, Hand, HeartHandshake, LifeBuoy, Phone, Sparkle, Wind } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { HELPLINES } from "@/lib/neeva-data";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +30,10 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
             compact ? "h-9 px-3 text-xs" : "h-10 px-4 text-sm",
           )}
         >
-          <span className="absolute inset-0 rounded-full bg-crisis animate-pulse-ring" aria-hidden />
+          <span
+            className="absolute inset-0 rounded-full bg-crisis animate-pulse-ring"
+            aria-hidden
+          />
           <LifeBuoy className="relative size-4" />
           <span className="relative">Crisis help</span>
         </button>
@@ -35,7 +45,11 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
           </div>
           <DialogTitle className="font-display text-3xl">You're not alone right now.</DialogTitle>
           <DialogDescription className="text-sm leading-relaxed">
-            If you're in immediate danger, call <a className="font-semibold text-crisis underline" href="tel:112">112</a>. Trained, caring people are a tap away — free and confidential.
+            If you're in immediate danger, call{" "}
+            <a className="font-semibold text-crisis underline" href="tel:112">
+              112
+            </a>
+            . Trained, caring people are a tap away — free and confidential.
           </DialogDescription>
         </DialogHeader>
 
@@ -59,7 +73,9 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
         </div>
 
         <div className="rounded-2xl bg-sage/60 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sage-foreground">Grounding · 5-4-3-2-1</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sage-foreground">
+            Grounding · 5-4-3-2-1
+          </p>
           {step < GROUNDING.length ? (
             <div className="mt-3 flex items-center gap-4">
               {(() => {
@@ -67,31 +83,47 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
                 const Icon = G.icon;
                 return (
                   <>
-                    <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-card font-display text-3xl text-primary">{G.n}</span>
+                    <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-card font-display text-3xl text-primary">
+                      {G.n}
+                    </span>
                     <div className="flex-1">
                       <p className="flex items-center gap-2 text-sm font-semibold">
                         <Icon className="size-4" /> Notice {G.n} {G.sense}
                       </p>
-                      <p className="text-xs text-muted-foreground">Take your time. Name each one, silently or out loud.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Take your time. Name each one, silently or out loud.
+                      </p>
                     </div>
                   </>
                 );
               })()}
             </div>
           ) : (
-            <p className="mt-3 text-sm">You did it. Your feet are on the floor, and you are here. Stay as long as you need.</p>
+            <p className="mt-3 text-sm">
+              You did it. Your feet are on the floor, and you are here. Stay as long as you need.
+            </p>
           )}
           <div className="mt-3 flex items-center justify-between">
             <div className="flex gap-1.5">
               {GROUNDING.map((_, i) => (
-                <span key={i} className={cn("h-1.5 w-6 rounded-full transition-all duration-300", i < step ? "bg-primary" : i === step ? "bg-sage-deep" : "bg-card")} />
+                <span
+                  key={i}
+                  className={cn(
+                    "h-1.5 w-6 rounded-full transition-all duration-300",
+                    i < step ? "bg-primary" : i === step ? "bg-sage-deep" : "bg-card",
+                  )}
+                />
               ))}
             </div>
             <button
               onClick={() => setStep((s) => (s >= GROUNDING.length ? 0 : s + 1))}
               className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground transition-all duration-300 hover:opacity-90"
             >
-              {step >= GROUNDING.length ? "Start again" : step === GROUNDING.length - 1 ? "Finish" : "Next"}
+              {step >= GROUNDING.length
+                ? "Start again"
+                : step === GROUNDING.length - 1
+                  ? "Finish"
+                  : "Next"}
             </button>
           </div>
         </div>
