@@ -59,7 +59,9 @@ export function MoodCheckIn() {
                   active && "scale-110",
                 )}
               />
-              <span className="text-[11px] font-semibold @lg:text-xs">{m.label}</span>
+              <span className="w-full break-words text-center text-[11px] font-semibold leading-tight hyphens-manual @lg:text-xs">
+                {m.key === "overwhelmed" ? "Over\u00ADwhelmed" : m.label}
+              </span>
             </button>
           );
         })}
