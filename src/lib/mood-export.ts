@@ -13,8 +13,8 @@ export function moodsToCSV(moods: MoodLog[]): string {
   const lines = rows.map((m) => {
     const d = new Date(m.at);
     return [
-      m.at.slice(0, 10),
-      d.toISOString().slice(11, 16),
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+      `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`,
       moodByKey(m.mood).label,
       moodByKey(m.mood).score,
       m.intensity,
