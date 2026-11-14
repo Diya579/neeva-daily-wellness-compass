@@ -28,7 +28,7 @@ import type { JournalAnalysis } from "@/lib/journal-types";
 import { uid, useNeeva, type JournalEntry } from "@/lib/neeva-store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/journal")({
+export const Route = createFileRoute("/_authenticated/journal")({
   head: () => ({
     meta: [
       { title: "Reflective Journal · Neeva" },

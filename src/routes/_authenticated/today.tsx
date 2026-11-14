@@ -22,7 +22,7 @@ import { GOALS, type Goal } from "@/lib/neeva-data";
 import { useNeeva } from "@/lib/neeva-store";
 import hero from "@/assets/hero-calm.jpg";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({
     meta: [
       { title: "Today · Neeva — Your daily wellness space" },

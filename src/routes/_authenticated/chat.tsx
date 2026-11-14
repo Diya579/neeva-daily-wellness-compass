@@ -29,7 +29,7 @@ import { CHAT_SUGGESTIONS, CHAT_WELCOME, LANGUAGES, type LangCode } from "@/lib/
 import { uid, useNeeva, type ChatMessage } from "@/lib/neeva-store";
 import mark from "@/assets/neeva-mark.png";
 
-export const Route = createFileRoute("/chat")({
+export const Route = createFileRoute("/_authenticated/chat")({
   head: () => ({
     meta: [
       { title: "Neeva AI · An empathetic companion, any hour" },
