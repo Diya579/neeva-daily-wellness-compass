@@ -12,9 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { NeevaProvider } from "@/lib/neeva-store";
-import { AppShell } from "@/components/neeva/AppShell";
-import { Onboarding } from "@/components/neeva/Onboarding";
+import { MotionConfig } from "motion/react";
+import { AuthSessionProvider } from "@/lib/auth-session";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -109,7 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
       },
     ],
   }),
@@ -138,14 +137,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NeevaProvider>
-        <AppShell>
+      <AuthSessionProvider>
+        <MotionConfig reducedMotion="user">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
-        </AppShell>
-        <Onboarding />
-        <Toaster position="top-center" />
-      </NeevaProvider>
+          <Toaster position="top-center" />
+        </MotionConfig>
+      </AuthSessionProvider>
     </QueryClientProvider>
   );
 }
