@@ -11,10 +11,12 @@ import side from "@/assets/window-calm.jpg";
 import mark from "@/assets/neeva-mark.png";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>): { redirect?: string; mode?: "signin" | "signup" } => ({
-    redirect: typeof s["redirect"] === "string" ? (s["redirect"] as string) : undefined,
-    mode: s["mode"] === "signup" ? "signup" : s["mode"] === "signin" ? "signin" : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): { redirect?: string; mode?: "signin" | "signup" } => {
+    const out: { redirect?: string; mode?: "signin" | "signup" } = {};
+    if (typeof s["redirect"] === "string") out.redirect = s["redirect"];
+    if (s["mode"] === "signup" || s["mode"] === "signin") out.mode = s["mode"];
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Sign in or join · Neeva" },

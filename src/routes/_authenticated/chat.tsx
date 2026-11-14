@@ -265,7 +265,7 @@ function ChatRoom() {
             <Message from="assistant">
               <div className="flex items-center gap-3">
                 <Avatar />
-                <Shimmer className="text-sm">{companion.name} is typing…</Shimmer>
+                <Shimmer className="text-sm">{`${companion.name} is typing…`}</Shimmer>
               </div>
             </Message>
           )}
