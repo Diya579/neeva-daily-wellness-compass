@@ -267,15 +267,21 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </header>
 
-          <main className="@container relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <main
+            className={cn(
+              "@container relative min-h-0 flex-1 overflow-y-auto overscroll-contain [--nav-space:6.5rem]",
+              !framed && "md:[--nav-space:0rem]",
+            )}
+          >
             <motion.div
               key={pathname}
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 30 }}
-              className={cn("pb-28", !framed && "md:pb-0")}
+              className="h-full"
             >
               {children}
+              {pathname !== "/chat" && <div aria-hidden className="h-[var(--nav-space)]" />}
             </motion.div>
           </main>
 
