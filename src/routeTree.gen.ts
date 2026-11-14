@@ -9,42 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ChatRouteImport } from './routes/chat'
-import { Route as CommunityRouteImport } from './routes/community'
-import { Route as EnterpriseRouteImport } from './routes/enterprise'
-import { Route as HubRouteImport } from './routes/hub'
-import { Route as JournalRouteImport } from './routes/journal'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedCommunityRouteImport } from './routes/_authenticated/community'
+import { Route as AuthenticatedHubRouteImport } from './routes/_authenticated/hub'
+import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
+import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/today'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/_authenticated/chat',
   path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommunityRoute = CommunityRouteImport.update({
-  id: '/community',
+const AuthenticatedCommunityRoute = AuthenticatedCommunityRouteImport.update({
+  id: '/_authenticated/community',
   path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EnterpriseRoute = EnterpriseRouteImport.update({
-  id: '/enterprise',
-  path: '/enterprise',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HubRoute = HubRouteImport.update({
-  id: '/hub',
+const AuthenticatedHubRoute = AuthenticatedHubRouteImport.update({
+  id: '/_authenticated/hub',
   path: '/hub',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JournalRoute = JournalRouteImport.update({
-  id: '/journal',
+const AuthenticatedJournalRoute = AuthenticatedJournalRouteImport.update({
+  id: '/_authenticated/journal',
   path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTodayRoute = AuthenticatedTodayRouteImport.update({
+  id: '/_authenticated/today',
+  path: '/today',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -54,115 +48,90 @@ const ApiChatRoute = ApiChatRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
-  '/community': typeof CommunityRoute
-  '/enterprise': typeof EnterpriseRoute
-  '/hub': typeof HubRoute
-  '/journal': typeof JournalRoute
+  '/chat': typeof AuthenticatedChatRoute
+  '/community': typeof AuthenticatedCommunityRoute
+  '/hub': typeof AuthenticatedHubRoute
+  '/journal': typeof AuthenticatedJournalRoute
+  '/today': typeof AuthenticatedTodayRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
-  '/community': typeof CommunityRoute
-  '/enterprise': typeof EnterpriseRoute
-  '/hub': typeof HubRoute
-  '/journal': typeof JournalRoute
+  '/chat': typeof AuthenticatedChatRoute
+  '/community': typeof AuthenticatedCommunityRoute
+  '/hub': typeof AuthenticatedHubRoute
+  '/journal': typeof AuthenticatedJournalRoute
+  '/today': typeof AuthenticatedTodayRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
-  '/community': typeof CommunityRoute
-  '/enterprise': typeof EnterpriseRoute
-  '/hub': typeof HubRoute
-  '/journal': typeof JournalRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
+  '/_authenticated/community': typeof AuthenticatedCommunityRoute
+  '/_authenticated/hub': typeof AuthenticatedHubRoute
+  '/_authenticated/journal': typeof AuthenticatedJournalRoute
+  '/_authenticated/today': typeof AuthenticatedTodayRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/chat'
-    | '/community'
-    | '/enterprise'
-    | '/hub'
-    | '/journal'
-    | '/api/chat'
+    '/chat' | '/community' | '/hub' | '/journal' | '/today' | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/chat'
-    | '/community'
-    | '/enterprise'
-    | '/hub'
-    | '/journal'
-    | '/api/chat'
+  to: '/chat' | '/community' | '/hub' | '/journal' | '/today' | '/api/chat'
   id:
     | '__root__'
-    | '/'
-    | '/chat'
-    | '/community'
-    | '/enterprise'
-    | '/hub'
-    | '/journal'
+    | '/_authenticated/chat'
+    | '/_authenticated/community'
+    | '/_authenticated/hub'
+    | '/_authenticated/journal'
+    | '/_authenticated/today'
     | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ChatRoute: typeof ChatRoute
-  CommunityRoute: typeof CommunityRoute
-  EnterpriseRoute: typeof EnterpriseRoute
-  HubRoute: typeof HubRoute
-  JournalRoute: typeof JournalRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
+  AuthenticatedCommunityRoute: typeof AuthenticatedCommunityRoute
+  AuthenticatedHubRoute: typeof AuthenticatedHubRoute
+  AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
+  AuthenticatedTodayRoute: typeof AuthenticatedTodayRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chat': {
-      id: '/chat'
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
       path: '/chat'
       fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/community': {
-      id: '/community'
+    '/_authenticated/community': {
+      id: '/_authenticated/community'
       path: '/community'
       fullPath: '/community'
-      preLoaderRoute: typeof CommunityRouteImport
+      preLoaderRoute: typeof AuthenticatedCommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/enterprise': {
-      id: '/enterprise'
-      path: '/enterprise'
-      fullPath: '/enterprise'
-      preLoaderRoute: typeof EnterpriseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hub': {
-      id: '/hub'
+    '/_authenticated/hub': {
+      id: '/_authenticated/hub'
       path: '/hub'
       fullPath: '/hub'
-      preLoaderRoute: typeof HubRouteImport
+      preLoaderRoute: typeof AuthenticatedHubRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/journal': {
-      id: '/journal'
+    '/_authenticated/journal': {
+      id: '/_authenticated/journal'
       path: '/journal'
       fullPath: '/journal'
-      preLoaderRoute: typeof JournalRouteImport
+      preLoaderRoute: typeof AuthenticatedJournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/today': {
+      id: '/_authenticated/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof AuthenticatedTodayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -176,12 +145,11 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ChatRoute: ChatRoute,
-  CommunityRoute: CommunityRoute,
-  EnterpriseRoute: EnterpriseRoute,
-  HubRoute: HubRoute,
-  JournalRoute: JournalRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
+  AuthenticatedCommunityRoute: AuthenticatedCommunityRoute,
+  AuthenticatedHubRoute: AuthenticatedHubRoute,
+  AuthenticatedJournalRoute: AuthenticatedJournalRoute,
+  AuthenticatedTodayRoute: AuthenticatedTodayRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
