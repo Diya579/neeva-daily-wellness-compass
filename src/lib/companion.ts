@@ -62,8 +62,9 @@ export const NAME_IDEAS = ["Neeva", "Mitra", "Saathi", "Juno", "Kiki", "Sukoon",
 export function sanitizeCompanionName(raw: string): string {
   const cleaned = raw
     .normalize("NFKC")
-    .replace(/[^\p{L}\p{M}\p{N} '\-]/gu, "")
     .replace(/\s+/g, " ")
+    .replace(/[^\p{L}\p{M}\p{N} '\-]/gu, "")
+    .replace(/ +/g, " ")
     .trim()
     .slice(0, 24)
     .trim();
