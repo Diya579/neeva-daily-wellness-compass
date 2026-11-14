@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          companion_avatar: string
+          companion_configured: boolean
+          companion_emoji: boolean
+          companion_length: string
+          companion_name: string
+          companion_vibe: string
+          created_at: string
+          display_name: string
+          goal: string
+          id: string
+          onboarded: boolean
+          updated_at: string
+        }
+        Insert: {
+          companion_avatar?: string
+          companion_configured?: boolean
+          companion_emoji?: boolean
+          companion_length?: string
+          companion_name?: string
+          companion_vibe?: string
+          created_at?: string
+          display_name?: string
+          goal?: string
+          id: string
+          onboarded?: boolean
+          updated_at?: string
+        }
+        Update: {
+          companion_avatar?: string
+          companion_configured?: boolean
+          companion_emoji?: boolean
+          companion_length?: string
+          companion_name?: string
+          companion_vibe?: string
+          created_at?: string
+          display_name?: string
+          goal?: string
+          id?: string
+          onboarded?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
