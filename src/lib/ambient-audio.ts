@@ -4,13 +4,40 @@ export type Ambient = "rain" | "forest" | "cafe" | "drone";
 type Voice = { gain: GainNode; stop: () => void };
 
 let ctx: AudioContext | null = null;
+let bus: GainNode | null = null;
+let analyser: AnalyserNode | null = null;
+let volume = 0.8;
 const voices = new Map<Ambient, Voice>();
 
 function audio() {
-  if (!ctx) ctx = new AudioContext();
+  if (!ctx) {
+    ctx = new AudioContext();
+    bus = ctx.createGain();
+    bus.gain.value = volume;
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    bus.connect(analyser).connect(ctx.destination);
+  }
   if (ctx.state === "suspended") void ctx.resume();
   return ctx;
 }
+
+/** 0–1 loudness of everything currently playing (for the live level meter). */
+export function getAmbientLevel(): number {
+  if (!analyser || voices.size === 0) return 0;
+  const buf = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buf);
+  let sum = 0;
+  for (const v of buf) sum += v * v;
+  return Math.min(1, Math.sqrt(sum / buf.length) * 6);
+}
+
+export function setAmbientVolume(v: number) {
+  volume = Math.max(0, Math.min(1, v));
+  if (bus && ctx) bus.gain.setTargetAtTime(volume, ctx.currentTime, 0.05);
+}
+
+export const isAmbientOn = (k: Ambient) => voices.has(k);
 
 function noise(c: AudioContext, kind: "white" | "brown") {
   const len = c.sampleRate * 3;
@@ -57,7 +84,7 @@ function build(kind: Ambient): Voice {
   const c = audio();
   const master = c.createGain();
   master.gain.setValueAtTime(0, c.currentTime);
-  master.connect(c.destination);
+  master.connect(bus!);
   const stops: (() => void)[] = [];
 
   if (kind === "rain") {

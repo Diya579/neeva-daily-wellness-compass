@@ -16,7 +16,7 @@ const TABS = [
 ] as const;
 type HubTab = (typeof TABS)[number]["key"];
 
-export const Route = createFileRoute("/hub")({
+export const Route = createFileRoute("/_authenticated/hub")({
   validateSearch: (s: Record<string, unknown>): { tab?: HubTab } => {
     const t = s["tab"];
     return TABS.some((x) => x.key === t) ? { tab: t as HubTab } : {};

@@ -24,7 +24,7 @@ import { ALIASES, GROUPS, POSTS, type Group, type Post } from "@/lib/neeva-data"
 import { useNeeva } from "@/lib/neeva-store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/community")({
+export const Route = createFileRoute("/_authenticated/community")({
   head: () => ({
     meta: [
       { title: "Community & Support · Neeva" },

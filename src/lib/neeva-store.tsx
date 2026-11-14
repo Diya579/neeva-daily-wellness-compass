@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Goal, LangCode, MoodKey } from "./neeva-data";
+import type { LangCode, MoodKey } from "./neeva-data";
 import type { JournalAnalysis } from "./journal-types";
 
 export type MoodLog = {
@@ -41,9 +41,6 @@ export type ChatMessage = { id: string; role: "user" | "assistant"; content: str
 export type ViewMode = "desktop" | "mobile";
 
 type State = {
-  onboarded: boolean;
-  name: string;
-  goal: Goal;
   moods: MoodLog[];
   points: number;
   focusSessions: number;
@@ -56,9 +53,6 @@ type State = {
 };
 
 const DEFAULT: State = {
-  onboarded: false,
-  name: "",
-  goal: "stress",
   moods: [],
   points: 120,
   focusSessions: 0,
@@ -70,7 +64,6 @@ const DEFAULT: State = {
   chat: [],
 };
 
-const KEY = "neeva:v1";
 
 type Ctx = State & {
   hydrated: boolean;
@@ -83,7 +76,9 @@ const NeevaContext = createContext<Ctx | null>(null);
 
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
-export function NeevaProvider({ children }: { children: ReactNode }) {
+/** On-device activity store, namespaced per signed-in account. */
+export function NeevaProvider({ userId, children }: { userId: string; children: ReactNode }) {
+  const KEY = `neeva:v2:${userId}`;
   const [state, setState] = useState<State>(DEFAULT);
   const [hydrated, setHydrated] = useState(false);
   const first = useRef(true);
@@ -96,7 +91,7 @@ export function NeevaProvider({ children }: { children: ReactNode }) {
       /* ignore corrupt storage */
     }
     setHydrated(true);
-  }, []);
+  }, [KEY]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -109,7 +104,7 @@ export function NeevaProvider({ children }: { children: ReactNode }) {
     } catch {
       /* storage full or unavailable */
     }
-  }, [state, hydrated]);
+  }, [state, hydrated, KEY]);
 
   const update = useCallback((fn: (s: State) => Partial<State>) => {
     setState((s) => ({ ...s, ...fn(s) }));
@@ -121,7 +116,7 @@ export function NeevaProvider({ children }: { children: ReactNode }) {
   const reset = useCallback(() => {
     window.localStorage.removeItem(KEY);
     setState(DEFAULT);
-  }, []);
+  }, [KEY]);
 
   const value = useMemo(
     () => ({ ...state, hydrated, update, addPoints, reset }),
