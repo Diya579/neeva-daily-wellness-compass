@@ -25,9 +25,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CHAT_SUGGESTIONS, CHAT_WELCOME, LANGUAGES, type LangCode } from "@/lib/neeva-data";
+import { CHAT_SUGGESTIONS, LANGUAGES, type LangCode } from "@/lib/neeva-data";
+import { welcomeFor } from "@/lib/companion";
+import { detectCrisis } from "@/lib/crisis";
+import { useProfile } from "@/lib/profile";
+import { supabase } from "@/integrations/supabase/client";
+import { CompanionAvatar } from "@/components/neeva/CompanionAvatar";
+import { CompanionSetup } from "@/components/neeva/CompanionSetup";
+import { useCrisis } from "@/components/neeva/CrisisDialog";
+import { Settings2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { uid, useNeeva, type ChatMessage } from "@/lib/neeva-store";
-import mark from "@/assets/neeva-mark.png";
 
 export const Route = createFileRoute("/_authenticated/chat")({
   head: () => ({
@@ -56,14 +64,34 @@ const timeOf = (at: number) =>
   new Date(at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
 
 function Avatar() {
-  return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sage ring-4 ring-sage/40">
-      <img src={mark} alt="" className="size-6" width={816} height={816} />
-    </span>
-  );
+  const { companion } = useProfile();
+  return <CompanionAvatar avatar={companion.avatar} className="size-9" />;
 }
 
 function ChatPage() {
+  const { profile, companion, saveProfile, saving } = useProfile();
+  if (!profile.companion_configured) {
+    return (
+      <div className="mx-auto max-w-2xl p-4 @3xl:p-8">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Before your first chat</p>
+        <h2 className="mt-1 text-4xl font-extrabold tracking-tight">Build your <em className="font-display font-normal">companion.</em></h2>
+        <p className="mb-6 mt-2 text-sm text-muted-foreground">Give them a name and a vibe. You can change this anytime in Settings.</p>
+        <CompanionSetup
+          initial={companion}
+          saving={saving}
+          onSave={(c) =>
+            saveProfile({ companion_name: c.name, companion_vibe: c.vibe, companion_length: c.length, companion_avatar: c.avatar, companion_emoji: c.emoji, companion_configured: true })
+          }
+        />
+      </div>
+    );
+  }
+  return <ChatRoom />;
+}
+
+function ChatRoom() {
+  const { companion } = useProfile();
+  const { openCrisis } = useCrisis();
   const { chat, language, update } = useNeeva();
   const [status, setStatus] = useState<Status>("ready");
   const [input, setInput] = useState("");
@@ -78,6 +106,7 @@ function ChatPage() {
     async (text: string) => {
       const content = text.trim();
       if (!content || status === "submitted" || status === "streaming") return;
+      if (detectCrisis(content)) openCrisis("detected");
       const userMsg: ChatMessage = { id: uid(), role: "user", content, at: Date.now() };
       const history = [...chat, userMsg].slice(-30);
       setMessages((m) => [...m, userMsg]);
@@ -89,8 +118,12 @@ function ChatPage() {
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? ""}`,
+          },
           body: JSON.stringify({
+            companion,
             language,
             messages: history.map(({ role, content }) => ({ role, content })),
           }),
@@ -142,21 +175,20 @@ function ChatPage() {
         abortRef.current = null;
       }
     },
-    [chat, language, setMessages, status],
+    [chat, language, setMessages, status, companion, openCrisis],
   );
 
   const onSubmit = (msg: PromptInputMessage) => void send(msg.text ?? input);
   const busy = status === "submitted" || status === "streaming";
 
   return (
-    <div className="mx-auto flex h-full max-w-4xl flex-col">
+    <div className="mx-auto flex h-full max-w-4xl flex-col pb-[var(--nav-space)]">
       <div className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 @3xl:px-8">
         <Avatar />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">Neeva AI</p>
+          <p className="text-sm font-bold">{companion.name}</p>
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-sage-deep" /> Here for you · CBT & ACT
-            informed
+            <span className="size-1.5 animate-pulse rounded-full bg-sage-deep" /> online · CBT & ACT informed
           </p>
         </div>
         <Select value={language} onValueChange={(v) => update(() => ({ language: v as LangCode }))}>
@@ -176,6 +208,9 @@ function ChatPage() {
             ))}
           </SelectContent>
         </Select>
+        <Link to="/settings" aria-label="Customise companion" className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 hover:bg-muted hover:text-foreground">
+          <Settings2 className="size-4" />
+        </Link>
         {chat.length > 0 && (
           <button
             onClick={() => setMessages(() => [])}
@@ -194,9 +229,9 @@ function ChatPage() {
               <Avatar />
               <div className="min-w-0">
                 <MessageContent className="text-[15px] leading-relaxed">
-                  <MessageResponse>{CHAT_WELCOME[language]}</MessageResponse>
+                  <MessageResponse>{welcomeFor(language, companion.name)}</MessageResponse>
                 </MessageContent>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">Neeva · just now</p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">{companion.name} · just now</p>
               </div>
             </div>
           </Message>
@@ -204,7 +239,7 @@ function ChatPage() {
           {chat.map((m) =>
             m.role === "user" ? (
               <Message key={m.id} from="user">
-                <MessageContent className="rounded-3xl rounded-br-lg bg-primary px-4 py-3 text-[15px] leading-relaxed text-primary-foreground group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground group-[.is-user]:rounded-3xl group-[.is-user]:rounded-br-lg">
+                <MessageContent className="rounded-3xl rounded-br-lg border-[1.5px] border-ink bg-primary px-4 py-3 text-[15px] leading-relaxed text-primary-foreground group-[.is-user]:bg-primary group-[.is-user]:text-primary-foreground group-[.is-user]:rounded-3xl group-[.is-user]:rounded-br-lg">
                   <p className="whitespace-pre-wrap">{m.content}</p>
                 </MessageContent>
                 <p className="text-right text-[11px] text-muted-foreground">You · {timeOf(m.at)}</p>
@@ -218,7 +253,7 @@ function ChatPage() {
                       <MessageResponse>{m.content}</MessageResponse>
                     </MessageContent>
                     <p className="mt-1.5 text-[11px] text-muted-foreground">
-                      Neeva · {timeOf(m.at)}
+                      {companion.name} · {timeOf(m.at)}
                     </p>
                   </div>
                 </div>
@@ -230,7 +265,7 @@ function ChatPage() {
             <Message from="assistant">
               <div className="flex items-center gap-3">
                 <Avatar />
-                <Shimmer className="text-sm">Neeva is listening and reflecting…</Shimmer>
+                <Shimmer className="text-sm">{companion.name} is typing…</Shimmer>
               </div>
             </Message>
           )}

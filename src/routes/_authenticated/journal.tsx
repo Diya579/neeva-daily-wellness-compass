@@ -27,6 +27,8 @@ import { analyzeJournal } from "@/lib/journal.functions";
 import type { JournalAnalysis } from "@/lib/journal-types";
 import { uid, useNeeva, type JournalEntry } from "@/lib/neeva-store";
 import { cn } from "@/lib/utils";
+import { detectCrisis } from "@/lib/crisis";
+import { useCrisis } from "@/components/neeva/CrisisDialog";
 
 export const Route = createFileRoute("/_authenticated/journal")({
   head: () => ({
@@ -201,6 +203,7 @@ function JournalPage() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState<{ entry: JournalEntry; offline: boolean } | null>(null);
   const analyze = useServerFn(analyzeJournal);
+  const { openCrisis } = useCrisis();
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   const run = async () => {
@@ -210,6 +213,7 @@ function JournalPage() {
       });
       return;
     }
+    if (detectCrisis(text)) openCrisis("detected");
     setLoading(true);
     try {
       const { analysis, source } = await analyze({ data: { text, prompt } });
