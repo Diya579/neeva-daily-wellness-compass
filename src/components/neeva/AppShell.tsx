@@ -9,9 +9,7 @@ import {
   House,
   LogOut,
   MessageCircleHeart,
-  Monitor,
   Settings,
-  Smartphone,
   Users,
 } from "lucide-react";
 import {
@@ -42,44 +40,6 @@ function useNav() {
     { to: "/hub", label: "Hub", icon: Flower2 },
     { to: "/community", label: "Circles", icon: Users },
   ] as const;
-}
-
-function ViewToggle({ className }: { className?: string }) {
-  const { viewMode, update } = useNeeva();
-  return (
-    <div
-      className={cn(
-        "hidden items-center rounded-full border-[1.5px] border-ink bg-card p-0.5 md:inline-flex",
-        className,
-      )}
-    >
-      {(
-        [
-          { k: "mobile", icon: Smartphone, label: "Phone" },
-          { k: "desktop", icon: Monitor, label: "Wide" },
-        ] as const
-      ).map(({ k, icon: Icon, label }) => (
-        <button
-          key={k}
-          onClick={() => update(() => ({ viewMode: k }))}
-          className={cn(
-            "relative inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-colors duration-300",
-            viewMode === k ? "text-background" : "text-muted-foreground hover:text-foreground",
-          )}
-          aria-pressed={viewMode === k}
-        >
-          {viewMode === k && (
-            <motion.span
-              layoutId="view-toggle"
-              className="absolute inset-0 rounded-full bg-ink"
-              transition={{ type: "spring", stiffness: 400, damping: 32 }}
-            />
-          )}
-          <Icon className="relative size-3.5" /> <span className="relative">{label}</span>
-        </button>
-      ))}
-    </div>
-  );
 }
 
 export function useSignOut() {
@@ -147,39 +107,17 @@ function ProfileMenu() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { viewMode } = useNeeva();
   const { companion } = useProfile();
   const nav = useNav();
-  const framed = viewMode === "mobile";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const current = [...nav, { to: "/settings", label: "Settings" }].find((n) => n.to === pathname);
 
   return (
-    <div
-      className={cn(
-        "relative min-h-dvh overflow-hidden bg-sand",
-        framed && "md:flex md:items-center md:justify-center md:p-6",
-      )}
-    >
-      {framed && (
-        <div className="absolute left-1/2 top-4 z-20 hidden -translate-x-1/2 md:block lg:left-auto lg:right-8 lg:top-8 lg:translate-x-0">
-          <ViewToggle />
-        </div>
-      )}
-
-      <div
-        className={cn(
-          "relative z-10 flex h-dvh w-full bg-background",
-          framed &&
-            "md:mt-8 md:h-[min(880px,calc(100dvh-5rem))] md:w-[400px] md:overflow-hidden md:rounded-[2.75rem] md:border-[10px] md:border-ink md:shadow-device lg:mt-0",
-        )}
-      >
+    <div className="relative min-h-dvh overflow-hidden bg-background">
+      <div className="relative z-10 flex h-dvh w-full bg-background">
         {/* Desktop sidebar */}
         <aside
-          className={cn(
-            "w-60 shrink-0 flex-col border-r-[1.5px] border-ink/10 bg-sidebar p-4 xl:w-64 xl:p-5",
-            framed ? "hidden" : "hidden md:flex",
-          )}
+          className="hidden w-56 shrink-0 flex-col border-r-[1.5px] border-ink/10 bg-sidebar p-4 md:flex lg:w-60 xl:w-64 xl:p-5"
         >
           <Link to="/today" className="mb-8 flex items-center gap-2.5 px-2">
             <img src={mark} alt="" className="size-9" width={816} height={816} />
@@ -239,12 +177,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header
-            className={cn(
-              "flex items-center gap-2 border-b-[1.5px] border-ink/10 bg-background/85 px-4 py-3 backdrop-blur-xl",
-              !framed && "md:px-8",
-            )}
+            className="flex items-center gap-2 border-b-[1.5px] border-ink/10 bg-background/85 px-4 py-3 backdrop-blur-xl md:px-6 lg:px-8"
           >
-            <Link to="/today" className={cn("flex items-center gap-2", !framed && "md:hidden")}>
+            <Link to="/today" className="flex items-center gap-2 md:hidden">
               <img src={mark} alt="" className="size-8" width={816} height={816} />
               <span className="text-xl font-extrabold tracking-tight">neeva</span>
             </Link>
@@ -255,23 +190,19 @@ export function AppShell({ children }: { children: ReactNode }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
-                className={cn("hidden font-mono text-xs font-semibold uppercase tracking-widest text-muted-foreground", !framed && "md:block")}
+                className="hidden font-mono text-xs font-semibold uppercase tracking-widest text-muted-foreground md:block"
               >
                 /{(current?.label ?? "neeva").toLowerCase()}
               </motion.h1>
             </AnimatePresence>
             <div className="ml-auto flex items-center gap-2">
-              {!framed && <ViewToggle className="mr-1" />}
-              <CrisisButton compact={framed} />
+              <CrisisButton />
               <ProfileMenu />
             </div>
           </header>
 
           <main
-            className={cn(
-              "@container relative min-h-0 flex-1 overflow-y-auto overscroll-contain [--nav-space:6.5rem]",
-              !framed && "md:[--nav-space:0rem]",
-            )}
+            className="@container relative min-h-0 flex-1 overflow-y-auto overscroll-contain [--nav-space:6.5rem] md:[--nav-space:0rem]"
           >
             <motion.div
               key={pathname}
@@ -285,16 +216,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             </motion.div>
           </main>
 
-          <div className={cn(framed ? "hidden" : "hidden md:block")}>
+          <div className="hidden md:block">
             <SecurityBanner />
           </div>
 
           {/* Mobile floating nav */}
           <nav
-            className={cn(
-              "pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)]",
-              framed ? "block" : "md:hidden",
-            )}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] md:hidden"
           >
             <div className="pointer-events-auto mx-auto grid max-w-md grid-cols-5 rounded-[1.6rem] border-[1.5px] border-ink bg-card/95 p-1.5 shadow-pop backdrop-blur-xl">
               {nav.map(({ to, label, icon: Icon }) => {
