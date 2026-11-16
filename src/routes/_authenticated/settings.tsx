@@ -36,6 +36,7 @@ function SettingsPage() {
           initial={companion}
           saving={saving}
           cta="Save companion"
+          saveAnytime
           onSave={async (c) => {
             await saveProfile(companionPatch(c));
             toast.success(`${c.name} is updated`);

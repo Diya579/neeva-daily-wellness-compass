@@ -60,11 +60,14 @@ export function CompanionSetup({
   onSave,
   saving,
   cta = "Meet your companion",
+  saveAnytime = false,
 }: {
   initial: Companion;
   onSave: (c: Companion) => void | Promise<void>;
   saving?: boolean;
   cta?: string;
+  /** Show the save button on every step (Settings), not only the last (first-chat setup). */
+  saveAnytime?: boolean;
 }) {
   const [c, setC] = useState<Companion>(initial);
   const [step, setStep] = useState(0);
@@ -221,7 +224,7 @@ export function CompanionSetup({
             Next: {STEPS[step + 1]} <ArrowRight className="size-4" />
           </button>
         )}
-        {(last || cta !== "Meet your companion") && (
+        {(last || saveAnytime) && (
           <button type="button" disabled={saving} onClick={save} className="pop press inline-flex h-12 items-center gap-2 rounded-full bg-zest px-6 text-sm font-bold text-zest-foreground disabled:opacity-60">
             <Sparkles className="size-4" /> {cta}
           </button>
