@@ -23,9 +23,9 @@ import { useNeeva } from "@/lib/neeva-store";
 import { useProfile } from "@/lib/profile";
 import { exportMoods } from "@/lib/mood-export";
 import { Download } from "lucide-react";
-import journalImg from "@/assets/journal-chai.jpg";
-import circleImg from "@/assets/circle-terrace.jpg";
-import hero from "@/assets/landing-hero.jpg";
+import journalImg from "@/assets/today-journal-bed.jpg";
+import circleImg from "@/assets/today-circle-park.jpg";
+import hero from "@/assets/hero-calm.jpg";
 
 export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({
@@ -227,10 +227,10 @@ function Today() {
       <section className="grain relative overflow-hidden rounded-[2rem] border-[1.5px] border-ink bg-primary text-primary-foreground shadow-pop-lg animate-rise">
         <img
           src={hero}
-          alt="A young woman with headphones relaxing on a rooftop at sunset"
-          width={1280}
-          height={1600}
-          className="absolute inset-0 h-full w-full object-cover object-[70%_30%]"
+          alt="A young woman with eyes closed, surrounded by soft flowers"
+          width={1600}
+          height={1008}
+          className="absolute inset-0 h-full w-full object-cover object-[75%_30%]"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary/0 @3xl:via-primary/60" />
         <div className="relative max-w-xl p-6 @3xl:p-10">
@@ -318,8 +318,8 @@ function Today() {
 
       <div className="grid gap-4 @2xl:grid-cols-2">
         {[
-          { to: "/journal" as const, img: journalImg, w: 1280, h: 1600, alt: "Hands holding chai beside an open journal", tag: "journal", line: "Dump it on the page. Get a gentle read-back." },
-          { to: "/community" as const, img: circleImg, w: 1600, h: 1072, alt: "Friends talking on a terrace at dusk", tag: "circles", line: "People who get it, anonymously." },
+          { to: "/journal" as const, img: journalImg, w: 1600, h: 1072, alt: "Hands writing in a notebook on a lilac bed", tag: "journal", line: "Dump it on the page. Get a gentle read-back." },
+          { to: "/community" as const, img: circleImg, w: 1600, h: 1072, alt: "Friends sitting in a circle on the grass at sunset", tag: "circles", line: "People who get it, anonymously." },
         ].map((c) => (
           <Link key={c.to} to={c.to} className="group relative block h-44 overflow-hidden rounded-[1.75rem] border-[1.5px] border-ink">
             <img src={c.img} alt={c.alt} width={c.w} height={c.h} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
