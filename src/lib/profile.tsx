@@ -86,6 +86,9 @@ export function ProfileProvider({
     length: profile.companion_length as Companion["length"],
     avatar: profile.companion_avatar as Companion["avatar"],
     emoji: profile.companion_emoji,
+    approach: profile.companion_approach as Companion["approach"],
+    tone: profile.companion_tone as Companion["tone"],
+    notes: profile.companion_notes,
   };
 
   return (
@@ -104,6 +107,19 @@ export function ProfileProvider({
     </ProfileCtx.Provider>
   );
 }
+
+/** Map companion settings onto profile columns. */
+export const companionPatch = (c: Companion): ProfilePatch => ({
+  companion_name: c.name,
+  companion_vibe: c.vibe,
+  companion_length: c.length,
+  companion_avatar: c.avatar,
+  companion_emoji: c.emoji,
+  companion_approach: c.approach,
+  companion_tone: c.tone,
+  companion_notes: c.notes,
+  companion_configured: true,
+});
 
 export function useProfile() {
   const ctx = useContext(ProfileCtx);

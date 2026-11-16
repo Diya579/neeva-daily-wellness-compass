@@ -9,6 +9,9 @@ const Body = z.object({
     length: z.enum(["short", "balanced", "deep"]),
     avatar: z.enum(["bloom", "moon", "wave", "spark"]),
     emoji: z.boolean(),
+    approach: z.enum(["validate", "advise", "mix", "explore"]).default("mix"),
+    tone: z.enum(["gentle", "honest", "playful"]).default("gentle"),
+    notes: z.string().max(400).default(""),
   }),
   language: z.enum(["en", "hi", "gu", "ta", "mr", "bn"]),
   messages: z
