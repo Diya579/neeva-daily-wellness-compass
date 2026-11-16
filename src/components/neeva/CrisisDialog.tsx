@@ -379,7 +379,7 @@ export function CrisisButton({ compact = false }: { compact?: boolean }) {
       onClick={() => openCrisis("button")}
       className={cn(
         "pop press relative inline-flex shrink-0 items-center gap-2 rounded-full bg-crisis font-bold text-crisis-foreground",
-        compact ? "h-9 px-3 text-xs" : "h-10 px-4 text-sm",
+        compact ? "h-9 px-3 text-xs" : "h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm",
       )}
     >
       <LifeBuoy className="size-4" />

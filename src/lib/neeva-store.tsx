@@ -38,7 +38,6 @@ export type ThoughtEntry = {
   at: string;
 };
 export type ChatMessage = { id: string; role: "user" | "assistant"; content: string; at: number };
-export type ViewMode = "desktop" | "mobile";
 
 type State = {
   moods: MoodLog[];
@@ -47,7 +46,6 @@ type State = {
   journal: JournalEntry[];
   thoughts: ThoughtEntry[];
   joinedGroups: string[];
-  viewMode: ViewMode;
   language: LangCode;
   chat: ChatMessage[];
 };
@@ -59,7 +57,6 @@ const DEFAULT: State = {
   journal: [],
   thoughts: [],
   joinedGroups: ["campus"],
-  viewMode: "desktop",
   language: "en",
   chat: [],
 };

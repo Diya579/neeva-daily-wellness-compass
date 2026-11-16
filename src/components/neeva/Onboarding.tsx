@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { GOALS, type Goal } from "@/lib/neeva-data";
 import { useProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
-import heroImg from "@/assets/landing-hero.jpg";
-import friends from "@/assets/friends-steps.jpg";
-import windowImg from "@/assets/window-calm.jpg";
+import cycleImg from "@/assets/onboard-cycle.jpg";
+import hostelImg from "@/assets/onboard-hostel.jpg";
+import sunriseImg from "@/assets/onboard-sunrise.jpg";
 import mark from "@/assets/neeva-mark.png";
 import { IconBadge, type Tone } from "./IconBadge";
 
@@ -21,9 +21,9 @@ const GOAL_ICON: Record<Goal, { icon: typeof Wind; tone: Tone }> = {
 };
 
 const SIDE = [
-  { src: heroImg, alt: "A young woman with headphones relaxing on a rooftop at sunset", w: 1280, h: 1600, line: "Your feelings, finally with a home." },
-  { src: friends, alt: "Four college friends laughing on campus steps", w: 1600, h: 1072, line: "Built for the way you actually live." },
-  { src: windowImg, alt: "A young man smiling at his phone by a sunlit window", w: 1280, h: 1600, line: "Small steps count here." },
+  { src: cycleImg, alt: "A young woman laughing as she cycles down a leafy street", w: 1280, h: 1600, line: "Your feelings, finally with a home." },
+  { src: hostelImg, alt: "Two roommates laughing over instant noodles in a hostel room", w: 1280, h: 1600, line: "Built for the way you actually live." },
+  { src: sunriseImg, alt: "A young man stretching on a rooftop at sunrise", w: 1280, h: 1600, line: "Small steps count here." },
 ];
 
 export function Onboarding() {

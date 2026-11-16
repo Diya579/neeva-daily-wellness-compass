@@ -4,6 +4,8 @@ import type { LangCode } from "./neeva-data";
 export type Vibe = "bestie" | "coach" | "sage" | "hype";
 export type ReplyLength = "short" | "balanced" | "deep";
 export type AvatarKey = "bloom" | "moon" | "wave" | "spark";
+export type Approach = "validate" | "advise" | "mix" | "explore";
+export type Tone = "gentle" | "honest" | "playful";
 
 export type Companion = {
   name: string;
@@ -11,6 +13,10 @@ export type Companion = {
   length: ReplyLength;
   avatar: AvatarKey;
   emoji: boolean;
+  approach: Approach;
+  tone: Tone;
+  /** Free-text notes the person wants the companion to remember (max 200 chars). */
+  notes: string;
 };
 
 export const DEFAULT_COMPANION: Companion = {
@@ -19,7 +25,37 @@ export const DEFAULT_COMPANION: Companion = {
   length: "balanced",
   avatar: "bloom",
   emoji: true,
+  approach: "mix",
+  tone: "gentle",
+  notes: "",
 };
+
+export const APPROACHES: { key: Approach; label: string; line: string; sample: string }[] = [
+  { key: "validate", label: "Just listen", line: "Validation first. No fixing unless I ask.", sample: "That sounds really heavy, and it makes total sense you feel this way. I'm here — tell me more." },
+  { key: "advise", label: "Give me advice", line: "Practical tips and next steps, please.", sample: "Okay, let's make it smaller: pick one task, set a 15-min timer, and text me when it's done." },
+  { key: "mix", label: "A bit of both", line: "Hear me out, then help me move.", sample: "That's a lot to carry. When you're ready, want to try one tiny thing that might help tonight?" },
+  { key: "explore", label: "Help me think", line: "Ask questions so I figure it out myself.", sample: "What part of this feels the most true to you — and what part might be the worry talking?" },
+];
+
+export const TONES: { key: Tone; label: string; line: string }[] = [
+  { key: "gentle", label: "Gentle", line: "Soft and careful with my feelings" },
+  { key: "honest", label: "Straight-up", line: "Kind but direct — no sugar-coating" },
+  { key: "playful", label: "Playful", line: "Light, a little funny when it fits" },
+];
+
+export const NOTES_MAX = 200;
+
+/** Clean free-text notes: single line, no braces/angle brackets, max 200 chars. */
+export function sanitizeNotes(raw: string): string {
+  return raw
+    .normalize("NFKC")
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replace(/[{}<>`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, NOTES_MAX)
+    .trim();
+}
 
 export const VIBES: { key: Vibe; label: string; line: string; sample: string }[] = [
   {

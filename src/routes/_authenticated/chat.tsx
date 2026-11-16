@@ -28,7 +28,7 @@ import {
 import { CHAT_SUGGESTIONS, LANGUAGES, type LangCode } from "@/lib/neeva-data";
 import { welcomeFor } from "@/lib/companion";
 import { detectCrisis } from "@/lib/crisis";
-import { useProfile } from "@/lib/profile";
+import { companionPatch, useProfile } from "@/lib/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { CompanionAvatar } from "@/components/neeva/CompanionAvatar";
 import { CompanionSetup } from "@/components/neeva/CompanionSetup";
@@ -75,12 +75,12 @@ function ChatPage() {
       <div className="mx-auto max-w-2xl p-4 @3xl:p-8">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Before your first chat</p>
         <h2 className="mt-1 text-4xl font-extrabold tracking-tight">Build your <em className="font-display font-normal">companion.</em></h2>
-        <p className="mb-6 mt-2 text-sm text-muted-foreground">Give them a name and a vibe. You can change this anytime in Settings.</p>
+        <p className="mb-6 mt-2 text-sm text-muted-foreground">Name them, then choose how you want to be talked to. You can change this anytime in Settings.</p>
         <CompanionSetup
           initial={companion}
           saving={saving}
           onSave={(c) =>
-            saveProfile({ companion_name: c.name, companion_vibe: c.vibe, companion_length: c.length, companion_avatar: c.avatar, companion_emoji: c.emoji, companion_configured: true })
+            saveProfile(companionPatch(c))
           }
         />
       </div>

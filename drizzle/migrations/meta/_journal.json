@@ -8,6 +8,13 @@
       "when": 1794671703444,
       "tag": "0000_create_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794845118039,
+      "tag": "0001_companion_talk_style",
+      "breakpoints": true
     }
   ]
 }

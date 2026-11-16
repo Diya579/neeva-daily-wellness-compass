@@ -7,7 +7,7 @@ import { SecurityBanner } from "@/components/neeva/SecurityBanner";
 import { useSignOut } from "@/components/neeva/AppShell";
 import { exportMoods } from "@/lib/mood-export";
 import { useNeeva } from "@/lib/neeva-store";
-import { useProfile } from "@/lib/profile";
+import { companionPatch, useProfile } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -31,13 +31,14 @@ function SettingsPage() {
     <div className="mx-auto max-w-4xl space-y-5 p-4 @3xl:p-8">
       <h2 className="text-4xl font-extrabold tracking-tight @3xl:text-5xl">Settings<span className="text-zest">.</span></h2>
       <Panel>
-        <PanelTitle eyebrow="AI companion" title="Name & personality" />
+        <PanelTitle eyebrow="AI companion" title="Name, personality & how they talk" />
         <CompanionSetup
           initial={companion}
           saving={saving}
           cta="Save companion"
+          saveAnytime
           onSave={async (c) => {
-            await saveProfile({ companion_name: c.name, companion_vibe: c.vibe, companion_length: c.length, companion_avatar: c.avatar, companion_emoji: c.emoji, companion_configured: true });
+            await saveProfile(companionPatch(c));
             toast.success(`${c.name} is updated`);
           }}
         />

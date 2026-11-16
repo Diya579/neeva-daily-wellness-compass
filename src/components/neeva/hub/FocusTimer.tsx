@@ -12,7 +12,7 @@ import {
 } from "@/lib/ambient-audio";
 import { useNeeva } from "@/lib/neeva-store";
 import { cn } from "@/lib/utils";
-import desk from "@/assets/focus-desk.jpg";
+import desk from "@/assets/focus-library.jpg";
 
 export const MODES = {
   focus: { label: "Focus", mins: 25 },
@@ -219,7 +219,7 @@ export function FocusTimer() {
         <div className="relative overflow-hidden rounded-3xl border-[1.5px] border-ink">
           <img
             src={desk}
-            alt="A desk by a rainy window at night with a warm lamp"
+            alt="A student with headphones studying in a quiet library café"
             width={1600}
             height={1072}
             loading="lazy"
