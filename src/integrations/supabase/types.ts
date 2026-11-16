@@ -16,11 +16,14 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          companion_approach: string
           companion_avatar: string
           companion_configured: boolean
           companion_emoji: boolean
           companion_length: string
           companion_name: string
+          companion_notes: string
+          companion_tone: string
           companion_vibe: string
           created_at: string
           display_name: string
@@ -30,11 +33,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          companion_approach?: string
           companion_avatar?: string
           companion_configured?: boolean
           companion_emoji?: boolean
           companion_length?: string
           companion_name?: string
+          companion_notes?: string
+          companion_tone?: string
           companion_vibe?: string
           created_at?: string
           display_name?: string
@@ -44,11 +50,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          companion_approach?: string
           companion_avatar?: string
           companion_configured?: boolean
           companion_emoji?: boolean
           companion_length?: string
           companion_name?: string
+          companion_notes?: string
+          companion_tone?: string
           companion_vibe?: string
           created_at?: string
           display_name?: string
