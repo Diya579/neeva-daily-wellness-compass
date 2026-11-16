@@ -28,7 +28,7 @@ import {
 import { CHAT_SUGGESTIONS, LANGUAGES, type LangCode } from "@/lib/neeva-data";
 import { welcomeFor } from "@/lib/companion";
 import { detectCrisis } from "@/lib/crisis";
-import { useProfile } from "@/lib/profile";
+import { companionPatch, useProfile } from "@/lib/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { CompanionAvatar } from "@/components/neeva/CompanionAvatar";
 import { CompanionSetup } from "@/components/neeva/CompanionSetup";

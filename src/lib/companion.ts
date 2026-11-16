@@ -30,11 +30,11 @@ export const DEFAULT_COMPANION: Companion = {
   notes: "",
 };
 
-export const APPROACHES: { key: Approach; label: string; line: string }[] = [
-  { key: "validate", label: "Just listen", line: "Validation first. No fixing unless I ask." },
-  { key: "advise", label: "Give me advice", line: "Practical tips and next steps, please." },
-  { key: "mix", label: "A bit of both", line: "Hear me out, then help me move." },
-  { key: "explore", label: "Help me think", line: "Ask questions so I figure it out myself." },
+export const APPROACHES: { key: Approach; label: string; line: string; sample: string }[] = [
+  { key: "validate", label: "Just listen", line: "Validation first. No fixing unless I ask.", sample: "That sounds really heavy, and it makes total sense you feel this way. I'm here — tell me more." },
+  { key: "advise", label: "Give me advice", line: "Practical tips and next steps, please.", sample: "Okay, let's make it smaller: pick one task, set a 15-min timer, and text me when it's done." },
+  { key: "mix", label: "A bit of both", line: "Hear me out, then help me move.", sample: "That's a lot to carry. When you're ready, want to try one tiny thing that might help tonight?" },
+  { key: "explore", label: "Help me think", line: "Ask questions so I figure it out myself.", sample: "What part of this feels the most true to you — and what part might be the worry talking?" },
 ];
 
 export const TONES: { key: Tone; label: string; line: string }[] = [
