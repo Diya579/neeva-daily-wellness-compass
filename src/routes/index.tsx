@@ -143,7 +143,7 @@ function TalkYourWay() {
           <h2 className="mt-2 max-w-xl text-4xl font-extrabold tracking-tight sm:text-5xl">
             Some days you want advice. <em className="font-display font-normal">Some days you just want to be heard.</em>
           </h2>
-          <p className="mt-4 max-w-md text-muted-foreground">Tell your companion how to show up for you. Try it — the reply on the right changes as you tap.</p>
+          <p className="mt-4 max-w-md text-muted-foreground">Tell your companion how to show up for you. Try it — the reply changes as you tap.</p>
           <div className="mt-8 space-y-5">
             <div>
               <p className="mb-2 font-mono text-[11px] font-bold uppercase tracking-wider">I want…</p>
