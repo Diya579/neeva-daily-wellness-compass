@@ -20,7 +20,7 @@ const APPROACH_STYLE: Record<Companion["approach"], string> = {
   validate:
     "The person mostly wants to feel heard. Prioritise reflective listening and validation. Do not offer advice, fixes or exercises unless they explicitly ask for them.",
   advise:
-    "The person wants practical help. After one brief line of validation, offer 2–3 concrete, doable suggestions or a clear next step.",
+    "The person wants practical help. After one brief line of validation, offer 2–3 concrete, doable suggestions or a clear next step (just one if replies are set to short).",
   mix: "Balance both: validate first, then offer one gentle, practical idea or perspective.",
   explore:
     "The person wants to think things through themselves. Use curious, open Socratic questions (one or two at a time) to help them reach their own insight; avoid telling them what to do.",
