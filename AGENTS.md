@@ -32,7 +32,7 @@ use the editor.
 ## Project rules (Neeva)
 
 - Public pages (landing `/`, `/auth`, `/reset-password`) are top-level routes; the app lives under `src/routes/_authenticated/` whose layout wraps `ProfileProvider`, `NeevaProvider`, `CrisisProvider`, `AppShell` and onboarding — one gate and one shell for every signed-in page.
-- Pages use container queries (`@container` on `<main>`, `@3xl:`/`@4xl:` variants) rather than viewport breakpoints — so the phone-frame preview mode lays out like a real phone.
+- Signed-in pages use container queries (`@container` on `<main>`, `@3xl:`/`@4xl:` variants) so content adapts to the space beside the sidebar; the shell itself switches sidebar/bottom-nav at `md` — there is no manual phone/desktop toggle.
 - Profile and companion settings live in the Cloud `profiles` table (own-row RLS); activity (moods, journal, points, chat) stays on-device in `NeevaProvider`, namespaced per user id — private by default without new tables.
 - `/api/chat` verifies the caller's bearer token before calling the model — protects AI credits.
 - Crisis detection and the safety check scoring live in `src/lib/crisis.ts` (tested); chat and journal open the shared crisis overlay via `useCrisis()`.
