@@ -44,13 +44,34 @@ export const GOALS: { key: Goal; label: string; description: string }[] = [
   { key: "sleep", label: "Sleep better", description: "Wind down and rest more deeply" },
 ];
 
-export const LANGUAGES: { code: LangCode; label: string; native: string }[] = [
-  { code: "en", label: "English", native: "English" },
-  { code: "hi", label: "Hindi", native: "हिन्दी" },
-  { code: "gu", label: "Gujarati", native: "ગુજરાતી" },
-  { code: "ta", label: "Tamil", native: "தமிழ்" },
-  { code: "mr", label: "Marathi", native: "मराठी" },
-  { code: "bn", label: "Bengali", native: "বাংলা" },
+/** How the companion writes a non-English language: mirror the person, English letters, or native script. */
+export type ScriptStyle = "auto" | "roman" | "native";
+
+export const LANGUAGES: {
+  code: LangCode;
+  label: string;
+  native: string;
+  /** What people call it when typed in English letters and mixed with English. */
+  mix: string;
+  /** Name of the native writing system. */
+  scriptName: string;
+  /** A real-feeling example of how young people type it in English letters. */
+  example: string;
+}[] = [
+  { code: "en", label: "English", native: "English", mix: "English", scriptName: "Latin", example: "ugh today was a lot" },
+  { code: "hi", label: "Hindi", native: "हिन्दी", mix: "Hinglish", scriptName: "Devanagari", example: "bro thak gayi hoon yaar" },
+  { code: "gu", label: "Gujarati", native: "ગુજરાતી", mix: "Gujlish", scriptName: "Gujarati", example: "yaar have bas thai gayu" },
+  { code: "ta", label: "Tamil", native: "தமிழ்", mix: "Tanglish", scriptName: "Tamil", example: "romba tired ah irukku da" },
+  { code: "mr", label: "Marathi", native: "मराठी", mix: "Minglish", scriptName: "Devanagari", example: "khup thaklo yaar aaj" },
+  { code: "bn", label: "Bengali", native: "বাংলা", mix: "Banglish", scriptName: "Bengali", example: "ar parchi na bhai" },
+];
+
+export const langInfo = (code: LangCode) => LANGUAGES.find((l) => l.code === code) ?? LANGUAGES[0];
+
+export const SCRIPT_STYLES: { key: ScriptStyle; label: string; line: (lang: (typeof LANGUAGES)[number]) => string }[] = [
+  { key: "auto", label: "Match how I type", line: (l) => `English letters if you type "${l.example}", ${l.native} if you type in ${l.native}` },
+  { key: "roman", label: "English letters", line: (l) => `Always ${l.mix}, like "${l.example}"` },
+  { key: "native", label: "Native script", line: (l) => `Always written in ${l.native}` },
 ];
 
 export const CHAT_WELCOME: Record<LangCode, string> = {
@@ -68,6 +89,7 @@ export const CHAT_SUGGESTIONS = [
   "Help me reframe this thought",
   "I can't switch off at night",
   "Exam pressure is getting to me",
+  "Yaar sab kuch bahut zyada ho raha hai",
 ];
 
 const TIPS: Record<MoodKey, string[]> = {

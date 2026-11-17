@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { LangCode, MoodKey } from "./neeva-data";
+import type { LangCode, MoodKey, ScriptStyle } from "./neeva-data";
 import type { JournalAnalysis } from "./journal-types";
 
 export type MoodLog = {
@@ -47,6 +47,8 @@ type State = {
   thoughts: ThoughtEntry[];
   joinedGroups: string[];
   language: LangCode;
+  /** How the companion writes non-English languages (default: mirror the person). */
+  script: ScriptStyle;
   chat: ChatMessage[];
 };
 
@@ -58,6 +60,7 @@ const DEFAULT: State = {
   thoughts: [],
   joinedGroups: ["campus"],
   language: "en",
+  script: "auto",
   chat: [],
 };
 

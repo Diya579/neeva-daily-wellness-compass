@@ -1,5 +1,5 @@
 // The person's own AI companion: name, vibe and reply style. Browser + server safe.
-import type { LangCode } from "./neeva-data";
+import type { LangCode, ScriptStyle } from "./neeva-data";
 
 export type Vibe = "bestie" | "coach" | "sage" | "hype";
 export type ReplyLength = "short" | "balanced" | "deep";
@@ -122,4 +122,20 @@ const WELCOME: Record<LangCode, (n: string) => string> = {
     `হাই, আমি **${n}**। এটা তোমার জায়গা — কোনো তাড়া নেই, কোনো বিচার নেই।\n\nএই মুহূর্তে সত্যি তোমার মনে কী চলছে?`,
 };
 
-export const welcomeFor = (lang: LangCode, name: string) => WELCOME[lang](name);
+// How young people actually type these languages: English letters, English words mixed in.
+const WELCOME_ROMAN: Record<Exclude<LangCode, "en">, (n: string) => string> = {
+  hi: (n) =>
+    `Hey, main **${n}** hoon. Yeh tumhari space hai — koi jaldi nahi, koi judgement nahi.\n\nSach batao, abhi mann mein kya chal raha hai?`,
+  gu: (n) =>
+    `Hey, hu **${n}** chhu. Aa taari space chhe — koi utaval nai, koi judgement nai.\n\nSaachu kahe, atyare mann ma shu chale chhe?`,
+  ta: (n) =>
+    `Hey, naan **${n}**. Idhu unga space — avasaram illa, judgement illa.\n\nUnmaiya sollunga, ippo manasula enna odittu irukku?`,
+  mr: (n) =>
+    `Hey, mi **${n}**. Hi tujhi space aahe — ghai nahi, judgement nahi.\n\nKhara saang, aatta manaat kay chaalu aahe?`,
+  bn: (n) =>
+    `Hey, ami **${n}**. Eta tomar space — kono taara nei, kono judgement nei.\n\nSotyi bolo, ekhon mone ki cholche?`,
+};
+
+/** Welcome line. "auto" starts in English letters — that's how most people text — then the companion mirrors them. */
+export const welcomeFor = (lang: LangCode, name: string, script: ScriptStyle = "auto") =>
+  lang === "en" || script === "native" ? WELCOME[lang](name) : WELCOME_ROMAN[lang](name);
