@@ -14,6 +14,7 @@ const Body = z.object({
     notes: z.string().max(400).default(""),
   }),
   language: z.enum(["en", "hi", "gu", "ta", "mr", "bn"]),
+  script: z.enum(["auto", "roman", "native"]).default("auto"),
   messages: z
     .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(6000) }))
     .min(1)
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/api/chat")({
 
         const parsed = Body.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return Response.json({ error: "Invalid request" }, { status: 400 });
-        const { messages, language, companion } = parsed.data;
+        const { messages, language, companion, script } = parsed.data;
         const { streamResponse, GatewayError } = await import("@lovable.dev/ai-gateway");
 
         let stream;
@@ -54,7 +55,7 @@ export const Route = createFileRoute("/api/chat")({
             {
               model: "openai/gpt-6-astra",
               reasoning: { effort: "low" },
-              instructions: therapistInstructions(language, companion),
+              instructions: therapistInstructions(language, companion, script),
               input: messages.map((m) =>
                 m.role === "user"
                   ? { role: "user" as const, content: m.content }

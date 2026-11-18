@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CHAT_SUGGESTIONS, LANGUAGES, type LangCode } from "@/lib/neeva-data";
+import { CHAT_SUGGESTIONS, LANGUAGES, SCRIPT_STYLES, langInfo, type LangCode, type ScriptStyle } from "@/lib/neeva-data";
 import { welcomeFor } from "@/lib/companion";
 import { detectCrisis } from "@/lib/crisis";
 import { companionPatch, useProfile } from "@/lib/profile";
@@ -92,7 +92,7 @@ function ChatPage() {
 function ChatRoom() {
   const { companion } = useProfile();
   const { openCrisis } = useCrisis();
-  const { chat, language, update } = useNeeva();
+  const { chat, language, script, update } = useNeeva();
   const [status, setStatus] = useState<Status>("ready");
   const [input, setInput] = useState("");
   const abortRef = useRef<AbortController | null>(null);
@@ -125,6 +125,7 @@ function ChatRoom() {
           body: JSON.stringify({
             companion,
             language,
+            script,
             messages: history.map(({ role, content }) => ({ role, content })),
           }),
           signal: ctrl.signal,
@@ -175,7 +176,7 @@ function ChatRoom() {
         abortRef.current = null;
       }
     },
-    [chat, language, setMessages, status, companion, openCrisis],
+    [chat, language, script, setMessages, status, companion, openCrisis],
   );
 
   const onSubmit = (msg: PromptInputMessage) => void send(msg.text ?? input);
@@ -208,6 +209,24 @@ function ChatRoom() {
             ))}
           </SelectContent>
         </Select>
+        {language !== "en" && (
+          <Select value={script} onValueChange={(v) => update(() => ({ script: v as ScriptStyle }))}>
+            <SelectTrigger
+              className="h-9 w-auto gap-2 rounded-full border-border bg-card text-xs font-semibold"
+              aria-label="Typing style"
+            >
+              <span className="font-mono text-[11px] font-bold">Aa/{langInfo(language).native.slice(0, 1)}</span>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl">
+              {SCRIPT_STYLES.map((st) => (
+                <SelectItem key={st.key} value={st.key} className="rounded-xl">
+                  {st.key === "roman" ? langInfo(language).mix : st.key === "native" ? `${langInfo(language).native} script` : st.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Link to="/settings" aria-label="Customise companion" className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 hover:bg-muted hover:text-foreground">
           <Settings2 className="size-4" />
         </Link>
@@ -229,7 +248,7 @@ function ChatRoom() {
               <Avatar />
               <div className="min-w-0">
                 <MessageContent className="text-[15px] leading-relaxed">
-                  <MessageResponse>{welcomeFor(language, companion.name)}</MessageResponse>
+                  <MessageResponse>{welcomeFor(language, companion.name, script)}</MessageResponse>
                 </MessageContent>
                 <p className="mt-1.5 text-[11px] text-muted-foreground">{companion.name} · just now</p>
               </div>
@@ -292,7 +311,7 @@ function ChatRoom() {
           <PromptInputTextarea
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
-            placeholder="Share what's on your mind… there's no wrong thing to say."
+            placeholder={`Type it your way — English, ${langInfo(language === "en" ? "hi" : language).mix}, anything. "${langInfo(language === "en" ? "hi" : language).example}" works too.`}
             className="min-h-14 text-[15px]"
           />
           <PromptInputFooter>

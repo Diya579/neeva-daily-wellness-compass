@@ -82,12 +82,12 @@ const THOUGHTS = [
 ];
 
 const HELLOS = [
-  { t: "How are you, really?", l: "English" },
-  { t: "सच में, कैसे हो?", l: "हिन्दी" },
-  { t: "ખરેખર, કેમ છો?", l: "ગુજરાતી" },
-  { t: "உண்மையா, எப்படி இருக்கீங்க?", l: "தமிழ்" },
-  { t: "खरंच, कसा आहेस?", l: "मराठी" },
-  { t: "সত্যি, কেমন আছো?", l: "বাংলা" },
+  { t: "How are you, really?", r: "ngl, how are you actually?", l: "English" },
+  { t: "सच में, कैसे हो?", r: "sach mein, kaise ho?", l: "हिन्दी" },
+  { t: "ખરેખર, કેમ છો?", r: "kharekhar, kem chho?", l: "ગુજરાતી" },
+  { t: "உண்மையா, எப்படி இருக்கீங்க?", r: "unmaiya, eppadi irukeenga?", l: "தமிழ்" },
+  { t: "खरंच, कसा आहेस?", r: "kharach, kasa aahes?", l: "मराठी" },
+  { t: "সত্যি, কেমন আছো?", r: "sotyi, kemon achho?", l: "বাংলা" },
 ];
 
 const PLAN = [
@@ -104,7 +104,7 @@ const FAQ = [
   { q: "Can I change how the AI talks to me?", a: "Yes — anytime. Choose its name, look, personality, tone, reply length, emoji, and whether you want it to just listen, give advice, do both, or ask questions so you can think it through. You can also leave it a short note, like what to call you." },
   { q: "Who can read my journal and chats?", a: "Your journal entries, moods and chat history stay on the device you use. Your account only stores your name and companion settings." },
   { q: "What happens if I'm in crisis?", a: "If you write something worrying, Neeva gently opens a 30-second safety check and shows Indian helplines like Tele-MANAS 14416 and KIRAN 1800-599-0019, plus a one-tap call to 112." },
-  { q: "Which languages are supported?", a: "English, Hindi, Gujarati, Tamil, Marathi and Bengali. You can switch languages mid-conversation." },
+  { q: "Which languages are supported?", a: "English, Hindi, Gujarati, Tamil, Marathi and Bengali — in their own script or typed in English letters, like Hinglish (\"bro thak gayi hoon\") or Gujlish (\"chal ne have\"). Your companion replies the way you type, and you can switch mid-conversation." },
   { q: "How much does it cost?", a: "₹99 a month. Cancel anytime." },
 ];
 
@@ -358,7 +358,10 @@ function Landing() {
             {HELLOS.map((h, i) => (
               <Reveal key={h.l} delay={i * 0.05}>
                 <div className="group flex items-end justify-between gap-3 rounded-2xl border-[1.5px] border-primary-foreground/25 p-5 transition-colors duration-300 hover:border-zest hover:bg-primary-foreground/5">
-                  <p className="text-2xl font-bold leading-tight">{h.t}</p>
+                  <div>
+                    <p className="text-2xl font-bold leading-tight">{h.t}</p>
+                    <p className="mt-1 font-mono text-xs text-primary-foreground/70">or just type: “{h.r}”</p>
+                  </div>
                   <span className="shrink-0 rounded-full bg-zest px-2.5 py-0.5 font-mono text-[11px] font-bold text-zest-foreground transition-transform duration-300 group-hover:-rotate-6">{h.l}</span>
                 </div>
               </Reveal>

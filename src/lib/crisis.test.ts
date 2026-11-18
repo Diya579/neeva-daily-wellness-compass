@@ -8,6 +8,23 @@ describe("detectCrisis", () => {
     expect(detectCrisis("everyone would be better off without me")).toBe(true);
     expect(detectCrisis("mujhe ab jeena nahi hai")).toBe(true);
   });
+  it("flags self-harm language typed in English letters across Indian languages", () => {
+    expect(detectCrisis("bro sach mein mar jaun aisa lagta hai")).toBe(true); // Hinglish
+    expect(detectCrisis("yaar mane have mari javu chhe")).toBe(true); // Gujlish
+    expect(detectCrisis("mala marayche aahe")).toBe(true); // Marathi in English letters
+    expect(detectCrisis("enaku saaganum pola irukku")).toBe(true); // Tanglish
+    expect(detectCrisis("ami more jete chai")).toBe(true); // Banglish
+  });
+  it("flags the same in native scripts", () => {
+    expect(detectCrisis("મારે મરી જવું છે")).toBe(true);
+    expect(detectCrisis("আমি মরে যেতে চাই")).toBe(true);
+  });
+  it("does not flag everyday Gen Z venting in mixed languages", () => {
+    expect(detectCrisis("Bro thak gayi hoon")).toBe(false);
+    expect(detectCrisis("Ruk na ek call aa raha hai")).toBe(false);
+    expect(detectCrisis("Yaar have chhe ne bas thai gyu")).toBe(false);
+    expect(detectCrisis("Chal ne have, bau bhav nai kha")).toBe(false);
+  });
   it("does not flag everyday stress", () => {
     expect(detectCrisis("this exam is killing me lol")).toBe(false);
     expect(detectCrisis("I'm so tired and burnt out from work")).toBe(false);

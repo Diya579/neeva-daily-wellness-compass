@@ -6,6 +6,8 @@ import { CompanionSetup } from "@/components/neeva/CompanionSetup";
 import { SecurityBanner } from "@/components/neeva/SecurityBanner";
 import { useSignOut } from "@/components/neeva/AppShell";
 import { exportMoods } from "@/lib/mood-export";
+import { LANGUAGES, SCRIPT_STYLES, langInfo } from "@/lib/neeva-data";
+import { cn } from "@/lib/utils";
 import { useNeeva } from "@/lib/neeva-store";
 import { companionPatch, useProfile } from "@/lib/profile";
 
@@ -25,7 +27,8 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 function SettingsPage() {
   const { companion, saveProfile, saving, email } = useProfile();
-  const { moods } = useNeeva();
+  const { moods, language, script, update } = useNeeva();
+  const lang = langInfo(language);
   const signOut = useSignOut();
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 @3xl:p-8">
@@ -42,6 +45,52 @@ function SettingsPage() {
             toast.success(`${c.name} is updated`);
           }}
         />
+      </Panel>
+      <Panel>
+        <PanelTitle eyebrow="Language & typing" title="Talk the way you text" />
+        <p className="text-sm text-muted-foreground">
+          Type Hindi, Gujarati or any of these in English letters — "bro thak gayi hoon", "chal ne have" — and your companion replies the same way.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label="Language">
+          {LANGUAGES.map((l) => (
+            <button
+              key={l.code}
+              role="radio"
+              aria-checked={language === l.code}
+              onClick={() => update(() => ({ language: l.code }))}
+              className={cn(
+                "press inline-flex h-10 items-center gap-1.5 rounded-full border-[1.5px] border-ink px-4 text-sm font-bold transition-colors duration-300",
+                language === l.code ? "bg-zest text-zest-foreground" : "bg-card hover:bg-muted",
+              )}
+            >
+              {l.native}
+              {l.code !== "en" && <span className="font-mono text-[10px] font-semibold opacity-70">{l.mix}</span>}
+            </button>
+          ))}
+        </div>
+        {language !== "en" ? (
+          <div className="mt-4 grid gap-2 @3xl:grid-cols-3" role="radiogroup" aria-label="Typing style">
+            {SCRIPT_STYLES.map((st) => (
+              <button
+                key={st.key}
+                role="radio"
+                aria-checked={script === st.key}
+                onClick={() => update(() => ({ script: st.key }))}
+                className={cn(
+                  "press rounded-2xl border-[1.5px] p-4 text-left transition-colors duration-300",
+                  script === st.key ? "pop border-ink bg-sage" : "border-border bg-card hover:border-ink",
+                )}
+              >
+                <p className="text-sm font-bold">{st.key === "roman" ? `${lang.mix} (English letters)` : st.key === "native" ? `${lang.native} script` : st.label}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{st.line(lang)}</p>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 rounded-2xl bg-muted px-4 py-3 text-xs text-muted-foreground">
+            On English, your companion still switches to Hinglish, Gujlish and the rest if that's how you type.
+          </p>
+        )}
       </Panel>
       <Panel>
         <PanelTitle eyebrow="Your data" title="Export mood check-ins" />

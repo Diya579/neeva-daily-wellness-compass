@@ -66,7 +66,7 @@ export const LANGUAGES: {
   { code: "bn", label: "Bengali", native: "বাংলা", mix: "Banglish", scriptName: "Bengali", example: "ar parchi na bhai" },
 ];
 
-export const langInfo = (code: LangCode) => LANGUAGES.find((l) => l.code === code) ?? LANGUAGES[0];
+export const langInfo = (code: LangCode) => LANGUAGES.find((l) => l.code === code) ?? LANGUAGES[0]!;
 
 export const SCRIPT_STYLES: { key: ScriptStyle; label: string; line: (lang: (typeof LANGUAGES)[number]) => string }[] = [
   { key: "auto", label: "Match how I type", line: (l) => `English letters if you type "${l.example}", ${l.native} if you type in ${l.native}` },

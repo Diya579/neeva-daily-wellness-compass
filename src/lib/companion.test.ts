@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sanitizeCompanionName } from "./companion";
+import { sanitizeCompanionName, welcomeFor } from "./companion";
 
 describe("companion name", () => {
   it("keeps a normal custom name", () => {
@@ -40,5 +40,18 @@ describe("chat style personalisation", () => {
     const p = therapistInstructions("en", { ...DEFAULT_COMPANION, notes: "call me Diya" });
     expect(p).toContain('"call me Diya"');
     expect(p.indexOf("call me Diya")).toBeLessThan(p.indexOf("Safety (always overrides"));
+  });
+});
+
+describe("welcome message typing style", () => {
+  const latinOnly = /^[\p{Script=Latin}\p{N}\p{P}\p{Zs}\n*]+$/u;
+  it("greets in English letters by default for Indian languages", () => {
+    for (const lang of ["hi", "gu", "ta", "mr", "bn"] as const) {
+      expect(welcomeFor(lang, "Mitra")).toMatch(latinOnly);
+    }
+  });
+  it("greets in the native script when the person picks native script", () => {
+    expect(welcomeFor("gu", "Mitra", "native")).toMatch(/\p{Script=Gujarati}/u);
+    expect(welcomeFor("hi", "Mitra", "native")).toMatch(/\p{Script=Devanagari}/u);
   });
 });

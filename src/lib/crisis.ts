@@ -14,13 +14,37 @@ const PATTERNS: RegExp[] = [
   /\boverdose\b/i,
   /\bjump\s+off\b/i,
   /\bunalive\b/i,
-  // Hinglish / Hindi
-  /\bmar\s+jaana?\b/i,
+  // Hindi — typed in English letters (Hinglish) or Devanagari
+  /\bmar\s+(jaana?|jaun|jaaun|jau|jaungi|jaunga|jaungaa|jaaungi|jaaunga)\b/i,
   /\bmarna\s+(hai|chahta|chahti)\b/i,
-  /\bjeena\s+nahi\b/i,
+  /\bmarne\s+ka\s+(mann?|dil)\b/i,
+  /\b(jeena|jina)\s+nahi\b/i,
+  /\b(jeene|jine)\s+ka\s+(mann?|dil)\s+nahi\b/i,
+  /\bkhud\s*ko\s+(khatam|maar|mar)\b/i,
+  /\bzindagi\s+khatam\s+kar\b/i,
   /\bkhudkushi\b/i,
-  /\baatmahatya\b/i,
-  /आत्महत्या|मरना चाहत|जीना नहीं/,
+  /\ba{1,2}tm[ao]h[ao]t(y|i)a\b/i,
+  /आत्महत्या|मरना चाहत|मर जाऊं|जीना नहीं/,
+  // Gujarati — Gujlish or Gujarati script
+  /\bmari\s+ja(v|w|a)u\b/i,
+  /\bmarvu\s+(chhe|che|chhe\s+mare)\b/i,
+  /\b(jivvu|jeevvu|jivu|jeevu)\s+(nathi|nai|nahi)\b/i,
+  /\baap\s*ghat\b/i,
+  /આત્મહત્યા|આપઘાત|મરી જવું|જીવવું નથી/,
+  // Marathi — Minglish or Devanagari
+  /\bmar(aych|aaych)(a|e|ay|ay\s+aahe)\b/i,
+  /\bmarun\s+ja(ve|aave|aycha|aychay)\b/i,
+  /\bjag(aych|aaych)(a|e)\s+nahi\b/i,
+  /मरायचं|मरून जावं|जगायचं नाही/,
+  // Tamil — Tanglish or Tamil script
+  /\bsaaga(num|poren|poraen|venum)\b/i,
+  /\bsethu(dalam|duven|poganum|poyidalam)\b/i,
+  /\bthat?kolai\b/i,
+  /தற்கொலை|சாகணும்|சாக வேண்டும்/,
+  // Bengali — Banglish or Bengali script
+  /\bmor(e|te)\s+(jete\s+)?chai\b/i,
+  /\bbachte\s+chai\s+na\b/i,
+  /আত্মহত্যা|মরে যেতে চাই|বাঁচতে চাই না/,
 ];
 
 /** True when the text contains language that suggests the person may be at risk. */

@@ -36,5 +36,6 @@ use the editor.
 - Profile and companion settings live in the Cloud `profiles` table (own-row RLS); activity (moods, journal, points, chat) stays on-device in `NeevaProvider`, namespaced per user id — private by default without new tables.
 - `/api/chat` verifies the caller's bearer token before calling the model — protects AI credits.
 - Crisis detection and the safety check scoring live in `src/lib/crisis.ts` (tested); chat and journal open the shared crisis overlay via `useCrisis()`.
+- Language rules live in `languageRule()` (src/lib/chat-prompt.ts) with a per-device typing style (auto/roman/native) in `NeevaProvider`; crisis patterns cover both English-letter and native-script forms — users often type Indian languages in English letters.
 - AI chat streams plain text from the `/api/chat` server route; journal analysis is a server function with a strict JSON schema and an on-device fallback — model calls stay server-side.
 - Charts render only after hydration and use CSS token colours — avoids SSR/client mismatches and keeps theming.
