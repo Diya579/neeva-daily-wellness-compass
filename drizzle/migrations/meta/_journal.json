@@ -15,6 +15,13 @@
       "when": 1794845118039,
       "tag": "0001_companion_talk_style",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795064175698,
+      "tag": "0002_community_circles_moderation",
+      "breakpoints": true
     }
   ]
 }

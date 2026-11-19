@@ -14,6 +14,142 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      community_members: {
+        Row: {
+          circle: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          circle: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          circle?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_posts: {
+        Row: {
+          alias: string
+          author_id: string | null
+          body: string
+          circle: string
+          created_at: string
+          id: string
+          is_team: boolean
+          moderation: string
+          status: string
+        }
+        Insert: {
+          alias: string
+          author_id?: string | null
+          body: string
+          circle: string
+          created_at?: string
+          id?: string
+          is_team?: boolean
+          moderation?: string
+          status?: string
+        }
+        Update: {
+          alias?: string
+          author_id?: string | null
+          body?: string
+          circle?: string
+          created_at?: string
+          id?: string
+          is_team?: boolean
+          moderation?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      community_reports: {
+        Row: {
+          created_at: string
+          details: string
+          id: string
+          post_id: string
+          reason: string
+          reporter_id: string
+          target: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string
+          id?: string
+          post_id: string
+          reason: string
+          reporter_id: string
+          target?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string
+          id?: string
+          post_id?: string
+          reason?: string
+          reporter_id?: string
+          target?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_supports: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_supports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           companion_approach: string
@@ -73,7 +209,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      community_block_author: { Args: { _post: string }; Returns: boolean }
+      community_blocked_count: { Args: never; Returns: number }
+      community_circle_stats: {
+        Args: never
+        Returns: {
+          circle: string
+          members: number
+          posts_week: number
+        }[]
+      }
+      community_delete_my_data: { Args: never; Returns: undefined }
+      community_delete_my_post: { Args: { _post: string }; Returns: boolean }
+      community_feed: {
+        Args: { _circle?: string; _limit?: number }
+        Returns: {
+          alias: string
+          body: string
+          circle: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          is_team: boolean
+          support_count: number
+          supported_by_me: boolean
+        }[]
+      }
+      community_toggle_support: { Args: { _post: string }; Returns: boolean }
+      community_unblock_all: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
