@@ -62,10 +62,22 @@ const GEMINI_RESPONSE_SCHEMA = {
 };
 
 export function getApiBaseUrl(): string {
-  if (typeof import.meta !== "undefined" && import.meta.env?.["VITE_API_BASE_URL"]) {
-    return String(import.meta.env["VITE_API_BASE_URL"]).replace(/\/+$/, "");
+  // In production (Cloud Run / custom domain), always use same-origin relative URLs ("")
+  // so frontend and backend share one HTTPS origin with zero CORS issues.
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host !== "localhost" && host !== "127.0.0.1") {
+      return "";
+    }
+    if (typeof import.meta !== "undefined" && import.meta.env?.["VITE_API_BASE_URL"]) {
+      return String(import.meta.env["VITE_API_BASE_URL"]).replace(/\/+$/, "");
+    }
+    return "http://127.0.0.1:8080";
   }
-  return "http://localhost:8080";
+  if (typeof process !== "undefined" && process.env?.["INTERNAL_BACKEND_URL"]) {
+    return process.env["INTERNAL_BACKEND_URL"].replace(/\/+$/, "");
+  }
+  return "http://127.0.0.1:8080";
 }
 
 /** Recognize both Google AI Studio `AQ.` Authentication Keys and legacy `AIza` keys (len >= 30). */

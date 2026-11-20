@@ -3,7 +3,12 @@
 .pytest_cache
 __pycache__
 *.pyc
-frontend/
+frontend/node_modules/
+frontend/dist/
+frontend/.tanstack/
+frontend/.nitro/
+frontend/.env
+frontend/.env.local
 docs/
 models/
 infrastructure/
@@ -14,4 +19,3 @@ data/
 *.sqlite3*
 *.db*
 *.zip
-
