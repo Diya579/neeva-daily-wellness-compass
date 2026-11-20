@@ -281,7 +281,60 @@ export type Group = {
   tags: string[];
   tone: "sage" | "rose" | "lilac" | "periwinkle" | "terracotta";
   icon: "wind" | "graduation" | "briefcase" | "baby" | "flower" | "zap" | "moon" | "heart" | "book";
+  activeNow: number;
+  members: number;
 };
+
+export type Post = {
+  id: string;
+  alias: string;
+  group: string;
+  minutesAgo: number;
+  text: string;
+  support: number;
+  replies: number;
+};
+
+export const ALIASES: string[] = [
+  "Quiet Banyan",
+  "Gentle Monsoon",
+  "Midnight Chai",
+  "Calm Lotus",
+  "Warm Lantern",
+  "Steady River",
+  "Soft Horizon",
+  "Kind Firefly",
+];
+
+export const POSTS: Post[] = [
+  {
+    id: "p1",
+    alias: "Midnight Chai",
+    group: "campus",
+    minutesAgo: 12,
+    text: "Placement season in final year is intense, but taking a 15-minute walk without my phone after dinner genuinely helped my head stop spinning tonight.",
+    support: 18,
+    replies: 4,
+  },
+  {
+    id: "p2",
+    alias: "Quiet Banyan",
+    group: "anxiety",
+    minutesAgo: 28,
+    text: "Did 4 cycles of 4-7-8 breathing before my presentation today. Still felt nervous, but my voice didn't shake.",
+    support: 24,
+    replies: 6,
+  },
+  {
+    id: "p3",
+    alias: "Gentle Monsoon",
+    group: "burnout",
+    minutesAgo: 45,
+    text: "Closed my work laptop at 7:30 PM without checking Slack one last time. Small boundary, huge relief.",
+    support: 31,
+    replies: 5,
+  },
+];
 
 export const GROUPS: Group[] = [
   {
@@ -291,6 +344,8 @@ export const GROUPS: Group[] = [
     tags: ["anxiety", "panic", "worry"],
     tone: "lilac",
     icon: "wind",
+    activeNow: 84,
+    members: 1420,
   },
   {
     id: "campus",
@@ -299,6 +354,8 @@ export const GROUPS: Group[] = [
     tags: ["students", "exams", "university"],
     tone: "sage",
     icon: "graduation",
+    activeNow: 167,
+    members: 2890,
   },
   {
     id: "burnout",
@@ -307,6 +364,8 @@ export const GROUPS: Group[] = [
     tags: ["work", "burnout", "career"],
     tone: "rose",
     icon: "briefcase",
+    activeNow: 93,
+    members: 1750,
   },
   {
     id: "parents",
@@ -315,6 +374,8 @@ export const GROUPS: Group[] = [
     tags: ["parenting", "postpartum"],
     tone: "periwinkle",
     icon: "baby",
+    activeNow: 41,
+    members: 680,
   },
   {
     id: "grief",
@@ -323,6 +384,8 @@ export const GROUPS: Group[] = [
     tags: ["grief", "loss"],
     tone: "terracotta",
     icon: "flower",
+    activeNow: 36,
+    members: 590,
   },
   {
     id: "adhd",
@@ -331,6 +394,8 @@ export const GROUPS: Group[] = [
     tags: ["adhd", "focus", "productivity"],
     tone: "sage",
     icon: "zap",
+    activeNow: 98,
+    members: 1640,
   },
   {
     id: "sleep",
@@ -339,6 +404,8 @@ export const GROUPS: Group[] = [
     tags: ["sleep", "insomnia"],
     tone: "periwinkle",
     icon: "moon",
+    activeNow: 76,
+    members: 1310,
   },
   {
     id: "pride",
@@ -347,5 +414,7 @@ export const GROUPS: Group[] = [
     tags: ["lgbtqia", "identity"],
     tone: "lilac",
     icon: "heart",
+    activeNow: 52,
+    members: 940,
   },
 ];

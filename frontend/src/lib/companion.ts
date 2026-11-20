@@ -110,6 +110,8 @@ export function sanitizeCompanionName(raw: string): string {
 const WELCOME: Record<LangCode, (n: string) => string> = {
   en: (n) =>
     `Hey, I'm **${n}**. This is your space — no rush, no judgement, no wrong thing to say.\n\nWhat's actually on your mind right now?`,
+  hinglish: (n) =>
+    `Hey, main **${n}** hoon. Yeh tumhari space hai — koi jaldi nahi, koi judgement nahi.\n\nSach batao, abhi mann mein kya chal raha hai?`,
   hi: (n) =>
     `हाय, मैं **${n}** हूँ। यह आपकी जगह है — कोई जल्दी नहीं, कोई जजमेंट नहीं।\n\nअभी सच में आपके मन में क्या चल रहा है?`,
   gu: (n) =>
@@ -120,10 +122,14 @@ const WELCOME: Record<LangCode, (n: string) => string> = {
     `हाय, मी **${n}** आहे. ही तुमची जागा आहे — घाई नाही, जजमेंट नाही.\n\nआत्ता खरंच तुमच्या मनात काय चाललंय?`,
   bn: (n) =>
     `হাই, আমি **${n}**। এটা তোমার জায়গা — কোনো তাড়া নেই, কোনো বিচার নেই।\n\nএই মুহূর্তে সত্যি তোমার মনে কী চলছে?`,
+  te: (n) =>
+    `హాయ్, నేను **${n}**. ఇది మీ స్థలం — తొందర లేదు, ఎలాంటి తీర్పు లేదు.\n\nఇప్పుడు నిజంగా మీ మనసులో ఏమి నడుస్తోంది?`,
 };
 
 // How young people actually type these languages: English letters, English words mixed in.
 const WELCOME_ROMAN: Record<Exclude<LangCode, "en">, (n: string) => string> = {
+  hinglish: (n) =>
+    `Hey, main **${n}** hoon. Yeh tumhari space hai — koi jaldi nahi, koi judgement nahi.\n\nSach batao, abhi mann mein kya chal raha hai?`,
   hi: (n) =>
     `Hey, main **${n}** hoon. Yeh tumhari space hai — koi jaldi nahi, koi judgement nahi.\n\nSach batao, abhi mann mein kya chal raha hai?`,
   gu: (n) =>
@@ -134,6 +140,8 @@ const WELCOME_ROMAN: Record<Exclude<LangCode, "en">, (n: string) => string> = {
     `Hey, mi **${n}**. Hi tujhi space aahe — ghai nahi, judgement nahi.\n\nKhara saang, aatta manaat kay chaalu aahe?`,
   bn: (n) =>
     `Hey, ami **${n}**. Eta tomar space — kono taara nei, kono judgement nei.\n\nSotyi bolo, ekhon mone ki cholche?`,
+  te: (n) =>
+    `Hey, nenu **${n}**. Idi mee space — thondara ledu, judgement ledu.\n\nNijam cheppu, ippudu manasulo em nadustondi?`,
 };
 
 /** Welcome line. "auto" starts in English letters — that's how most people text — then the companion mirrors them. */

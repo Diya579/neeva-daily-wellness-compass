@@ -714,6 +714,541 @@
         }
       }
     },
+    "/api/v1/journal/vault": {
+      "post": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Store Encrypted Journal Blob",
+        "operationId": "store_encrypted_journal_blob_api_v1_journal_vault_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EncryptedVaultWriteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "List Encrypted Journal Blobs",
+        "operationId": "list_encrypted_journal_blobs_api_v1_journal_vault_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Purge Encrypted Journal Vault",
+        "operationId": "purge_encrypted_journal_vault_api_v1_journal_vault_delete",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journal/reframe": {
+      "post": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Reframe Scrubbed Journal",
+        "operationId": "reframe_scrubbed_journal_api_v1_journal_reframe_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JournalReframeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/structured": {
+      "post": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Structured Chat Endpoint",
+        "operationId": "structured_chat_endpoint_api_v1_chat_structured_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StructuredChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/stream": {
+      "post": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Structured Chat Sse Stream",
+        "operationId": "structured_chat_sse_stream_api_v1_chat_stream_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StructuredChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campus/telemetry": {
+      "post": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Submit Anonymized Campus Telemetry",
+        "operationId": "submit_anonymized_campus_telemetry_api_v1_campus_telemetry_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampusTelemetrySubmitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campus/analytics": {
+      "get": {
+        "tags": [
+          "zero-knowledge-vault-and-campus"
+        ],
+        "summary": "Get Campus K Anonymous Analytics",
+        "description": "Strict K-Anonymity (K >= 50) SQL aggregation view.\nUses `HAVING COUNT(DISTINCT user_id) >= 50`. If active distinct users < 50,\nreturns an anonymized threshold notice instead of raw numbers.",
+        "operationId": "get_campus_k_anonymous_analytics_api_v1_campus_analytics_get",
+        "parameters": [
+          {
+            "name": "department",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/chat": {
       "post": {
         "tags": [
@@ -4541,6 +5076,40 @@
         ],
         "title": "ActivityCreate"
       },
+      "CampusTelemetrySubmitRequest": {
+        "properties": {
+          "department": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Department",
+            "default": "Computer Science"
+          },
+          "cohortYear": {
+            "type": "string",
+            "maxLength": 16,
+            "title": "Cohortyear",
+            "default": "2026"
+          },
+          "moodScore": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Moodscore"
+          },
+          "burnoutIndex": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Burnoutindex"
+          }
+        },
+        "type": "object",
+        "required": [
+          "moodScore",
+          "burnoutIndex"
+        ],
+        "title": "CampusTelemetrySubmitRequest"
+      },
       "ChatRequest": {
         "properties": {
           "companion": {
@@ -4785,6 +5354,56 @@
         ],
         "title": "EmailActionRequest"
       },
+      "EncryptedVaultWriteRequest": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "ciphertext": {
+            "type": "string",
+            "maxLength": 65536,
+            "minLength": 8,
+            "title": "Ciphertext"
+          },
+          "iv": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Iv"
+          },
+          "salt": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Salt"
+          },
+          "algorithm": {
+            "type": "string",
+            "title": "Algorithm",
+            "default": "AES-GCM-256"
+          },
+          "kdf": {
+            "type": "string",
+            "title": "Kdf",
+            "default": "PBKDF2-SHA256-100000"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ciphertext",
+          "iv",
+          "salt"
+        ],
+        "title": "EncryptedVaultWriteRequest"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -4937,6 +5556,27 @@
         },
         "type": "object",
         "title": "JournalPatch"
+      },
+      "JournalReframeRequest": {
+        "properties": {
+          "scrubbedText": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 10,
+            "title": "Scrubbedtext"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Prompt",
+            "default": "Daily reflection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scrubbedText"
+        ],
+        "title": "JournalReframeRequest"
       },
       "JournalResponse": {
         "properties": {
@@ -5913,6 +6553,41 @@
           "reason"
         ],
         "title": "ReportCreate"
+      },
+      "StructuredChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 6000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "en"
+          },
+          "script": {
+            "type": "string",
+            "title": "Script",
+            "default": "auto"
+          },
+          "companionName": {
+            "type": "string",
+            "title": "Companionname",
+            "default": "Neeva"
+          },
+          "vibe": {
+            "type": "string",
+            "title": "Vibe",
+            "default": "bestie"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "StructuredChatRequest"
       },
       "TextInferenceRequest": {
         "properties": {

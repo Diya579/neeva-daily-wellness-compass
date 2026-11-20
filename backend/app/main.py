@@ -23,6 +23,7 @@ from app.api import (
     safety,
     thought,
     wellness,
+    zk_vault_and_campus,
 )
 from app.core.config import settings
 from app.core.logging import setup_logging
@@ -139,6 +140,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 app.include_router(auth.router)
 app.include_router(profile.router)
+app.include_router(zk_vault_and_campus.router)
 app.include_router(chat.router)
 app.include_router(chat.legacy_chat_router)
 app.include_router(safety.router)

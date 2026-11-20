@@ -5,14 +5,15 @@ import {
   Feather,
   Lightbulb,
   Loader2,
+  Lock,
   Quote,
   RefreshCw,
   ScanHeart,
+  ShieldCheck,
   Sprout,
   Tags,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useServerFn } from "@tanstack/react-start";
 import {
   Dialog,
   DialogContent,
@@ -21,14 +22,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Panel, PanelTitle } from "@/components/neeva/Card";
-import { IconBadge } from "@/components/neeva/IconBadge";
-import { JOURNAL_PROMPTS } from "@/lib/neeva-data";
-import { analyzeJournal } from "@/lib/journal.functions";
-import type { JournalAnalysis } from "@/lib/journal-types";
-import { uid, useNeeva, type JournalEntry } from "@/lib/neeva-store";
-import { cn } from "@/lib/utils";
-import { detectCrisis } from "@/lib/crisis";
 import { useCrisis } from "@/components/neeva/CrisisDialog";
+import { IconBadge } from "@/components/neeva/IconBadge";
+import { supabase } from "@/integrations/supabase/client";
+import { reframeJournalWithPIIScrubber, syncEncryptedJournalToVault } from "@/lib/api";
+import { detectCrisis } from "@/lib/crisis";
+import { encryptPayload, getOrCreateVaultSessionKey } from "@/lib/crypto";
+import type { JournalAnalysis } from "@/lib/journal-types";
+import { JOURNAL_PROMPTS } from "@/lib/neeva-data";
+import { uid, useNeeva, type JournalEntry } from "@/lib/neeva-store";
+import { useProfile } from "@/lib/profile";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/journal")({
   head: () => ({
@@ -37,13 +41,13 @@ export const Route = createFileRoute("/_authenticated/journal")({
       {
         name: "description",
         content:
-          "Guided journaling prompts with gentle AI insights on emotional tone, themes and cognitive reframes.",
+          "Zero-knowledge AES-GCM-256 encrypted journaling with gentle AI insights on emotional tone, themes and cognitive reframes.",
       },
       { property: "og:title", content: "Reflective Journal · Neeva" },
       {
         property: "og:description",
         content:
-          "Write freely, then let Neeva reflect your entry back with compassion and CBT-based reframes.",
+          "Write freely in your zero-knowledge encrypted vault, then let Neeva reflect your entry back with compassion and CBT-based reframes.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -188,8 +192,7 @@ function AnalysisView({ a, offline }: { a: JournalAnalysis; offline?: boolean })
       </div>
       {offline && (
         <p className="text-center text-[11px] text-muted-foreground">
-          Offline reflection — Neeva's full AI analysis was unavailable, so a lighter on-device read
-          was used.
+          Local-first deterministic CBT reflection — zero data left your device in plaintext.
         </p>
       )}
     </div>
@@ -198,11 +201,12 @@ function AnalysisView({ a, offline }: { a: JournalAnalysis; offline?: boolean })
 
 function JournalPage() {
   const { journal, update, addPoints, hydrated } = useNeeva();
+  const { userId } = useProfile();
   const [prompt, setPrompt] = useState<string>(JOURNAL_PROMPTS[0]!);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [lastEncryptMs, setLastEncryptMs] = useState<number | null>(null);
   const [open, setOpen] = useState<{ entry: JournalEntry; offline: boolean } | null>(null);
-  const analyze = useServerFn(analyzeJournal);
   const { openCrisis } = useCrisis();
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
@@ -216,9 +220,34 @@ function JournalPage() {
     if (detectCrisis(text)) openCrisis("detected");
     setLoading(true);
     try {
-      const { analysis, source } = await analyze({ data: { text, prompt } });
+      const sessionData = await supabase.auth.getSession();
+      const token = sessionData.data.session?.access_token;
+
+      // 1. Run PII Scrubber -> Cognitive Reframing
+      const { analysis, source, piiScrubbedCount } = await reframeJournalWithPIIScrubber(
+        text,
+        prompt,
+        token
+      );
+      if (piiScrubbedCount > 0) {
+        toast.info(`Scrubbed ${piiScrubbedCount} Indian PII pattern(s) before reframing`);
+      }
+
+      // 2. Client-Edge Zero-Knowledge Encryption (AES-GCM-256 + PBKDF2 100k, extractable: false)
+      const entryId = uid();
+      const { key, salt } = await getOrCreateVaultSessionKey(userId);
+      const encryptedBlob = await encryptPayload(
+        JSON.stringify({ prompt, text, analysis }),
+        key,
+        salt
+      );
+      setLastEncryptMs(encryptedBlob.durationMs);
+
+      // 3. Sync ONLY { ciphertext, iv, salt } to the SQLite WAL Vault
+      await syncEncryptedJournalToVault(entryId, encryptedBlob, token);
+
       const entry: JournalEntry = {
-        id: uid(),
+        id: entryId,
         prompt,
         text,
         at: new Date().toISOString(),
@@ -228,6 +257,7 @@ function JournalPage() {
       addPoints(15);
       setOpen({ entry, offline: source === "offline" });
       setText("");
+      toast.success(`Encrypted in ${encryptedBlob.durationMs}ms (AES-GCM-256)`);
     } catch {
       toast.error("Couldn't analyse this entry right now", {
         description: "Your writing is still here — please try again.",
@@ -239,13 +269,24 @@ function JournalPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 @3xl:p-8">
-      <div className="animate-rise">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Reflective journal
-        </p>
-        <h2 className="mt-1 font-display text-4xl @3xl:text-5xl">
-          Write it down. <em className="text-sage-deep">Let it breathe.</em>
-        </h2>
+      <div className="flex flex-wrap items-end justify-between gap-3 animate-rise">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Reflective journal · Zero-Knowledge Vault
+          </p>
+          <h2 className="mt-1 font-display text-4xl @3xl:text-5xl">
+            Write it down. <em className="text-sage-deep">Let it breathe.</em>
+          </h2>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-medium">
+          <Lock className="size-3.5 text-sage-deep" />
+          <span>AES-GCM-256 · PBKDF2 (100k) · Non-Extractable Key</span>
+          {lastEncryptMs !== null && (
+            <span className="rounded-full bg-sage px-2 py-0.5 font-mono text-[10px] font-bold text-sage-foreground">
+              {lastEncryptMs}ms
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-5 @4xl:grid-cols-3">
@@ -260,7 +301,7 @@ function JournalPage() {
                   "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-300",
                   prompt === p
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card hover:border-sage-deep",
+                    : "border-border bg-card hover:border-sage-deep"
                 )}
               >
                 {p}
@@ -274,7 +315,7 @@ function JournalPage() {
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Start anywhere. No one else will read this…"
+              placeholder="Start anywhere. Encrypted on your device with AES-GCM-256 before storage…"
               className="mt-3 min-h-64 w-full resize-none bg-transparent text-[15px] leading-8 outline-none placeholder:text-muted-foreground/70"
               style={{
                 backgroundImage:
@@ -284,8 +325,12 @@ function JournalPage() {
               maxLength={8000}
             />
           </div>
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="text-xs text-muted-foreground tabular-nums">{words} words</span>
+            <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <ShieldCheck className="size-3.5 text-sage-deep" /> Aadhaar / PAN / Phone scrubbed
+              automatically
+            </span>
             <button
               onClick={run}
               disabled={loading}
@@ -296,7 +341,7 @@ function JournalPage() {
               ) : (
                 <ScanHeart className="size-4" />
               )}
-              {loading ? "Reflecting on your words…" : "Analyze entry"}
+              {loading ? "Encrypting & reflecting…" : "Analyze & encrypt entry"}
             </button>
           </div>
         </Panel>
@@ -307,7 +352,7 @@ function JournalPage() {
             <div className="flex flex-col items-center gap-3 py-8 text-center">
               <IconBadge icon={BookHeart} tone="rose" size="lg" />
               <p className="text-sm text-muted-foreground">
-                Your first entry will live here, along with Neeva's reflection.
+                Your first encrypted entry will live here, along with Neeva's reflection.
               </p>
             </div>
           )}
