@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Neeva AI — Zero-Knowledge Wellness Compass built for Indian Higher Education: empathetic AI chat, AES-GCM-256 encrypted journaling, CBT tools and peer support.",
+          "Neeva AI — Zero-Knowledge Mental Wellness Compass built for everyone across India: empathetic AI chat, AES-GCM-256 encrypted journaling, CBT tools and peer support.",
       },
       { name: "author", content: "Neeva AI" },
       { name: "theme-color", content: "#FAF7F0" },

@@ -182,7 +182,7 @@ function SettingsPage() {
           </button>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <ShieldCheck className="size-4 text-sage-deep" /> K-Anonymity (K &ge; 50) active for
-            campus telemetry
+            community analytics
           </span>
         </div>
       </Panel>

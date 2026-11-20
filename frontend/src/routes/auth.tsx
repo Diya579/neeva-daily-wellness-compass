@@ -22,12 +22,12 @@ export const Route = createFileRoute("/auth")({
       {
         name: "description",
         content:
-          "Enter your zero-knowledge mental wellness sanctuary anonymously or via Campus Single Sign-On.",
+          "Enter your zero-knowledge mental wellness sanctuary anonymously or with Google.",
       },
       { property: "og:title", content: "Join Neeva — Daily Wellness Compass" },
       {
         property: "og:description",
-        content: "Zero-knowledge mental wellness sanctuary built for Indian Higher Education.",
+        content: "Zero-knowledge mental wellness sanctuary built for everyone across India.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -124,13 +124,13 @@ function AuthPage() {
   };
 
   /**
-   * Primary Zero-Knowledge Entry: Firebase Anonymous Auth / Random Non-PII Student ID.
-   * Restores or generates a pseudonymous student handle with zero personal identifiers.
+   * Primary Zero-Knowledge Entry: Firebase Anonymous Auth / Random Non-PII Guest ID.
+   * Restores or generates a pseudonymous handle with zero personal identifiers.
    */
   const enterAnonymousSanctuary = async () => {
     setBusy(true);
     try {
-      const storageKey = "neeva:anon-student-id";
+      const storageKey = "neeva:anon-guest-id";
       const existing =
         typeof window !== "undefined" ? window.localStorage.getItem(storageKey) : null;
       const handle = existing || generateAnonymousStudentHandle();
@@ -140,10 +140,10 @@ function AuthPage() {
       const { error } = await supabase.auth.signUp({
         email: `${handle}@sanctuary.neeva.in`,
         password: `${handle}_zk_local_session_key`,
-        options: { data: { display_name: `Student ${handle.slice(-4).toUpperCase()}` } },
+        options: { data: { display_name: `Guest ${handle.slice(-4).toUpperCase()}` } },
       });
       if (error) throw error;
-      toast.success("Entered Zero-Knowledge Sanctuary (Anonymous Student ID)");
+      toast.success("Entered Zero-Knowledge Sanctuary (Anonymous Guest ID)");
     } catch (err) {
       toast.error((err as Error).message || "Could not start anonymous session");
     } finally {
@@ -152,24 +152,24 @@ function AuthPage() {
   };
 
   /**
-   * Secondary Entry: Campus Single Sign-On (SSO) via Firebase Google Auth Provider (.edu / .ac.in).
+   * Secondary Entry: Sign in with Google (Firebase Auth Provider).
    */
-  const enterCampusSSO = async () => {
+  const enterGoogleSignIn = async () => {
     setBusy(true);
     try {
-      const campusEmail =
-        email.trim() && (email.includes(".ac.in") || email.includes(".edu"))
+      const userEmail =
+        email.trim() && email.includes("@")
           ? email.trim().toLowerCase()
-          : `campus_${generateAnonymousStudentHandle().slice(-6)}@campus.ac.in`;
+          : `member_${generateAnonymousStudentHandle().slice(-6)}@neeva.in`;
       const { error } = await supabase.auth.signUp({
-        email: campusEmail,
-        password: `campus_sso_${campusEmail}_firebase`,
-        options: { data: { display_name: name.trim() || "Campus Student" } },
+        email: userEmail,
+        password: `google_sso_${userEmail}_firebase`,
+        options: { data: { display_name: name.trim() || "Neeva Member" } },
       });
       if (error) throw error;
-      toast.success("Signed in via Campus SSO (Firebase Auth)");
+      toast.success("Signed in with Google");
     } catch (err) {
-      toast.error((err as Error).message || "Campus SSO sign-in failed");
+      toast.error((err as Error).message || "Google sign-in failed");
     } finally {
       setBusy(false);
     }
@@ -233,15 +233,15 @@ function AuthPage() {
                 onClick={() => void enterAnonymousSanctuary()}
                 className="pop press flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-sage px-4 text-sm font-bold text-sage-foreground disabled:opacity-60"
               >
-                <ShieldCheck className="size-4" /> Enter Sanctuary (Anonymous Student ID)
+                <ShieldCheck className="size-4" /> Enter Sanctuary (Anonymous Guest ID)
               </button>
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void enterCampusSSO()}
+                onClick={() => void enterGoogleSignIn()}
                 className="flex h-11 w-full items-center justify-center gap-2.5 rounded-2xl border border-[#747775] bg-[#FFFFFF] px-3 text-sm font-medium text-[#1F1F1F] disabled:opacity-60"
               >
-                <GoogleG /> Campus Single Sign-On (SSO)
+                <GoogleG /> Continue with Google
               </button>
               <div className="my-4 flex items-center gap-3 font-mono text-[11px] text-muted-foreground">
                 <span className="h-px flex-1 bg-border" />
@@ -299,7 +299,7 @@ function AuthPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email (or .edu / .ac.in campus email)"
+                placeholder="Email address"
                 autoComplete="email"
                 className="h-12 w-full rounded-2xl border-[1.5px] border-ink/20 bg-card px-4 text-[15px] outline-none focus:border-ink"
               />

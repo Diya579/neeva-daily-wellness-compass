@@ -7,7 +7,7 @@ export function SecurityBanner() {
       <span>Neeva AI — Zero-Knowledge Wellness Compass</span>
       <span className="text-border">|</span>
       <ShieldCheck className="size-3.5 text-sage-deep" />
-      <span>Built for Indian Higher Education · AES-GCM-256 &amp; DPDP Act 2023</span>
+      <span>Built for Everyone Across India · AES-GCM-256 &amp; DPDP Act 2023</span>
     </div>
   );
 }

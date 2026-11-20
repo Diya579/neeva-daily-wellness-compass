@@ -460,7 +460,7 @@ function Landing() {
 
       <footer className="border-t-[1.5px] border-ink/10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-6 text-sm text-muted-foreground sm:px-6">
-          <img src={mark} alt="" width={816} height={816} className="size-6" /> Neeva AI — Zero-Knowledge Wellness Compass | Built for Indian Higher Education
+          <img src={mark} alt="" width={816} height={816} className="size-6" /> Neeva AI — Zero-Knowledge Wellness Compass | Mental Wellness for Everyone Across India
         </div>
         <SecurityBanner />
       </footer>
