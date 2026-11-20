@@ -326,3 +326,4 @@ async def stream_structured_wellness_sse(
 
     yield f"event: message\ndata: {json.dumps(result, ensure_ascii=False)}\n\n"
     yield "event: done\ndata: [DONE]\n\n"
+

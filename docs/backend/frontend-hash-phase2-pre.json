@@ -1,847 +1,827 @@
-﻿[
-    {
-        "Path":  "frontend/.env",
-        "Hash":  "43FDE608E95F92317D0EBDCC5F53934B6E3FA42AC2D088F4955DCC9CDA3D6EDA",
-        "Length":  413
-    },
-    {
-        "Path":  "frontend/.gitignore",
-        "Hash":  "74366D54BCD8375F43E80EBE6C1963C27BFA139CB2F384A5A4EE113A9A462E81",
-        "Length":  334
-    },
-    {
-        "Path":  "frontend/.lovable/north-star/north-star.md",
-        "Hash":  "8BF94C4C1B246B7EF4F315508D60517E14D910ED21BD8F92D2C15BE3F74DEE36",
-        "Length":  268
-    },
-    {
-        "Path":  "frontend/.lovable/project.json",
-        "Hash":  "8215993B09F862B9B1C8E49317B2F469E5432F0F0A97E6418724573F367B7CBE",
-        "Length":  124
-    },
-    {
-        "Path":  "frontend/.prettierignore",
-        "Hash":  "52C7C767FF0615EEC4EB64CC71265877F7F423EB597D665B5E439F337C661A5A",
-        "Length":  92
-    },
-    {
-        "Path":  "frontend/.prettierrc",
-        "Hash":  "1ED88D3B99ECED8DC3B6F58F26645466DD1CEACA6C5A9B818531C941AC28E55B",
-        "Length":  90
-    },
-    {
-        "Path":  "frontend/AGENTS.md",
-        "Hash":  "05A01274F9B5EE1AA1E8B5D544E64964A04B55B07CCF46E9CF45F4B977C3EBE8",
-        "Length":  3058
-    },
-    {
-        "Path":  "frontend/bun.lock",
-        "Hash":  "F198F399F0186920B0499C7B0617CBEB8502A24EFB0F3ABCA53F30129A490937",
-        "Length":  268913
-    },
-    {
-        "Path":  "frontend/bunfig.toml",
-        "Hash":  "1ED9B1FC5131FD50C2E0975635C3E98A8362362103F4061910B56EAC510B748E",
-        "Length":  407
-    },
-    {
-        "Path":  "frontend/components.json",
-        "Hash":  "37C484818824D2521EEE3367E7AA2C2ABBD19635D8103D19734B6E24603D0292",
-        "Length":  443
-    },
-    {
-        "Path":  "frontend/drizzle.config.ts",
-        "Hash":  "091BB5BDA4B36DCBC2EF729CDC65AFD67163149C221E8A5B0C6F38EBC542DA2C",
-        "Length":  245
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/0000_create_profiles.sql",
-        "Hash":  "529809FB75D277787F8651272E385E632EA242178B44811359F141E1B884D328",
-        "Length":  2430
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/0001_companion_talk_style.sql",
-        "Hash":  "1557AAF8AED49673BDBDF756DB043BEF6B10E029277BAA88A7B3F094B60ED8E7",
-        "Length":  589
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/0002_community_circles_moderation.sql",
-        "Hash":  "EBC66924C2FF6C5D05F1749B397B96384D4DAF919CB51AA7D78053E2FDB073EF",
-        "Length":  10664
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/meta/_journal.json",
-        "Hash":  "B5B64196780A2A7A24FCD6D7FE4C4CEC3522EECBEB142D15CEC94AC60B19E87C",
-        "Length":  514
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/meta/0000_snapshot.json",
-        "Hash":  "E3CE1B2C0E7DEFB4437C6DBDC61FD971E7817FC08E652892DEE1D94189583AE4",
-        "Length":  336
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/meta/0001_snapshot.json",
-        "Hash":  "8F1DCE259443E91E43A86547ED835AF249243B21BF8535CAACD0A36934FF3713",
-        "Length":  336
-    },
-    {
-        "Path":  "frontend/drizzle/migrations/meta/0002_snapshot.json",
-        "Hash":  "8BA90800FC96B7000A2D6EBFC595891E9E5383A7A728529788FDFC75AAD5D5B2",
-        "Length":  336
-    },
-    {
-        "Path":  "frontend/drizzle/schema.ts",
-        "Hash":  "834FFF8005E00606DFDFF9FF71393309DC72160C108FDAD72418986573CF9448",
-        "Length":  60
-    },
-    {
-        "Path":  "frontend/eslint.config.js",
-        "Hash":  "3266245A1FF610A0B37DBB8B8C77B93A125E0D8758B9838CFD04B2E0A1397D56",
-        "Length":  1250
-    },
-    {
-        "Path":  "frontend/package.json",
-        "Hash":  "9118AFE7F24FAEE7F022D3B18A7AD9FABFFB1F722272218ABFC0A88CF0EC8497",
-        "Length":  3608
-    },
-    {
-        "Path":  "frontend/public/favicon.png",
-        "Hash":  "CEC094835BF917DDB828DE9E1F62321B3CCBCC5772A83E4A9A8CE902BD51C351",
-        "Length":  6151
-    },
-    {
-        "Path":  "frontend/public/robots.txt",
-        "Hash":  "A3D27B3CA5CE32341FA9F96F01169B521B1657C05D1860C45D1E53A6258E9E8B",
-        "Length":  160
-    },
-    {
-        "Path":  "frontend/README.md",
-        "Hash":  "16B3002DC75494A1D5DA5505921CB0034BDD2DD2610A1A6C00EB5475DBCAF156",
-        "Length":  7317
-    },
-    {
-        "Path":  "frontend/roadmap.md",
-        "Hash":  "8BFF8A7DB91FA992A258E069189428EFC7A78BDDAA5D9250D39A8484DF2EA122",
-        "Length":  2085
-    },
-    {
-        "Path":  "frontend/src/ai-gateway.types.ts",
-        "Hash":  "6CEB37DC6E0B3F71E17D3EA547145F9EFA3564FC4D5CA94954D509BD0F029F34",
-        "Length":  53
-    },
-    {
-        "Path":  "frontend/src/assets/chat-metro.jpg",
-        "Hash":  "9A2006C63F9E7448A197EA4E278852975A7405E2A97F80FC206B222DC04C6B6D",
-        "Length":  247260
-    },
-    {
-        "Path":  "frontend/src/assets/circle-terrace.jpg",
-        "Hash":  "FEEC88886318FF0253EAAC92D09E1B961C1F5BE2C84A36D6344AE88C168D4329",
-        "Length":  193986
-    },
-    {
-        "Path":  "frontend/src/assets/focus-desk.jpg",
-        "Hash":  "F3E7629DA97A7378337D2A6F96673DE3957D89779364C40BDA5CEDEC29E5CB40",
-        "Length":  192339
-    },
-    {
-        "Path":  "frontend/src/assets/focus-library.jpg",
-        "Hash":  "364897666877AC0BBA8F7B696CB89418790A119FEDDB32D4CBB8FAB9A26E0771",
-        "Length":  247605
-    },
-    {
-        "Path":  "frontend/src/assets/friends-steps.jpg",
-        "Hash":  "C68AE7C7C838639F5A6B4A141847CB691DC3A3B265CB03ACB1888C6D40023C5E",
-        "Length":  195444
-    },
-    {
-        "Path":  "frontend/src/assets/hero-calm.jpg",
-        "Hash":  "DDCDD685ECF8ED4F38D44456EEDBEA75173BC60D10F7F791A30CF0F8246DA169",
-        "Length":  114600
-    },
-    {
-        "Path":  "frontend/src/assets/journal-chai.jpg",
-        "Hash":  "BA2523F4D248E7AE0408551DF13280516599637F343C6082983ED3AC0143F64C",
-        "Length":  250074
-    },
-    {
-        "Path":  "frontend/src/assets/landing-hero.jpg",
-        "Hash":  "548D982AF411AAE1058D874314F341E5B2C678EEC014A2E4B417904CBAAECC32",
-        "Length":  230042
-    },
-    {
-        "Path":  "frontend/src/assets/meditation-cover.jpg",
-        "Hash":  "70A9A5488CAC59A59836367B688E0972AAE96DAA43CE57127E41D06F2382DBFD",
-        "Length":  132235
-    },
-    {
-        "Path":  "frontend/src/assets/neeva-mark.png",
-        "Hash":  "ADE1F431460183EDE1765C1420E603C064AF98B0A712121B701978D1E4016AC6",
-        "Length":  557492
-    },
-    {
-        "Path":  "frontend/src/assets/night-balcony.jpg",
-        "Hash":  "1EE4FB227AB7272736DED5415357382FE5C9A69EE0F102C0D6E9261B503F2497",
-        "Length":  241649
-    },
-    {
-        "Path":  "frontend/src/assets/onboard-cycle.jpg",
-        "Hash":  "ECD98B8C9D31329C444CB3C66501ADB2B88D5D1244984D0B799E1EFE6FCB5B69",
-        "Length":  306784
-    },
-    {
-        "Path":  "frontend/src/assets/onboard-hostel.jpg",
-        "Hash":  "7A88D015395C2C418F14AF280B5C6392660146B01E716A6FD801EE595220A6EA",
-        "Length":  223646
-    },
-    {
-        "Path":  "frontend/src/assets/onboard-sunrise.jpg",
-        "Hash":  "387C24C330C0B6E71DBE75AA03019695925DF96AAF22C5917D6AC53DCD5E4026",
-        "Length":  257974
-    },
-    {
-        "Path":  "frontend/src/assets/sticky-wall.jpg",
-        "Hash":  "CDC3EE435376CD3A68939D8F09B6F6ADD65F19B6DA5B9C68F8FE64B7BF6AAFF4",
-        "Length":  216698
-    },
-    {
-        "Path":  "frontend/src/assets/today-circle-park.jpg",
-        "Hash":  "9E4FAA3410C440BFFFAE3CEF8C1C4AA90E7EFB28D5C70AF90FFF3F2A99154C69",
-        "Length":  215936
-    },
-    {
-        "Path":  "frontend/src/assets/today-journal-bed.jpg",
-        "Hash":  "0EC7EC30BA1CAF2EAFB0B8D19FC83977C851F144EC655495B82023AF855BB125",
-        "Length":  223314
-    },
-    {
-        "Path":  "frontend/src/assets/window-calm.jpg",
-        "Hash":  "7813ABCE5B2CA56FF4CBC5B88E23DC05D8C1C30F258183A914294CE853F0A039",
-        "Length":  253740
-    },
-    {
-        "Path":  "frontend/src/components/ai-elements/conversation.tsx",
-        "Hash":  "2D35EB320E82067704A715857533EB9ABBF9B0CD9702FDA4F003973869CA2CFF",
-        "Length":  4351
-    },
-    {
-        "Path":  "frontend/src/components/ai-elements/message.tsx",
-        "Hash":  "009D2AD435866DB2BD16DE9513AEBAC08E3E5D46234D63CCEF7EB2526E72C4F0",
-        "Length":  8364
-    },
-    {
-        "Path":  "frontend/src/components/ai-elements/prompt-input.tsx",
-        "Hash":  "213187FAC38F974BBE79644A9BFA3192017B30607B6C980F436F54E73CF41921",
-        "Length":  38467
-    },
-    {
-        "Path":  "frontend/src/components/ai-elements/shimmer.tsx",
-        "Hash":  "10CDAEB12079B07A50D35D850C4D1075C07995F9FB08144FF5B52D105302BF2A",
-        "Length":  2139
-    },
-    {
-        "Path":  "frontend/src/components/ai-elements/suggestion.tsx",
-        "Hash":  "A6CF82E902077EAC89CE7EC8DBFBCEA190C29E5DB7C0F5AA0E36392741431D9A",
-        "Length":  1319
-    },
-    {
-        "Path":  "frontend/src/components/neeva/AppShell.tsx",
-        "Hash":  "D06F03CA421AEF0C98DE22B11DFDD1981E19ED75512F91DE9883EEEDE4917BAA",
-        "Length":  10668
-    },
-    {
-        "Path":  "frontend/src/components/neeva/Card.tsx",
-        "Hash":  "F543AEC349C25029C0749A18E5C25CF03B5C8DB4AEA082056C692E2271FE7D5A",
-        "Length":  965
-    },
-    {
-        "Path":  "frontend/src/components/neeva/CompanionAvatar.tsx",
-        "Hash":  "20F7A0F245F52F1E90CB52F703C5039E4A222A24CCA20A6F7ADE522091112A59",
-        "Length":  2300
-    },
-    {
-        "Path":  "frontend/src/components/neeva/CompanionSetup.tsx",
-        "Hash":  "67ED10305339109F6B999F34692AD7B20FE7976E938C618B9CFFB3BB8015FABD",
-        "Length":  10574
-    },
-    {
-        "Path":  "frontend/src/components/neeva/CrisisDialog.tsx",
-        "Hash":  "3D5FE8C44232940A8A65859EF1D20300E5EBAC61F1C96E3A0BD021A44BF69B2C",
-        "Length":  13941
-    },
-    {
-        "Path":  "frontend/src/components/neeva/hub/BreathingCircle.tsx",
-        "Hash":  "444B1FEB1456C4AB13DFA07C10EA11FC77C36281B513498AC28A8DDFE28C6516",
-        "Length":  3551
-    },
-    {
-        "Path":  "frontend/src/components/neeva/hub/DistortionGame.tsx",
-        "Hash":  "58DDD601B2C51401A1B112DB2F351C2DD236EAB510B4EDE07E7159AF5B84DB6E",
-        "Length":  4637
-    },
-    {
-        "Path":  "frontend/src/components/neeva/hub/FocusTimer.tsx",
-        "Hash":  "F96EB13DFEE2017276E0B4EF44915B2F57E34C49D831DCF46692E4E29775614F",
-        "Length":  12907
-    },
-    {
-        "Path":  "frontend/src/components/neeva/hub/MeditationPlayer.tsx",
-        "Hash":  "96CD8F78D52E8399192184F419A41A969F419C4BC15D93E8F1E1EAA76E92B793",
-        "Length":  5364
-    },
-    {
-        "Path":  "frontend/src/components/neeva/hub/ThoughtRecord.tsx",
-        "Hash":  "3292225871C6171240C23BCBEDF253DE6A5863DF652B0FA16E11A32B2C8EF927",
-        "Length":  11151
-    },
-    {
-        "Path":  "frontend/src/components/neeva/IconBadge.tsx",
-        "Hash":  "CE2A8666B905308171A9B6AFCF8D24E08B93E3BD3946EBC8D1A12CC1405BB967",
-        "Length":  1538
-    },
-    {
-        "Path":  "frontend/src/components/neeva/MoodCheckIn.tsx",
-        "Hash":  "407F39C254CD8F24BE39B30823F7BF589EB6FE1FCCBF69320842186FAAD38334",
-        "Length":  5298
-    },
-    {
-        "Path":  "frontend/src/components/neeva/MoodFace.tsx",
-        "Hash":  "28A175ACEF16D99A46DA524AAB47B34264D4D6C80E29C61649F6770690D81D9F",
-        "Length":  2832
-    },
-    {
-        "Path":  "frontend/src/components/neeva/MoodHistory.tsx",
-        "Hash":  "F5D7FF111C03D37D891913A489C582A05A22AB4431778F5B2CC3A1A3FF035FF0",
-        "Length":  8735
-    },
-    {
-        "Path":  "frontend/src/components/neeva/Onboarding.tsx",
-        "Hash":  "0DA1075F9A69801B91D5CC335D57222D220BD271462A6DA310AFF51AD22BAB44",
-        "Length":  10548
-    },
-    {
-        "Path":  "frontend/src/components/neeva/SecurityBanner.tsx",
-        "Hash":  "63AB3D23D3C8ECC1A9C2FC63E1897D05501B066456DAECFB78F675DAB6DBEE21",
-        "Length":  556
-    },
-    {
-        "Path":  "frontend/src/components/ui/accordion.tsx",
-        "Hash":  "0903EFCD7B746EEF0A10C954A541B0DFA7AA1172F3C380A1A88F4E19A317FDA3",
-        "Length":  2015
-    },
-    {
-        "Path":  "frontend/src/components/ui/alert.tsx",
-        "Hash":  "E7F4C2E6F78C59270905B4152B7D3EF4D5C6B9E3B2D370DAA7B301AA7CBD27B3",
-        "Length":  1589
-    },
-    {
-        "Path":  "frontend/src/components/ui/alert-dialog.tsx",
-        "Hash":  "EE4D7F3341A1E5592787B7DAC8E924BD226189492819F6704D8A7FAF8FE64D20",
-        "Length":  4183
-    },
-    {
-        "Path":  "frontend/src/components/ui/aspect-ratio.tsx",
-        "Hash":  "D72C73D629E37995A0A71647D851D68D6FDCD7EC120797F36AB83A8EE89F2CAB",
-        "Length":  143
-    },
-    {
-        "Path":  "frontend/src/components/ui/avatar.tsx",
-        "Hash":  "0326C9041C5A0B1BA31FF29822C51950B6AEAC485CD0985E7DF714741A54E7F4",
-        "Length":  1413
-    },
-    {
-        "Path":  "frontend/src/components/ui/badge.tsx",
-        "Hash":  "6519775252FE729F21C60B92C7C9FEEFD1FE7D0A8C2CF16D6F1C2FA7E153FE75",
-        "Length":  1123
-    },
-    {
-        "Path":  "frontend/src/components/ui/breadcrumb.tsx",
-        "Hash":  "D5224E87344B3AC0F8B002E5DDA6A71FF8FEE296DB8A5FBE6B034D06BD5C2AE1",
-        "Length":  2749
-    },
-    {
-        "Path":  "frontend/src/components/ui/button.tsx",
-        "Hash":  "177E52A779A43DFA67C76DE99C1F27738A0058EC9C4877BF09527FE678A105C6",
-        "Length":  2036
-    },
-    {
-        "Path":  "frontend/src/components/ui/button-group.tsx",
-        "Hash":  "4B2B0966F8452BA5D09C3149D1D195B9F6C96D7F3B723AA257F669A5784AF2CC",
-        "Length":  2214
-    },
-    {
-        "Path":  "frontend/src/components/ui/calendar.tsx",
-        "Hash":  "E883F2245873FDF360764F77FC8F391426BEF5776C6397537012C46970EBD6EE",
-        "Length":  7226
-    },
-    {
-        "Path":  "frontend/src/components/ui/card.tsx",
-        "Hash":  "F13878A0078A5EF9F3E92AF29259FC1E93EA56EA80CB992E0C4DEA4E35396459",
-        "Length":  1817
-    },
-    {
-        "Path":  "frontend/src/components/ui/carousel.tsx",
-        "Hash":  "568E00E8EDBFAB8AF67EE902CA9EF5CEB6D5ED6F3045E7F9B3C15B4F7EF9E974",
-        "Length":  6200
-    },
-    {
-        "Path":  "frontend/src/components/ui/chart.tsx",
-        "Hash":  "81B1F692F9334BA3030213FF37EEAF2DD762B644E5D96E51ADA7072109F07430",
-        "Length":  10570
-    },
-    {
-        "Path":  "frontend/src/components/ui/checkbox.tsx",
-        "Hash":  "C44D02535D5C9C92807576804407DD63D01E7189DBDE526E925B53885E645FD4",
-        "Length":  1043
-    },
-    {
-        "Path":  "frontend/src/components/ui/collapsible.tsx",
-        "Hash":  "5F0A45D8F6CA72D37ED10BF0A85306158B67D7CBC386319186CE013EAD9BC0A6",
-        "Length":  335
-    },
-    {
-        "Path":  "frontend/src/components/ui/command.tsx",
-        "Hash":  "BA8C0F8B23044CE9A5066E66D7AB7BE3A3C79BFC4A0AB7DFAE6FFAFE439145A3",
-        "Length":  4876
-    },
-    {
-        "Path":  "frontend/src/components/ui/context-menu.tsx",
-        "Hash":  "B299F50A0A7840B136DB5670F2B2E7EEC6FC62B3C06BC2AD0015800959CC381B",
-        "Length":  7360
-    },
-    {
-        "Path":  "frontend/src/components/ui/dialog.tsx",
-        "Hash":  "E3A6DE153FB15597EA95BE9C4549211A297C060267787915599E3D680D476BD9",
-        "Length":  3648
-    },
-    {
-        "Path":  "frontend/src/components/ui/drawer.tsx",
-        "Hash":  "478C487F66245641D5FA0F0D1C53A07D68BD60C4B3C497EC4C41CE08B482E14B",
-        "Length":  2973
-    },
-    {
-        "Path":  "frontend/src/components/ui/dropdown-menu.tsx",
-        "Hash":  "A6B87C89F5A806225B7F3A81F13A6577289C67E5787C2A56B5A22BD1EDEA02CE",
-        "Length":  7565
-    },
-    {
-        "Path":  "frontend/src/components/ui/form.tsx",
-        "Hash":  "1ED53D4AB564A64708938643DE590F2BEF3718B0B2A309C1019C57E9C1FDE23F",
-        "Length":  4201
-    },
-    {
-        "Path":  "frontend/src/components/ui/hover-card.tsx",
-        "Hash":  "69DC172ECE56AC77BF3A044A1CD60ED601B0041945D16B5DA4C6CC4F42116988",
-        "Length":  1246
-    },
-    {
-        "Path":  "frontend/src/components/ui/input.tsx",
-        "Hash":  "92DEBB7D6D2D96D9E607A42D5CE8F37B2D63384AE5DD9FFBBF5F047B680FFB85",
-        "Length":  776
-    },
-    {
-        "Path":  "frontend/src/components/ui/input-group.tsx",
-        "Hash":  "3842024F636788B347A19C7BD00DA702833C8DAD7EAE41327E79D70903C288DA",
-        "Length":  4940
-    },
-    {
-        "Path":  "frontend/src/components/ui/input-otp.tsx",
-        "Hash":  "45B7C4FD518616F76DD611B9DA13BC60BECE1352E050878BF943E1CC6A4ED678",
-        "Length":  2232
-    },
-    {
-        "Path":  "frontend/src/components/ui/label.tsx",
-        "Hash":  "9F72E2ECF16206593AA9E3C4FBC14CD8E81AA8488D57D92D4A950B30935A9FA9",
-        "Length":  716
-    },
-    {
-        "Path":  "frontend/src/components/ui/menubar.tsx",
-        "Hash":  "5BD157C3A446EA1E451867E63724B2E87AD6BBA6251C8B5F1B267D1DF7BD4E0E",
-        "Length":  8515
-    },
-    {
-        "Path":  "frontend/src/components/ui/navigation-menu.tsx",
-        "Hash":  "755AECC77B7911AB61159C9FBB9B25254009EB4C32C95B1430B6B5B7D37ED8F0",
-        "Length":  5152
-    },
-    {
-        "Path":  "frontend/src/components/ui/pagination.tsx",
-        "Hash":  "CBE8559C578EE2D34C7DAEF5EE75DC3AFEB795851E294B111DEC375BA44A9A2D",
-        "Length":  2739
-    },
-    {
-        "Path":  "frontend/src/components/ui/popover.tsx",
-        "Hash":  "861C18577EA5988C6F5CA00D1C677200319FD427CF8B424E59A5CCA6FF24F830",
-        "Length":  1352
-    },
-    {
-        "Path":  "frontend/src/components/ui/progress.tsx",
-        "Hash":  "418F612946A520D1380B7A0D058185BB6A6D09846846DD6D6904A0016152DD4A",
-        "Length":  781
-    },
-    {
-        "Path":  "frontend/src/components/ui/radio-group.tsx",
-        "Hash":  "8C55AA0496B00A27FC4F609CA8B43A7E82C6802F6BF613998438B7632899FA96",
-        "Length":  1405
-    },
-    {
-        "Path":  "frontend/src/components/ui/resizable.tsx",
-        "Hash":  "F0399FEC7BC334F06433B41B6EBF34255942CE4916B99173898893FA7FCC8281",
-        "Length":  1552
-    },
-    {
-        "Path":  "frontend/src/components/ui/scroll-area.tsx",
-        "Hash":  "B607F562455152A079D70A22538C95072B0267E0D59A1A1CF16A905A2E373A6F",
-        "Length":  1635
-    },
-    {
-        "Path":  "frontend/src/components/ui/select.tsx",
-        "Hash":  "6D4DEEE18CF7CED0354EB719300833A83CAF46400DE6EE9C3D1942FA4C579AD4",
-        "Length":  5749
-    },
-    {
-        "Path":  "frontend/src/components/ui/separator.tsx",
-        "Hash":  "BF5838B692E5F74FDE7083280B99492DD402BCE6966E912E79F5E23F14BC98EB",
-        "Length":  723
-    },
-    {
-        "Path":  "frontend/src/components/ui/sheet.tsx",
-        "Hash":  "A82F9341962E766EE925A2FE883B0A9AB5D5DD8475C402AC8E491EE37DC95FDE",
-        "Length":  4248
-    },
-    {
-        "Path":  "frontend/src/components/ui/sidebar.tsx",
-        "Hash":  "9F44F4523271F965ADEC608AE1C3B8A2F350F2F45BA1401A2C7EE33BC5EDA238",
-        "Length":  23975
-    },
-    {
-        "Path":  "frontend/src/components/ui/skeleton.tsx",
-        "Hash":  "F4C42257D73925B0B856A3500E2CBDD918FE6744FCD6BE87EF28BB88E7EB7366",
-        "Length":  239
-    },
-    {
-        "Path":  "frontend/src/components/ui/slider.tsx",
-        "Hash":  "D307CF3FF05B54BE4A04389EF4379F9E8B4DC49720197937991CE843A8D4B5EC",
-        "Length":  1025
-    },
-    {
-        "Path":  "frontend/src/components/ui/sonner.tsx",
-        "Hash":  "3AD40F66C339E799B1A57C00E10B4627294C7D580D99D8A48AE0D8D4C13CF931",
-        "Length":  734
-    },
-    {
-        "Path":  "frontend/src/components/ui/spinner.tsx",
-        "Hash":  "ECD836D476573ADB4403747C3457339276805433C20EACF3408303B76EC283FF",
-        "Length":  335
-    },
-    {
-        "Path":  "frontend/src/components/ui/switch.tsx",
-        "Hash":  "C3C298DF4FFB56695E4A8F0FF3E37EEE08437DEC542A677153EC16BED0820107",
-        "Length":  1156
-    },
-    {
-        "Path":  "frontend/src/components/ui/table.tsx",
-        "Hash":  "1E945E564C2CC5CA3EF33019BA7DA7A8B94CBC73FEB3CBC2B7B33C36EA648D92",
-        "Length":  2820
-    },
-    {
-        "Path":  "frontend/src/components/ui/tabs.tsx",
-        "Hash":  "E9B454D2F987C83B36CC8870BBA47D9355DB4E8F5C733B310DBC1119A7D27654",
-        "Length":  1934
-    },
-    {
-        "Path":  "frontend/src/components/ui/textarea.tsx",
-        "Hash":  "35617A2CF053E52C9E56983BDE82D556861D38E462F9E578876C8E99A0432687",
-        "Length":  677
-    },
-    {
-        "Path":  "frontend/src/components/ui/toggle.tsx",
-        "Hash":  "62E6E21993F1AB633B9F830CBBF0C181F3D161BAE3A7792DBF2D842D42A2F09C",
-        "Length":  1534
-    },
-    {
-        "Path":  "frontend/src/components/ui/toggle-group.tsx",
-        "Hash":  "D59CD3937C967A3E221FDFCFE4EA5CD57EB97CBE37E1AC98126664C9C7DB49C1",
-        "Length":  1752
-    },
-    {
-        "Path":  "frontend/src/components/ui/tooltip.tsx",
-        "Hash":  "9682690FC3755D0F4B8684F2D7B1F77945876D41A45B723D0761B26804AD5010",
-        "Length":  1278
-    },
-    {
-        "Path":  "frontend/src/generated/ai-gateway/models.d.cts",
-        "Hash":  "1C7C7208164B5836B3B0FCB278602A25999E196C14A8BC6AB1BF3DA064FECD3B",
-        "Length":  2129
-    },
-    {
-        "Path":  "frontend/src/generated/ai-gateway/models.d.ts",
-        "Hash":  "1C7C7208164B5836B3B0FCB278602A25999E196C14A8BC6AB1BF3DA064FECD3B",
-        "Length":  2129
-    },
-    {
-        "Path":  "frontend/src/hooks/use-mobile.tsx",
-        "Hash":  "21EFF740F9E5C965C7F0782925A7E8F67DDFCDF0F58B6613550F99C3E1C454E9",
-        "Length":  576
-    },
-    {
-        "Path":  "frontend/src/integrations/lovable/index.ts",
-        "Hash":  "2B71954D100F88B414B15BCEA1BAE05450F4761727E030B3A21A0448CE9C6222",
-        "Length":  973
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/auth-attacher.ts",
-        "Hash":  "24D0DBDF8DC0FD49B391A948BD04E1DB43B97A1D851ACC391DD3D1B13B9797FD",
-        "Length":  611
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/auth-middleware.ts",
-        "Hash":  "AE40B141CE933B52252E00BFACD3E69FA7A8E6EF88A2C92809780BF7D1BB76CC",
-        "Length":  3236
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/client.server.ts",
-        "Hash":  "56EC7F9AC40CCDF96D8ABA4F7FE33A586590AC63420B81E6CD5DC1E4777EE28E",
-        "Length":  2753
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/client.ts",
-        "Hash":  "B300E9491D5B8500EE77137FBAEEF8E5B46B5F5E8A9463FC2DC01ADC104E1807",
-        "Length":  3569
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/cron-auth.ts",
-        "Hash":  "18430AA4C7FAFF5B44C572A8A4DFA6482DAA52ACBEA09F384B872F087E58E738",
-        "Length":  1109
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/previewAuthStorage.ts",
-        "Hash":  "03DD0FFE0501FA1F0B055D8644E079C573E7197A36E2E08FD494E70831484D18",
-        "Length":  6712
-    },
-    {
-        "Path":  "frontend/src/integrations/supabase/types.ts",
-        "Hash":  "B96ED26671C435B1FE4813E652953A821A06D765AC9827CCA501FE302F4A604D",
-        "Length":  10780
-    },
-    {
-        "Path":  "frontend/src/lib/ai.server.ts",
-        "Hash":  "03F61EFFA62848A757345C50DB1A57831E0A08B2DB727BFBBCA3EA9313874C1B",
-        "Length":  1537
-    },
-    {
-        "Path":  "frontend/src/lib/ambient-audio.ts",
-        "Hash":  "4979F4EB018D3B7904EE5DCD614DC03DB2DB45E2A6BF8B388933B6A675E1E2BC",
-        "Length":  5735
-    },
-    {
-        "Path":  "frontend/src/lib/auth-session.tsx",
-        "Hash":  "DE47B70AA2AB2678270B54440052540E0E295FE929B7793E0F21592DF50B1C52",
-        "Length":  1904
-    },
-    {
-        "Path":  "frontend/src/lib/chat-prompt.ts",
-        "Hash":  "8EC40EEB7A25AF37FCAC4993C5A76F5F4E332C89B20344B23CDCED2B2431E205",
-        "Length":  6286
-    },
-    {
-        "Path":  "frontend/src/lib/companion.test.ts",
-        "Hash":  "DC648D1075AEB5EB4C217FBC2938D47CB333297AFB34639BEF3EB5251C46046E",
-        "Length":  2549
-    },
-    {
-        "Path":  "frontend/src/lib/companion.ts",
-        "Hash":  "A3B2074AFE621F636FFE52CA1DD9679078F300163A71DB5360E71E454304A778",
-        "Length":  6962
-    },
-    {
-        "Path":  "frontend/src/lib/crisis.test.ts",
-        "Hash":  "EA303B72E58255C3096C87486EB76A9299BD9012C384C720211E9087EC61B62C",
-        "Length":  2404
-    },
-    {
-        "Path":  "frontend/src/lib/crisis.ts",
-        "Hash":  "87EB4265DA971C1FBAE85CDD27FF3BA9817ADE3F6E374FD2D1A85EB8041EB01C",
-        "Length":  3150
-    },
-    {
-        "Path":  "frontend/src/lib/error-capture.ts",
-        "Hash":  "D6FA7756CBC4C399F4E891B174C2DCE8160E2354972C2AE68413DFD1DB843088",
-        "Length":  2898
-    },
-    {
-        "Path":  "frontend/src/lib/error-page.ts",
-        "Hash":  "635915886F5D44A18B6ADD2A53959DBE2E8BA1BB3F7E597FC714650E74157BB6",
-        "Length":  1371
-    },
-    {
-        "Path":  "frontend/src/lib/journal.functions.ts",
-        "Hash":  "F9572AED21C607A04EAE9CA9CDFE31C8CEE498FA403D937C6F61FE978827FBF5",
-        "Length":  846
-    },
-    {
-        "Path":  "frontend/src/lib/journal-local.ts",
-        "Hash":  "3729BF6976E9686462199CC8F4BF7D1FCC45587409CE9199935D07FEE41EB1B8",
-        "Length":  3590
-    },
-    {
-        "Path":  "frontend/src/lib/journal-types.ts",
-        "Hash":  "54B5024DD241D67C28C1F2A911C79FFE652769CF60BD7EB4687414DC6245DE4B",
-        "Length":  2589
-    },
-    {
-        "Path":  "frontend/src/lib/lovable-error-reporting.ts",
-        "Hash":  "0A2E8B5F3FFD2DD682AB78BE1A9B0998B73284A6525080E4960F85827CD608D3",
-        "Length":  2219
-    },
-    {
-        "Path":  "frontend/src/lib/mood-export.test.ts",
-        "Hash":  "B743464A4C07D49692D1BCB670032FF0054C114F69E25EC3EC0C0C6EE7303A16",
-        "Length":  1149
-    },
-    {
-        "Path":  "frontend/src/lib/mood-export.ts",
-        "Hash":  "C73B58EC9FA3492C8BCCA73089C0B598683E9776D280E59441DF0ECEF232D61F",
-        "Length":  2120
-    },
-    {
-        "Path":  "frontend/src/lib/neeva-data.ts",
-        "Hash":  "2BBF5C35CD492AF03C6CF209537DBA0EE38CC3653006ABFAAEA10867026F6D5E",
-        "Length":  19631
-    },
-    {
-        "Path":  "frontend/src/lib/neeva-store.tsx",
-        "Hash":  "9B969D8809B72B34A9A3037583AFA11A460BB790847E807E889C5B4C0F4B7BF9",
-        "Length":  3237
-    },
-    {
-        "Path":  "frontend/src/lib/profile.tsx",
-        "Hash":  "8505748CB13499B1C0CAD437F933A18F91FD3A4A5DDCDE0A3343D02E884B62DA",
-        "Length":  3792
-    },
-    {
-        "Path":  "frontend/src/lib/utils.ts",
-        "Hash":  "D1F1E0D62CB8D8D1E04C26E14DE842D8A151F75812D81B046C65B5D1FE8E4B27",
-        "Length":  169
-    },
-    {
-        "Path":  "frontend/src/router.tsx",
-        "Hash":  "5BEED290518EAF596EA66202EFB3A01F6BD8D97313563B87B2EC387F54F4CA08",
-        "Length":  580
-    },
-    {
-        "Path":  "frontend/src/routes/__root.tsx",
-        "Hash":  "3ED875579F63D2430A5169F0E0029FD11037D63D7275EA220A59545337FB088F",
-        "Length":  5113
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/chat.tsx",
-        "Hash":  "798F209931BD436B7B4212EBA2E3BB323FA402857272032B2AC645AB1631CF73",
-        "Length":  13627
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/community.tsx",
-        "Hash":  "C0EE9CE6BA5BABB4ED70B3E639F544DDDC2BDF76F0D5B27098645C6A2B8C59FA",
-        "Length":  13094
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/hub.tsx",
-        "Hash":  "57D898B3956FDB5BE527DA1D9FD701A4C4ECE4B7C1E21EC1910AA13956A5579A",
-        "Length":  4376
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/journal.tsx",
-        "Hash":  "DA880A49279EF0C08639D3D7671DAFB8E3D18927E2CF715FB69C5CC0DD042E8B",
-        "Length":  13428
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/route.tsx",
-        "Hash":  "D332772935E6930A67F9231671F6D71C9CD9954EDE678E221099AC3FA0F694C4",
-        "Length":  1464
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/settings.tsx",
-        "Hash":  "BCAC5CB2E71C50694C22ECC1BF75AF9A3DDEB7661B4D11E13774F5C10803BD05",
-        "Length":  5464
-    },
-    {
-        "Path":  "frontend/src/routes/_authenticated/today.tsx",
-        "Hash":  "7675D2CEE3ED3660E8728DC47A517E6F20A088641FA057F33352F09F10CEC99E",
-        "Length":  13109
-    },
-    {
-        "Path":  "frontend/src/routes/api/chat.ts",
-        "Hash":  "ABDB1E2D3E5B3E13E14AFE9C3B67BD8AB2C3E108CA2835221AC818D67E9A952B",
-        "Length":  4384
-    },
-    {
-        "Path":  "frontend/src/routes/auth.tsx",
-        "Hash":  "32765997017B1EBEFC7E6E71D3FB6EBBE053F5AA237B8B64CA51C3CA55154481",
-        "Length":  10139
-    },
-    {
-        "Path":  "frontend/src/routes/index.tsx",
-        "Hash":  "C1719276BBB716BB0091DCD7A7249C63416E5666DCEE86121768614788F700C8",
-        "Length":  30688
-    },
-    {
-        "Path":  "frontend/src/routes/README.md",
-        "Hash":  "EDBD5D3CD5A427882C60B7B7DCDD12C7031F2F8AC0C085D20D2F6ABEC719E95D",
-        "Length":  1235
-    },
-    {
-        "Path":  "frontend/src/routes/reset-password.tsx",
-        "Hash":  "655BA6F4BEB6BCE6EDE348C1610CF95CAB019FC4F51261476D216AF3D98B48DD",
-        "Length":  1962
-    },
-    {
-        "Path":  "frontend/src/routeTree.gen.ts",
-        "Hash":  "3912B0013395EE752B186E215F63793E4C1C171A8E7856397273DE786DCDA0B0",
-        "Length":  9519
-    },
-    {
-        "Path":  "frontend/src/server.ts",
-        "Hash":  "09EF10E6695043F59778240F9AC813AE80C9826474A47A120CD14074A7CA5E10",
-        "Length":  2260
-    },
-    {
-        "Path":  "frontend/src/start.ts",
-        "Hash":  "F3679C32558FB8AE503ED1D14393D10D7B8F13124769FE6CD00A862A18414679",
-        "Length":  1569
-    },
-    {
-        "Path":  "frontend/src/styles.css",
-        "Hash":  "42DD92D31C7C068740B579871C552A8D51031EEDB66C4B284757327115FC3C52",
-        "Length":  11180
-    },
-    {
-        "Path":  "frontend/src/test/app-routing.test.tsx",
-        "Hash":  "C817058668430273E00A43620A835F562B8CFE1234EE361C057958C06470CEE3",
-        "Length":  698
-    },
-    {
-        "Path":  "frontend/src/test/setup.ts",
-        "Hash":  "049FD55D8C3BF8742482F5684ECF15407EADD752BAD5E86907032112DC05A558",
-        "Length":  446
-    },
-    {
-        "Path":  "frontend/supabase/config.toml",
-        "Hash":  "AC83EEBB9D689FFDDDE44537468EC8D443BA6C9252E116A4AB731695D539E0B7",
-        "Length":  35
-    },
-    {
-        "Path":  "frontend/tsconfig.json",
-        "Hash":  "E86F30FCB44F4FE5AAA1138E6F432F0FC3C094D4D7AD36BCABFAF1DB8CA96A0E",
-        "Length":  882
-    },
-    {
-        "Path":  "frontend/vite.config.ts",
-        "Hash":  "AEF3C0F6D98411A49C150A6EB3DC62E7AD06A37CC9BFB36311E12972C0FE181C",
-        "Length":  1049
-    },
-    {
-        "Path":  "frontend/vitest.config.ts",
-        "Hash":  "0158325852B8C6C2C4C9E2AE02196430B432A7F40772EB546E227CE16B9DA97B",
-        "Length":  396
-    }
+[
+  {
+    "Path": "frontend/.env",
+    "Hash": "43FDE608E95F92317D0EBDCC5F53934B6E3FA42AC2D088F4955DCC9CDA3D6EDA",
+    "Length": 413
+  },
+  {
+    "Path": "frontend/.gitignore",
+    "Hash": "74366D54BCD8375F43E80EBE6C1963C27BFA139CB2F384A5A4EE113A9A462E81",
+    "Length": 334
+  },
+  {
+    "Path": "frontend/.prettierignore",
+    "Hash": "52C7C767FF0615EEC4EB64CC71265877F7F423EB597D665B5E439F337C661A5A",
+    "Length": 92
+  },
+  {
+    "Path": "frontend/.prettierrc",
+    "Hash": "1ED88D3B99ECED8DC3B6F58F26645466DD1CEACA6C5A9B818531C941AC28E55B",
+    "Length": 90
+  },
+  {
+    "Path": "frontend/AGENTS.md",
+    "Hash": "05A01274F9B5EE1AA1E8B5D544E64964A04B55B07CCF46E9CF45F4B977C3EBE8",
+    "Length": 3058
+  },
+  {
+    "Path": "frontend/bun.lock",
+    "Hash": "F198F399F0186920B0499C7B0617CBEB8502A24EFB0F3ABCA53F30129A490937",
+    "Length": 268913
+  },
+  {
+    "Path": "frontend/bunfig.toml",
+    "Hash": "1ED9B1FC5131FD50C2E0975635C3E98A8362362103F4061910B56EAC510B748E",
+    "Length": 407
+  },
+  {
+    "Path": "frontend/components.json",
+    "Hash": "37C484818824D2521EEE3367E7AA2C2ABBD19635D8103D19734B6E24603D0292",
+    "Length": 443
+  },
+  {
+    "Path": "frontend/drizzle.config.ts",
+    "Hash": "091BB5BDA4B36DCBC2EF729CDC65AFD67163149C221E8A5B0C6F38EBC542DA2C",
+    "Length": 245
+  },
+  {
+    "Path": "frontend/drizzle/migrations/0000_create_profiles.sql",
+    "Hash": "529809FB75D277787F8651272E385E632EA242178B44811359F141E1B884D328",
+    "Length": 2430
+  },
+  {
+    "Path": "frontend/drizzle/migrations/0001_companion_talk_style.sql",
+    "Hash": "1557AAF8AED49673BDBDF756DB043BEF6B10E029277BAA88A7B3F094B60ED8E7",
+    "Length": 589
+  },
+  {
+    "Path": "frontend/drizzle/migrations/0002_community_circles_moderation.sql",
+    "Hash": "EBC66924C2FF6C5D05F1749B397B96384D4DAF919CB51AA7D78053E2FDB073EF",
+    "Length": 10664
+  },
+  {
+    "Path": "frontend/drizzle/migrations/meta/_journal.json",
+    "Hash": "B5B64196780A2A7A24FCD6D7FE4C4CEC3522EECBEB142D15CEC94AC60B19E87C",
+    "Length": 514
+  },
+  {
+    "Path": "frontend/drizzle/migrations/meta/0000_snapshot.json",
+    "Hash": "E3CE1B2C0E7DEFB4437C6DBDC61FD971E7817FC08E652892DEE1D94189583AE4",
+    "Length": 336
+  },
+  {
+    "Path": "frontend/drizzle/migrations/meta/0001_snapshot.json",
+    "Hash": "8F1DCE259443E91E43A86547ED835AF249243B21BF8535CAACD0A36934FF3713",
+    "Length": 336
+  },
+  {
+    "Path": "frontend/drizzle/migrations/meta/0002_snapshot.json",
+    "Hash": "8BA90800FC96B7000A2D6EBFC595891E9E5383A7A728529788FDFC75AAD5D5B2",
+    "Length": 336
+  },
+  {
+    "Path": "frontend/drizzle/schema.ts",
+    "Hash": "834FFF8005E00606DFDFF9FF71393309DC72160C108FDAD72418986573CF9448",
+    "Length": 60
+  },
+  {
+    "Path": "frontend/eslint.config.js",
+    "Hash": "3266245A1FF610A0B37DBB8B8C77B93A125E0D8758B9838CFD04B2E0A1397D56",
+    "Length": 1250
+  },
+  {
+    "Path": "frontend/package.json",
+    "Hash": "9118AFE7F24FAEE7F022D3B18A7AD9FABFFB1F722272218ABFC0A88CF0EC8497",
+    "Length": 3608
+  },
+  {
+    "Path": "frontend/public/favicon.png",
+    "Hash": "CEC094835BF917DDB828DE9E1F62321B3CCBCC5772A83E4A9A8CE902BD51C351",
+    "Length": 6151
+  },
+  {
+    "Path": "frontend/public/robots.txt",
+    "Hash": "A3D27B3CA5CE32341FA9F96F01169B521B1657C05D1860C45D1E53A6258E9E8B",
+    "Length": 160
+  },
+  {
+    "Path": "frontend/README.md",
+    "Hash": "16B3002DC75494A1D5DA5505921CB0034BDD2DD2610A1A6C00EB5475DBCAF156",
+    "Length": 7317
+  },
+  {
+    "Path": "frontend/roadmap.md",
+    "Hash": "8BFF8A7DB91FA992A258E069189428EFC7A78BDDAA5D9250D39A8484DF2EA122",
+    "Length": 2085
+  },
+  {
+    "Path": "frontend/src/ai-gateway.types.ts",
+    "Hash": "6CEB37DC6E0B3F71E17D3EA547145F9EFA3564FC4D5CA94954D509BD0F029F34",
+    "Length": 53
+  },
+  {
+    "Path": "frontend/src/assets/chat-metro.jpg",
+    "Hash": "9A2006C63F9E7448A197EA4E278852975A7405E2A97F80FC206B222DC04C6B6D",
+    "Length": 247260
+  },
+  {
+    "Path": "frontend/src/assets/circle-terrace.jpg",
+    "Hash": "FEEC88886318FF0253EAAC92D09E1B961C1F5BE2C84A36D6344AE88C168D4329",
+    "Length": 193986
+  },
+  {
+    "Path": "frontend/src/assets/focus-desk.jpg",
+    "Hash": "F3E7629DA97A7378337D2A6F96673DE3957D89779364C40BDA5CEDEC29E5CB40",
+    "Length": 192339
+  },
+  {
+    "Path": "frontend/src/assets/focus-library.jpg",
+    "Hash": "364897666877AC0BBA8F7B696CB89418790A119FEDDB32D4CBB8FAB9A26E0771",
+    "Length": 247605
+  },
+  {
+    "Path": "frontend/src/assets/friends-steps.jpg",
+    "Hash": "C68AE7C7C838639F5A6B4A141847CB691DC3A3B265CB03ACB1888C6D40023C5E",
+    "Length": 195444
+  },
+  {
+    "Path": "frontend/src/assets/hero-calm.jpg",
+    "Hash": "DDCDD685ECF8ED4F38D44456EEDBEA75173BC60D10F7F791A30CF0F8246DA169",
+    "Length": 114600
+  },
+  {
+    "Path": "frontend/src/assets/journal-chai.jpg",
+    "Hash": "BA2523F4D248E7AE0408551DF13280516599637F343C6082983ED3AC0143F64C",
+    "Length": 250074
+  },
+  {
+    "Path": "frontend/src/assets/landing-hero.jpg",
+    "Hash": "548D982AF411AAE1058D874314F341E5B2C678EEC014A2E4B417904CBAAECC32",
+    "Length": 230042
+  },
+  {
+    "Path": "frontend/src/assets/meditation-cover.jpg",
+    "Hash": "70A9A5488CAC59A59836367B688E0972AAE96DAA43CE57127E41D06F2382DBFD",
+    "Length": 132235
+  },
+  {
+    "Path": "frontend/src/assets/neeva-mark.png",
+    "Hash": "ADE1F431460183EDE1765C1420E603C064AF98B0A712121B701978D1E4016AC6",
+    "Length": 557492
+  },
+  {
+    "Path": "frontend/src/assets/night-balcony.jpg",
+    "Hash": "1EE4FB227AB7272736DED5415357382FE5C9A69EE0F102C0D6E9261B503F2497",
+    "Length": 241649
+  },
+  {
+    "Path": "frontend/src/assets/onboard-cycle.jpg",
+    "Hash": "ECD98B8C9D31329C444CB3C66501ADB2B88D5D1244984D0B799E1EFE6FCB5B69",
+    "Length": 306784
+  },
+  {
+    "Path": "frontend/src/assets/onboard-hostel.jpg",
+    "Hash": "7A88D015395C2C418F14AF280B5C6392660146B01E716A6FD801EE595220A6EA",
+    "Length": 223646
+  },
+  {
+    "Path": "frontend/src/assets/onboard-sunrise.jpg",
+    "Hash": "387C24C330C0B6E71DBE75AA03019695925DF96AAF22C5917D6AC53DCD5E4026",
+    "Length": 257974
+  },
+  {
+    "Path": "frontend/src/assets/sticky-wall.jpg",
+    "Hash": "CDC3EE435376CD3A68939D8F09B6F6ADD65F19B6DA5B9C68F8FE64B7BF6AAFF4",
+    "Length": 216698
+  },
+  {
+    "Path": "frontend/src/assets/today-circle-park.jpg",
+    "Hash": "9E4FAA3410C440BFFFAE3CEF8C1C4AA90E7EFB28D5C70AF90FFF3F2A99154C69",
+    "Length": 215936
+  },
+  {
+    "Path": "frontend/src/assets/today-journal-bed.jpg",
+    "Hash": "0EC7EC30BA1CAF2EAFB0B8D19FC83977C851F144EC655495B82023AF855BB125",
+    "Length": 223314
+  },
+  {
+    "Path": "frontend/src/assets/window-calm.jpg",
+    "Hash": "7813ABCE5B2CA56FF4CBC5B88E23DC05D8C1C30F258183A914294CE853F0A039",
+    "Length": 253740
+  },
+  {
+    "Path": "frontend/src/components/ai-elements/conversation.tsx",
+    "Hash": "2D35EB320E82067704A715857533EB9ABBF9B0CD9702FDA4F003973869CA2CFF",
+    "Length": 4351
+  },
+  {
+    "Path": "frontend/src/components/ai-elements/message.tsx",
+    "Hash": "009D2AD435866DB2BD16DE9513AEBAC08E3E5D46234D63CCEF7EB2526E72C4F0",
+    "Length": 8364
+  },
+  {
+    "Path": "frontend/src/components/ai-elements/prompt-input.tsx",
+    "Hash": "213187FAC38F974BBE79644A9BFA3192017B30607B6C980F436F54E73CF41921",
+    "Length": 38467
+  },
+  {
+    "Path": "frontend/src/components/ai-elements/shimmer.tsx",
+    "Hash": "10CDAEB12079B07A50D35D850C4D1075C07995F9FB08144FF5B52D105302BF2A",
+    "Length": 2139
+  },
+  {
+    "Path": "frontend/src/components/ai-elements/suggestion.tsx",
+    "Hash": "A6CF82E902077EAC89CE7EC8DBFBCEA190C29E5DB7C0F5AA0E36392741431D9A",
+    "Length": 1319
+  },
+  {
+    "Path": "frontend/src/components/neeva/AppShell.tsx",
+    "Hash": "D06F03CA421AEF0C98DE22B11DFDD1981E19ED75512F91DE9883EEEDE4917BAA",
+    "Length": 10668
+  },
+  {
+    "Path": "frontend/src/components/neeva/Card.tsx",
+    "Hash": "F543AEC349C25029C0749A18E5C25CF03B5C8DB4AEA082056C692E2271FE7D5A",
+    "Length": 965
+  },
+  {
+    "Path": "frontend/src/components/neeva/CompanionAvatar.tsx",
+    "Hash": "20F7A0F245F52F1E90CB52F703C5039E4A222A24CCA20A6F7ADE522091112A59",
+    "Length": 2300
+  },
+  {
+    "Path": "frontend/src/components/neeva/CompanionSetup.tsx",
+    "Hash": "67ED10305339109F6B999F34692AD7B20FE7976E938C618B9CFFB3BB8015FABD",
+    "Length": 10574
+  },
+  {
+    "Path": "frontend/src/components/neeva/CrisisDialog.tsx",
+    "Hash": "3D5FE8C44232940A8A65859EF1D20300E5EBAC61F1C96E3A0BD021A44BF69B2C",
+    "Length": 13941
+  },
+  {
+    "Path": "frontend/src/components/neeva/hub/BreathingCircle.tsx",
+    "Hash": "444B1FEB1456C4AB13DFA07C10EA11FC77C36281B513498AC28A8DDFE28C6516",
+    "Length": 3551
+  },
+  {
+    "Path": "frontend/src/components/neeva/hub/DistortionGame.tsx",
+    "Hash": "58DDD601B2C51401A1B112DB2F351C2DD236EAB510B4EDE07E7159AF5B84DB6E",
+    "Length": 4637
+  },
+  {
+    "Path": "frontend/src/components/neeva/hub/FocusTimer.tsx",
+    "Hash": "F96EB13DFEE2017276E0B4EF44915B2F57E34C49D831DCF46692E4E29775614F",
+    "Length": 12907
+  },
+  {
+    "Path": "frontend/src/components/neeva/hub/MeditationPlayer.tsx",
+    "Hash": "96CD8F78D52E8399192184F419A41A969F419C4BC15D93E8F1E1EAA76E92B793",
+    "Length": 5364
+  },
+  {
+    "Path": "frontend/src/components/neeva/hub/ThoughtRecord.tsx",
+    "Hash": "3292225871C6171240C23BCBEDF253DE6A5863DF652B0FA16E11A32B2C8EF927",
+    "Length": 11151
+  },
+  {
+    "Path": "frontend/src/components/neeva/IconBadge.tsx",
+    "Hash": "CE2A8666B905308171A9B6AFCF8D24E08B93E3BD3946EBC8D1A12CC1405BB967",
+    "Length": 1538
+  },
+  {
+    "Path": "frontend/src/components/neeva/MoodCheckIn.tsx",
+    "Hash": "407F39C254CD8F24BE39B30823F7BF589EB6FE1FCCBF69320842186FAAD38334",
+    "Length": 5298
+  },
+  {
+    "Path": "frontend/src/components/neeva/MoodFace.tsx",
+    "Hash": "28A175ACEF16D99A46DA524AAB47B34264D4D6C80E29C61649F6770690D81D9F",
+    "Length": 2832
+  },
+  {
+    "Path": "frontend/src/components/neeva/MoodHistory.tsx",
+    "Hash": "F5D7FF111C03D37D891913A489C582A05A22AB4431778F5B2CC3A1A3FF035FF0",
+    "Length": 8735
+  },
+  {
+    "Path": "frontend/src/components/neeva/Onboarding.tsx",
+    "Hash": "0DA1075F9A69801B91D5CC335D57222D220BD271462A6DA310AFF51AD22BAB44",
+    "Length": 10548
+  },
+  {
+    "Path": "frontend/src/components/neeva/SecurityBanner.tsx",
+    "Hash": "63AB3D23D3C8ECC1A9C2FC63E1897D05501B066456DAECFB78F675DAB6DBEE21",
+    "Length": 556
+  },
+  {
+    "Path": "frontend/src/components/ui/accordion.tsx",
+    "Hash": "0903EFCD7B746EEF0A10C954A541B0DFA7AA1172F3C380A1A88F4E19A317FDA3",
+    "Length": 2015
+  },
+  {
+    "Path": "frontend/src/components/ui/alert.tsx",
+    "Hash": "E7F4C2E6F78C59270905B4152B7D3EF4D5C6B9E3B2D370DAA7B301AA7CBD27B3",
+    "Length": 1589
+  },
+  {
+    "Path": "frontend/src/components/ui/alert-dialog.tsx",
+    "Hash": "EE4D7F3341A1E5592787B7DAC8E924BD226189492819F6704D8A7FAF8FE64D20",
+    "Length": 4183
+  },
+  {
+    "Path": "frontend/src/components/ui/aspect-ratio.tsx",
+    "Hash": "D72C73D629E37995A0A71647D851D68D6FDCD7EC120797F36AB83A8EE89F2CAB",
+    "Length": 143
+  },
+  {
+    "Path": "frontend/src/components/ui/avatar.tsx",
+    "Hash": "0326C9041C5A0B1BA31FF29822C51950B6AEAC485CD0985E7DF714741A54E7F4",
+    "Length": 1413
+  },
+  {
+    "Path": "frontend/src/components/ui/badge.tsx",
+    "Hash": "6519775252FE729F21C60B92C7C9FEEFD1FE7D0A8C2CF16D6F1C2FA7E153FE75",
+    "Length": 1123
+  },
+  {
+    "Path": "frontend/src/components/ui/breadcrumb.tsx",
+    "Hash": "D5224E87344B3AC0F8B002E5DDA6A71FF8FEE296DB8A5FBE6B034D06BD5C2AE1",
+    "Length": 2749
+  },
+  {
+    "Path": "frontend/src/components/ui/button.tsx",
+    "Hash": "177E52A779A43DFA67C76DE99C1F27738A0058EC9C4877BF09527FE678A105C6",
+    "Length": 2036
+  },
+  {
+    "Path": "frontend/src/components/ui/button-group.tsx",
+    "Hash": "4B2B0966F8452BA5D09C3149D1D195B9F6C96D7F3B723AA257F669A5784AF2CC",
+    "Length": 2214
+  },
+  {
+    "Path": "frontend/src/components/ui/calendar.tsx",
+    "Hash": "E883F2245873FDF360764F77FC8F391426BEF5776C6397537012C46970EBD6EE",
+    "Length": 7226
+  },
+  {
+    "Path": "frontend/src/components/ui/card.tsx",
+    "Hash": "F13878A0078A5EF9F3E92AF29259FC1E93EA56EA80CB992E0C4DEA4E35396459",
+    "Length": 1817
+  },
+  {
+    "Path": "frontend/src/components/ui/carousel.tsx",
+    "Hash": "568E00E8EDBFAB8AF67EE902CA9EF5CEB6D5ED6F3045E7F9B3C15B4F7EF9E974",
+    "Length": 6200
+  },
+  {
+    "Path": "frontend/src/components/ui/chart.tsx",
+    "Hash": "81B1F692F9334BA3030213FF37EEAF2DD762B644E5D96E51ADA7072109F07430",
+    "Length": 10570
+  },
+  {
+    "Path": "frontend/src/components/ui/checkbox.tsx",
+    "Hash": "C44D02535D5C9C92807576804407DD63D01E7189DBDE526E925B53885E645FD4",
+    "Length": 1043
+  },
+  {
+    "Path": "frontend/src/components/ui/collapsible.tsx",
+    "Hash": "5F0A45D8F6CA72D37ED10BF0A85306158B67D7CBC386319186CE013EAD9BC0A6",
+    "Length": 335
+  },
+  {
+    "Path": "frontend/src/components/ui/command.tsx",
+    "Hash": "BA8C0F8B23044CE9A5066E66D7AB7BE3A3C79BFC4A0AB7DFAE6FFAFE439145A3",
+    "Length": 4876
+  },
+  {
+    "Path": "frontend/src/components/ui/context-menu.tsx",
+    "Hash": "B299F50A0A7840B136DB5670F2B2E7EEC6FC62B3C06BC2AD0015800959CC381B",
+    "Length": 7360
+  },
+  {
+    "Path": "frontend/src/components/ui/dialog.tsx",
+    "Hash": "E3A6DE153FB15597EA95BE9C4549211A297C060267787915599E3D680D476BD9",
+    "Length": 3648
+  },
+  {
+    "Path": "frontend/src/components/ui/drawer.tsx",
+    "Hash": "478C487F66245641D5FA0F0D1C53A07D68BD60C4B3C497EC4C41CE08B482E14B",
+    "Length": 2973
+  },
+  {
+    "Path": "frontend/src/components/ui/dropdown-menu.tsx",
+    "Hash": "A6B87C89F5A806225B7F3A81F13A6577289C67E5787C2A56B5A22BD1EDEA02CE",
+    "Length": 7565
+  },
+  {
+    "Path": "frontend/src/components/ui/form.tsx",
+    "Hash": "1ED53D4AB564A64708938643DE590F2BEF3718B0B2A309C1019C57E9C1FDE23F",
+    "Length": 4201
+  },
+  {
+    "Path": "frontend/src/components/ui/hover-card.tsx",
+    "Hash": "69DC172ECE56AC77BF3A044A1CD60ED601B0041945D16B5DA4C6CC4F42116988",
+    "Length": 1246
+  },
+  {
+    "Path": "frontend/src/components/ui/input.tsx",
+    "Hash": "92DEBB7D6D2D96D9E607A42D5CE8F37B2D63384AE5DD9FFBBF5F047B680FFB85",
+    "Length": 776
+  },
+  {
+    "Path": "frontend/src/components/ui/input-group.tsx",
+    "Hash": "3842024F636788B347A19C7BD00DA702833C8DAD7EAE41327E79D70903C288DA",
+    "Length": 4940
+  },
+  {
+    "Path": "frontend/src/components/ui/input-otp.tsx",
+    "Hash": "45B7C4FD518616F76DD611B9DA13BC60BECE1352E050878BF943E1CC6A4ED678",
+    "Length": 2232
+  },
+  {
+    "Path": "frontend/src/components/ui/label.tsx",
+    "Hash": "9F72E2ECF16206593AA9E3C4FBC14CD8E81AA8488D57D92D4A950B30935A9FA9",
+    "Length": 716
+  },
+  {
+    "Path": "frontend/src/components/ui/menubar.tsx",
+    "Hash": "5BD157C3A446EA1E451867E63724B2E87AD6BBA6251C8B5F1B267D1DF7BD4E0E",
+    "Length": 8515
+  },
+  {
+    "Path": "frontend/src/components/ui/navigation-menu.tsx",
+    "Hash": "755AECC77B7911AB61159C9FBB9B25254009EB4C32C95B1430B6B5B7D37ED8F0",
+    "Length": 5152
+  },
+  {
+    "Path": "frontend/src/components/ui/pagination.tsx",
+    "Hash": "CBE8559C578EE2D34C7DAEF5EE75DC3AFEB795851E294B111DEC375BA44A9A2D",
+    "Length": 2739
+  },
+  {
+    "Path": "frontend/src/components/ui/popover.tsx",
+    "Hash": "861C18577EA5988C6F5CA00D1C677200319FD427CF8B424E59A5CCA6FF24F830",
+    "Length": 1352
+  },
+  {
+    "Path": "frontend/src/components/ui/progress.tsx",
+    "Hash": "418F612946A520D1380B7A0D058185BB6A6D09846846DD6D6904A0016152DD4A",
+    "Length": 781
+  },
+  {
+    "Path": "frontend/src/components/ui/radio-group.tsx",
+    "Hash": "8C55AA0496B00A27FC4F609CA8B43A7E82C6802F6BF613998438B7632899FA96",
+    "Length": 1405
+  },
+  {
+    "Path": "frontend/src/components/ui/resizable.tsx",
+    "Hash": "F0399FEC7BC334F06433B41B6EBF34255942CE4916B99173898893FA7FCC8281",
+    "Length": 1552
+  },
+  {
+    "Path": "frontend/src/components/ui/scroll-area.tsx",
+    "Hash": "B607F562455152A079D70A22538C95072B0267E0D59A1A1CF16A905A2E373A6F",
+    "Length": 1635
+  },
+  {
+    "Path": "frontend/src/components/ui/select.tsx",
+    "Hash": "6D4DEEE18CF7CED0354EB719300833A83CAF46400DE6EE9C3D1942FA4C579AD4",
+    "Length": 5749
+  },
+  {
+    "Path": "frontend/src/components/ui/separator.tsx",
+    "Hash": "BF5838B692E5F74FDE7083280B99492DD402BCE6966E912E79F5E23F14BC98EB",
+    "Length": 723
+  },
+  {
+    "Path": "frontend/src/components/ui/sheet.tsx",
+    "Hash": "A82F9341962E766EE925A2FE883B0A9AB5D5DD8475C402AC8E491EE37DC95FDE",
+    "Length": 4248
+  },
+  {
+    "Path": "frontend/src/components/ui/sidebar.tsx",
+    "Hash": "9F44F4523271F965ADEC608AE1C3B8A2F350F2F45BA1401A2C7EE33BC5EDA238",
+    "Length": 23975
+  },
+  {
+    "Path": "frontend/src/components/ui/skeleton.tsx",
+    "Hash": "F4C42257D73925B0B856A3500E2CBDD918FE6744FCD6BE87EF28BB88E7EB7366",
+    "Length": 239
+  },
+  {
+    "Path": "frontend/src/components/ui/slider.tsx",
+    "Hash": "D307CF3FF05B54BE4A04389EF4379F9E8B4DC49720197937991CE843A8D4B5EC",
+    "Length": 1025
+  },
+  {
+    "Path": "frontend/src/components/ui/sonner.tsx",
+    "Hash": "3AD40F66C339E799B1A57C00E10B4627294C7D580D99D8A48AE0D8D4C13CF931",
+    "Length": 734
+  },
+  {
+    "Path": "frontend/src/components/ui/spinner.tsx",
+    "Hash": "ECD836D476573ADB4403747C3457339276805433C20EACF3408303B76EC283FF",
+    "Length": 335
+  },
+  {
+    "Path": "frontend/src/components/ui/switch.tsx",
+    "Hash": "C3C298DF4FFB56695E4A8F0FF3E37EEE08437DEC542A677153EC16BED0820107",
+    "Length": 1156
+  },
+  {
+    "Path": "frontend/src/components/ui/table.tsx",
+    "Hash": "1E945E564C2CC5CA3EF33019BA7DA7A8B94CBC73FEB3CBC2B7B33C36EA648D92",
+    "Length": 2820
+  },
+  {
+    "Path": "frontend/src/components/ui/tabs.tsx",
+    "Hash": "E9B454D2F987C83B36CC8870BBA47D9355DB4E8F5C733B310DBC1119A7D27654",
+    "Length": 1934
+  },
+  {
+    "Path": "frontend/src/components/ui/textarea.tsx",
+    "Hash": "35617A2CF053E52C9E56983BDE82D556861D38E462F9E578876C8E99A0432687",
+    "Length": 677
+  },
+  {
+    "Path": "frontend/src/components/ui/toggle.tsx",
+    "Hash": "62E6E21993F1AB633B9F830CBBF0C181F3D161BAE3A7792DBF2D842D42A2F09C",
+    "Length": 1534
+  },
+  {
+    "Path": "frontend/src/components/ui/toggle-group.tsx",
+    "Hash": "D59CD3937C967A3E221FDFCFE4EA5CD57EB97CBE37E1AC98126664C9C7DB49C1",
+    "Length": 1752
+  },
+  {
+    "Path": "frontend/src/components/ui/tooltip.tsx",
+    "Hash": "9682690FC3755D0F4B8684F2D7B1F77945876D41A45B723D0761B26804AD5010",
+    "Length": 1278
+  },
+  {
+    "Path": "frontend/src/generated/ai-gateway/models.d.cts",
+    "Hash": "1C7C7208164B5836B3B0FCB278602A25999E196C14A8BC6AB1BF3DA064FECD3B",
+    "Length": 2129
+  },
+  {
+    "Path": "frontend/src/generated/ai-gateway/models.d.ts",
+    "Hash": "1C7C7208164B5836B3B0FCB278602A25999E196C14A8BC6AB1BF3DA064FECD3B",
+    "Length": 2129
+  },
+  {
+    "Path": "frontend/src/hooks/use-mobile.tsx",
+    "Hash": "21EFF740F9E5C965C7F0782925A7E8F67DDFCDF0F58B6613550F99C3E1C454E9",
+    "Length": 576
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/auth-attacher.ts",
+    "Hash": "24D0DBDF8DC0FD49B391A948BD04E1DB43B97A1D851ACC391DD3D1B13B9797FD",
+    "Length": 611
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/auth-middleware.ts",
+    "Hash": "AE40B141CE933B52252E00BFACD3E69FA7A8E6EF88A2C92809780BF7D1BB76CC",
+    "Length": 3236
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/client.server.ts",
+    "Hash": "56EC7F9AC40CCDF96D8ABA4F7FE33A586590AC63420B81E6CD5DC1E4777EE28E",
+    "Length": 2753
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/client.ts",
+    "Hash": "B300E9491D5B8500EE77137FBAEEF8E5B46B5F5E8A9463FC2DC01ADC104E1807",
+    "Length": 3569
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/cron-auth.ts",
+    "Hash": "18430AA4C7FAFF5B44C572A8A4DFA6482DAA52ACBEA09F384B872F087E58E738",
+    "Length": 1109
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/previewAuthStorage.ts",
+    "Hash": "03DD0FFE0501FA1F0B055D8644E079C573E7197A36E2E08FD494E70831484D18",
+    "Length": 6712
+  },
+  {
+    "Path": "frontend/src/integrations/supabase/types.ts",
+    "Hash": "B96ED26671C435B1FE4813E652953A821A06D765AC9827CCA501FE302F4A604D",
+    "Length": 10780
+  },
+  {
+    "Path": "frontend/src/lib/ai.server.ts",
+    "Hash": "03F61EFFA62848A757345C50DB1A57831E0A08B2DB727BFBBCA3EA9313874C1B",
+    "Length": 1537
+  },
+  {
+    "Path": "frontend/src/lib/ambient-audio.ts",
+    "Hash": "4979F4EB018D3B7904EE5DCD614DC03DB2DB45E2A6BF8B388933B6A675E1E2BC",
+    "Length": 5735
+  },
+  {
+    "Path": "frontend/src/lib/auth-session.tsx",
+    "Hash": "DE47B70AA2AB2678270B54440052540E0E295FE929B7793E0F21592DF50B1C52",
+    "Length": 1904
+  },
+  {
+    "Path": "frontend/src/lib/chat-prompt.ts",
+    "Hash": "8EC40EEB7A25AF37FCAC4993C5A76F5F4E332C89B20344B23CDCED2B2431E205",
+    "Length": 6286
+  },
+  {
+    "Path": "frontend/src/lib/companion.test.ts",
+    "Hash": "DC648D1075AEB5EB4C217FBC2938D47CB333297AFB34639BEF3EB5251C46046E",
+    "Length": 2549
+  },
+  {
+    "Path": "frontend/src/lib/companion.ts",
+    "Hash": "A3B2074AFE621F636FFE52CA1DD9679078F300163A71DB5360E71E454304A778",
+    "Length": 6962
+  },
+  {
+    "Path": "frontend/src/lib/crisis.test.ts",
+    "Hash": "EA303B72E58255C3096C87486EB76A9299BD9012C384C720211E9087EC61B62C",
+    "Length": 2404
+  },
+  {
+    "Path": "frontend/src/lib/crisis.ts",
+    "Hash": "87EB4265DA971C1FBAE85CDD27FF3BA9817ADE3F6E374FD2D1A85EB8041EB01C",
+    "Length": 3150
+  },
+  {
+    "Path": "frontend/src/lib/error-capture.ts",
+    "Hash": "D6FA7756CBC4C399F4E891B174C2DCE8160E2354972C2AE68413DFD1DB843088",
+    "Length": 2898
+  },
+  {
+    "Path": "frontend/src/lib/error-page.ts",
+    "Hash": "635915886F5D44A18B6ADD2A53959DBE2E8BA1BB3F7E597FC714650E74157BB6",
+    "Length": 1371
+  },
+  {
+    "Path": "frontend/src/lib/journal.functions.ts",
+    "Hash": "F9572AED21C607A04EAE9CA9CDFE31C8CEE498FA403D937C6F61FE978827FBF5",
+    "Length": 846
+  },
+  {
+    "Path": "frontend/src/lib/journal-local.ts",
+    "Hash": "3729BF6976E9686462199CC8F4BF7D1FCC45587409CE9199935D07FEE41EB1B8",
+    "Length": 3590
+  },
+  {
+    "Path": "frontend/src/lib/journal-types.ts",
+    "Hash": "54B5024DD241D67C28C1F2A911C79FFE652769CF60BD7EB4687414DC6245DE4B",
+    "Length": 2589
+  },
+  {
+    "Path": "frontend/src/lib/mood-export.test.ts",
+    "Hash": "B743464A4C07D49692D1BCB670032FF0054C114F69E25EC3EC0C0C6EE7303A16",
+    "Length": 1149
+  },
+  {
+    "Path": "frontend/src/lib/mood-export.ts",
+    "Hash": "C73B58EC9FA3492C8BCCA73089C0B598683E9776D280E59441DF0ECEF232D61F",
+    "Length": 2120
+  },
+  {
+    "Path": "frontend/src/lib/neeva-data.ts",
+    "Hash": "2BBF5C35CD492AF03C6CF209537DBA0EE38CC3653006ABFAAEA10867026F6D5E",
+    "Length": 19631
+  },
+  {
+    "Path": "frontend/src/lib/neeva-store.tsx",
+    "Hash": "9B969D8809B72B34A9A3037583AFA11A460BB790847E807E889C5B4C0F4B7BF9",
+    "Length": 3237
+  },
+  {
+    "Path": "frontend/src/lib/profile.tsx",
+    "Hash": "8505748CB13499B1C0CAD437F933A18F91FD3A4A5DDCDE0A3343D02E884B62DA",
+    "Length": 3792
+  },
+  {
+    "Path": "frontend/src/lib/utils.ts",
+    "Hash": "D1F1E0D62CB8D8D1E04C26E14DE842D8A151F75812D81B046C65B5D1FE8E4B27",
+    "Length": 169
+  },
+  {
+    "Path": "frontend/src/router.tsx",
+    "Hash": "5BEED290518EAF596EA66202EFB3A01F6BD8D97313563B87B2EC387F54F4CA08",
+    "Length": 580
+  },
+  {
+    "Path": "frontend/src/routes/__root.tsx",
+    "Hash": "3ED875579F63D2430A5169F0E0029FD11037D63D7275EA220A59545337FB088F",
+    "Length": 5113
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/chat.tsx",
+    "Hash": "798F209931BD436B7B4212EBA2E3BB323FA402857272032B2AC645AB1631CF73",
+    "Length": 13627
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/community.tsx",
+    "Hash": "C0EE9CE6BA5BABB4ED70B3E639F544DDDC2BDF76F0D5B27098645C6A2B8C59FA",
+    "Length": 13094
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/hub.tsx",
+    "Hash": "57D898B3956FDB5BE527DA1D9FD701A4C4ECE4B7C1E21EC1910AA13956A5579A",
+    "Length": 4376
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/journal.tsx",
+    "Hash": "DA880A49279EF0C08639D3D7671DAFB8E3D18927E2CF715FB69C5CC0DD042E8B",
+    "Length": 13428
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/route.tsx",
+    "Hash": "D332772935E6930A67F9231671F6D71C9CD9954EDE678E221099AC3FA0F694C4",
+    "Length": 1464
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/settings.tsx",
+    "Hash": "BCAC5CB2E71C50694C22ECC1BF75AF9A3DDEB7661B4D11E13774F5C10803BD05",
+    "Length": 5464
+  },
+  {
+    "Path": "frontend/src/routes/_authenticated/today.tsx",
+    "Hash": "7675D2CEE3ED3660E8728DC47A517E6F20A088641FA057F33352F09F10CEC99E",
+    "Length": 13109
+  },
+  {
+    "Path": "frontend/src/routes/api/chat.ts",
+    "Hash": "ABDB1E2D3E5B3E13E14AFE9C3B67BD8AB2C3E108CA2835221AC818D67E9A952B",
+    "Length": 4384
+  },
+  {
+    "Path": "frontend/src/routes/auth.tsx",
+    "Hash": "32765997017B1EBEFC7E6E71D3FB6EBBE053F5AA237B8B64CA51C3CA55154481",
+    "Length": 10139
+  },
+  {
+    "Path": "frontend/src/routes/index.tsx",
+    "Hash": "C1719276BBB716BB0091DCD7A7249C63416E5666DCEE86121768614788F700C8",
+    "Length": 30688
+  },
+  {
+    "Path": "frontend/src/routes/README.md",
+    "Hash": "EDBD5D3CD5A427882C60B7B7DCDD12C7031F2F8AC0C085D20D2F6ABEC719E95D",
+    "Length": 1235
+  },
+  {
+    "Path": "frontend/src/routes/reset-password.tsx",
+    "Hash": "655BA6F4BEB6BCE6EDE348C1610CF95CAB019FC4F51261476D216AF3D98B48DD",
+    "Length": 1962
+  },
+  {
+    "Path": "frontend/src/routeTree.gen.ts",
+    "Hash": "3912B0013395EE752B186E215F63793E4C1C171A8E7856397273DE786DCDA0B0",
+    "Length": 9519
+  },
+  {
+    "Path": "frontend/src/server.ts",
+    "Hash": "09EF10E6695043F59778240F9AC813AE80C9826474A47A120CD14074A7CA5E10",
+    "Length": 2260
+  },
+  {
+    "Path": "frontend/src/start.ts",
+    "Hash": "F3679C32558FB8AE503ED1D14393D10D7B8F13124769FE6CD00A862A18414679",
+    "Length": 1569
+  },
+  {
+    "Path": "frontend/src/styles.css",
+    "Hash": "42DD92D31C7C068740B579871C552A8D51031EEDB66C4B284757327115FC3C52",
+    "Length": 11180
+  },
+  {
+    "Path": "frontend/src/test/app-routing.test.tsx",
+    "Hash": "C817058668430273E00A43620A835F562B8CFE1234EE361C057958C06470CEE3",
+    "Length": 698
+  },
+  {
+    "Path": "frontend/src/test/setup.ts",
+    "Hash": "049FD55D8C3BF8742482F5684ECF15407EADD752BAD5E86907032112DC05A558",
+    "Length": 446
+  },
+  {
+    "Path": "frontend/supabase/config.toml",
+    "Hash": "AC83EEBB9D689FFDDDE44537468EC8D443BA6C9252E116A4AB731695D539E0B7",
+    "Length": 35
+  },
+  {
+    "Path": "frontend/tsconfig.json",
+    "Hash": "E86F30FCB44F4FE5AAA1138E6F432F0FC3C094D4D7AD36BCABFAF1DB8CA96A0E",
+    "Length": 882
+  },
+  {
+    "Path": "frontend/vite.config.ts",
+    "Hash": "AEF3C0F6D98411A49C150A6EB3DC62E7AD06A37CC9BFB36311E12972C0FE181C",
+    "Length": 1049
+  },
+  {
+    "Path": "frontend/vitest.config.ts",
+    "Hash": "0158325852B8C6C2C4C9E2AE02196430B432A7F40772EB546E227CE16B9DA97B",
+    "Length": 396
+  }
 ]

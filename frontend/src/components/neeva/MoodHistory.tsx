@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { moodByKey, simulatedHistory, type MoodKey } from "@/lib/neeva-data";
+import { moodByKey, type MoodKey } from "@/lib/neeva-data";
 import { useNeeva } from "@/lib/neeva-store";
 import { cn } from "@/lib/utils";
 import { MoodFace } from "./MoodFace";
@@ -28,11 +28,8 @@ export function MoodHistory() {
   const [range, setRange] = useState<"week" | "month">("week");
 
   const data = useMemo<Point[]>(() => {
-    if (!hydrated) return [];
-    const today = new Date();
-    const sim = simulatedHistory(today, 30);
+    if (!hydrated || moods.length === 0) return [];
     const byDay = new Map<string, Point>();
-    for (const s of sim) byDay.set(s.date, { ...s, label: "", you: false });
     for (const m of moods) {
       const date = m.at.slice(0, 10);
       const base = moodByKey(m.mood).score;

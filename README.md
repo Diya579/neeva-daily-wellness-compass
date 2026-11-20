@@ -79,3 +79,4 @@ npm run build
 cd ..
 PYTHONPATH=backend python -m pytest backend/tests -v
 ```
+

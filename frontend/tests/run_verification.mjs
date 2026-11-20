@@ -211,3 +211,4 @@ assert.equal(getSpeechLocaleForLanguage("te"), "te-IN");
 console.log(
   `[PASS] Frontend TypeScript Verification Suite: 85/85 Red-Team Crisis Prompts (max latency ${maxGateLatency}ms < 3.2ms), AES-GCM-256 Encryption (${encrypted.durationMs}ms < 11.4ms), 4-Field Gemini Schema, Indian PII Scrubber, and 8-Locale Browser Voice I/O.`
 );
+

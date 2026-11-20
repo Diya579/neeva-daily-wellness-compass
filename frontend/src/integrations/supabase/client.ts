@@ -1,6 +1,6 @@
 /**
  * Local-First Zero-Knowledge & FastAPI SQLite WAL Auth/Profile Adapter
- * Replaces the legacy Supabase/Lovable cloud dependency with a 100% local-first
+ * Replaces the legacy cloud auth dependency with a 100% local-first
  * + FastAPI SQLite WAL + Firebase-config-aware adapter while keeping the exact
  * interface expected by `auth-session.tsx`, `profile.tsx`, `auth.tsx`, and `route.tsx`.
  */

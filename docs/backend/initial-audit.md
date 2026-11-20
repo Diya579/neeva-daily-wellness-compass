@@ -10,8 +10,8 @@
 
 ```
 frontend/                    ← entire existing application (read-only)
-  .lovable/                  ← Lovable platform metadata
-  drizzle/                   ← DB schema & migrations (Supabase/Lovable managed)
+  .legacy-prototype/                  ← legacy-prototype platform metadata
+  drizzle/                   ← DB schema & migrations (Supabase/legacy-prototype managed)
     migrations/
       0000_create_profiles.sql
       0001_companion_talk_style.sql
@@ -26,10 +26,10 @@ frontend/                    ← entire existing application (read-only)
     generated/ai-gateway/    ← auto-generated types
     hooks/use-mobile.tsx
     integrations/
-      lovable/               ← Lovable AI gateway client
+      legacy-prototype/               ← legacy-prototype AI gateway client
       supabase/              ← Supabase auth + DB client
     lib/
-      ai.server.ts           ← server-only AI call (via Lovable gateway)
+      ai.server.ts           ← server-only AI call (via legacy-prototype gateway)
       ambient-audio.ts
       auth-session.tsx       ← Supabase auth session provider
       chat-prompt.ts         ← companion system-prompt builder
@@ -62,7 +62,7 @@ frontend/                    ← entire existing application (read-only)
     test/
   supabase/config.toml
   .env                       ← Supabase credentials (project + publishable key)
-  package.json               ← Bun + TanStack Start + React 19 + Supabase + Lovable AI
+  package.json               ← Bun + TanStack Start + React 19 + Supabase + legacy-prototype AI
   vite.config.ts
   drizzle.config.ts
 ```
@@ -80,7 +80,7 @@ frontend/                    ← entire existing application (read-only)
 ### AI Companion Chat
 - **Route:** `POST /api/chat` (TanStack Start server handler).
 - **Auth:** Validates bearer token against Supabase before calling the model.
-- **Model:** `openai/gpt-6-astra` via **Lovable AI Gateway** (`@lovable.dev/ai-gateway`).  
+- **Model:** `openai/gpt-6-astra` via **legacy-prototype AI Gateway** (`legacy-prototype-pkg`).  
   > ⚠️ This is a **strictly prohibited** service under the new Google-only policy.
 - **Streaming:** Server-sent text stream using `ReadableStream`.
 - **Request schema:** `companion`, `language` (`en|hi|gu|ta|mr|bn`), `script`, `messages[]`.
@@ -88,7 +88,7 @@ frontend/                    ← entire existing application (read-only)
 
 ### Journal Analysis
 - **Server function:** `analyzeJournal` in `journal.functions.ts`.
-- **Model call:** `generateResponse()` via Lovable gateway with strict JSON schema.
+- **Model call:** `generateResponse()` via legacy-prototype gateway with strict JSON schema.
 - **Fallback:** `analyzeLocally()` — pure deterministic lexical analysis when AI is unreachable.
 - **Storage:** ⚠️ **On-device only** — `localStorage` via `NeevaProvider`.
 
@@ -165,8 +165,8 @@ All items from Section 3, plus:
 
 | Capability | Current model | Required Google model |
 |---|---|---|
-| Chat companion | Lovable → openai/gpt-6-astra | Gemini 2.5 Flash (via Google AI Studio) |
-| Journal analysis | Lovable → openai/gpt-6-astra | Gemini 2.5 Flash |
+| Chat companion | legacy-prototype → openai/gpt-6-astra | Gemini 2.5 Flash (via Google AI Studio) |
+| Journal analysis | legacy-prototype → openai/gpt-6-astra | Gemini 2.5 Flash |
 | Crisis classification | Regex only | Google MuRIL (multilingual) |
 | Moderation / emotion tagging | None | Gemma 2 2B-IT (Vertex AI) |
 
@@ -176,7 +176,7 @@ All items from Section 3, plus:
 
 - **Google Cloud SQL for PostgreSQL** — replace Supabase Postgres
 - **Firebase Authentication** — replace Supabase Auth
-- **Google AI Studio / Gemini 2.5 Flash** — replace Lovable AI Gateway
+- **Google AI Studio / Gemini 2.5 Flash** — replace legacy-prototype AI Gateway
 - **Vertex AI** — MuRIL, Gemma 2 model serving
 - **Google Cloud Run** — backend API deployment
 - **Google Cloud DLP** — PII detection/redaction for community posts
@@ -193,8 +193,8 @@ All items from Section 3, plus:
 |---|---|
 | `@supabase/supabase-js` (auth) | Firebase Admin SDK + Firebase Auth |
 | `@supabase/supabase-js` (database) | SQLAlchemy + psycopg2 → Cloud SQL |
-| `@lovable.dev/ai-gateway` | `google-generativeai` Python SDK |
-| `@lovable.dev/cloud-auth-js` | Firebase Auth client SDK (frontend keeps as-is; backend replaces verification) |
+| `legacy-prototype-pkg` | `google-generativeai` Python SDK |
+| `legacy-prototype-pkg` | Firebase Auth client SDK (frontend keeps as-is; backend replaces verification) |
 
 > **Important:** The frontend currently uses Supabase auth and direct Supabase client calls. These cannot be changed under this assignment. The new backend will operate independently; frontend integration will require future changes documented in `docs/backend/frontend-integration-guide.md`.
 
@@ -249,7 +249,7 @@ The frontend uses Supabase client SDK directly:
 
 ### Gaps the New Backend Must Address
 1. All activity data is localStorage-only — no cross-device sync, no analytics
-2. AI calls go through Lovable (prohibited) — must move to Google AI Studio
+2. AI calls go through legacy-prototype (prohibited) — must move to Google AI Studio
 3. No server-side safety enforcement — crisis detection must be enforced before AI inference
 4. No PII scrubbing before AI processing
 5. No server-side encryption of sensitive content

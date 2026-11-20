@@ -400,3 +400,4 @@ export async function cryptographicEraseLocalVault(): Promise<void> {
     }
   }
 }
+

@@ -15,3 +15,4 @@ _conn = get_sqlite_wal_connection()
 _conn.close()
 
 __all__ = ["app"]
+

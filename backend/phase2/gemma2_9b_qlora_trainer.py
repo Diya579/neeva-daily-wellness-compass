@@ -44,3 +44,4 @@ def describe_phase2_qlora_pipeline() -> dict[str, object]:
         "lora_alpha": cfg.lora_alpha,
         "target_modules": cfg.target_modules,
     }
+

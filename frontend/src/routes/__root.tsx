@@ -11,7 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportClientError } from "../lib/error-reporting";
 import { MotionConfig } from "motion/react";
 import { AuthSessionProvider } from "@/lib/auth-session";
 import { Toaster } from "@/components/ui/sonner";
@@ -42,7 +42,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportClientError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -81,19 +81,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Neeva — Mental Wellness Reimagined for Everyone" },
+      { title: "Neeva — Daily Wellness Compass" },
       {
         name: "description",
         content:
-          "Neeva is India's ₹99/month mental wellness companion: empathetic AI chat, guided journaling, CBT tools and peer support.",
+          "Neeva AI — Zero-Knowledge Wellness Compass built for Indian Higher Education: empathetic AI chat, AES-GCM-256 encrypted journaling, CBT tools and peer support.",
       },
-      { name: "author", content: "Neeva" },
+      { name: "author", content: "Neeva AI" },
       { name: "theme-color", content: "#FAF7F0" },
-      { property: "og:title", content: "Neeva — Mental Wellness Reimagined for Everyone" },
+      { property: "og:title", content: "Neeva — Daily Wellness Compass" },
       {
         property: "og:description",
         content:
-          "Empathetic AI support, journaling, CBT tools and community — in your language, for ₹99/month.",
+          "Zero-knowledge mental wellness sanctuary with 8 Indian languages, 4-7-8 breathing, and 24x7 crisis support.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

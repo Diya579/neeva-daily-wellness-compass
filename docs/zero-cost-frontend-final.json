@@ -10,16 +10,6 @@
     "Length": 334
   },
   {
-    "Path": "frontend/.lovable/north-star/north-star.md",
-    "Hash": "8BF94C4C1B246B7EF4F315508D60517E14D910ED21BD8F92D2C15BE3F74DEE36",
-    "Length": 268
-  },
-  {
-    "Path": "frontend/.lovable/project.json",
-    "Hash": "8215993B09F862B9B1C8E49317B2F469E5432F0F0A97E6418724573F367B7CBE",
-    "Length": 124
-  },
-  {
     "Path": "frontend/.prettierignore",
     "Hash": "52C7C767FF0615EEC4EB64CC71265877F7F423EB597D665B5E439F337C661A5A",
     "Length": 92
@@ -585,11 +575,6 @@
     "Length": 576
   },
   {
-    "Path": "frontend/src/integrations/lovable/index.ts",
-    "Hash": "2B71954D100F88B414B15BCEA1BAE05450F4761727E030B3A21A0448CE9C6222",
-    "Length": 973
-  },
-  {
     "Path": "frontend/src/integrations/supabase/auth-attacher.ts",
     "Hash": "24D0DBDF8DC0FD49B391A948BD04E1DB43B97A1D851ACC391DD3D1B13B9797FD",
     "Length": 611
@@ -688,11 +673,6 @@
     "Path": "frontend/src/lib/journal.functions.ts",
     "Hash": "F9572AED21C607A04EAE9CA9CDFE31C8CEE498FA403D937C6F61FE978827FBF5",
     "Length": 846
-  },
-  {
-    "Path": "frontend/src/lib/lovable-error-reporting.ts",
-    "Hash": "0A2E8B5F3FFD2DD682AB78BE1A9B0998B73284A6525080E4960F85827CD608D3",
-    "Length": 2219
   },
   {
     "Path": "frontend/src/lib/mood-export.test.ts",

@@ -182,3 +182,4 @@ export function stopBrowserTTS(): void {
     window.speechSynthesis.cancel();
   }
 }
+
