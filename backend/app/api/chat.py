@@ -1,0 +1,243 @@
+"""
+Chat & Conversation Persistence API backed by Cloud Firestore
+(`users/{uid}/conversations/{conv_id}` and `users/{uid}/conversations/{conv_id}/messages/{msg_id}`).
+Enforces the Three-Tier Safety Engine and logs safety events + crisis interventions in Firestore.
+"""
+from __future__ import annotations
+
+import logging
+import uuid
+from datetime import datetime, timezone
+from typing import Literal, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
+
+from app.ai.companion_prompt import CompanionConfig, build_system_prompt
+from app.ai.dlp_client import redact_pii
+from app.ai.gemini import stream_chat
+from app.core.security import get_current_user
+from app.database.firestore_db import FirestoreOperationalRepository, get_firestore_repo
+from app.privacy.encryption import decode_client_ciphertext
+from app.safety.crisis_patterns import SafetyTier
+from app.safety.engine import get_safety_engine
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/api/v1", tags=["chat"])
+
+
+class CompanionPayload(BaseModel):
+    name: str = Field(default="Neeva", min_length=1, max_length=40)
+    vibe: Literal["bestie", "coach", "sage", "hype"] = "bestie"
+    length: Literal["short", "balanced", "deep"] = "balanced"
+    avatar: Literal["bloom", "moon", "wave", "spark"] = "bloom"
+    emoji: bool = True
+    approach: Literal["validate", "advise", "mix", "explore", "just_listen", "reframe", "guide_tool"] = "mix"
+    tone: Literal["gentle", "honest", "playful"] = "gentle"
+    notes: str = Field(default="", max_length=400)
+
+
+class MessagePayload(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(..., min_length=1, max_length=6000)
+    content_ciphertext: Optional[str] = None
+    content_iv: Optional[str] = None
+
+
+class ChatRequest(BaseModel):
+    companion: CompanionPayload = Field(default_factory=CompanionPayload)
+    language: Literal["en", "hinglish", "hi", "gu", "mr", "bn", "ta", "te"] = "en"
+    script: Literal["auto", "roman", "native"] = "auto"
+    messages: list[MessagePayload] = Field(..., min_length=1, max_length=40)
+    conversation_id: Optional[uuid.UUID] = None
+    retain_encrypted: bool = False
+
+
+@router.post("/chat")
+async def chat_endpoint(
+    body: ChatRequest,
+    user: dict = Depends(get_current_user),
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    uid = user["uid"]
+    last_user_msg = next((m for m in reversed(body.messages) if m.role == "user"), None)
+    if last_user_msg is None:
+        raise HTTPException(status_code=400, detail="At least one user message is required.")
+
+    # 1. Deterministic + MuRIL Safety Check BEFORE LLM Inference + Firestore audit log
+    engine = get_safety_engine()
+    safety = await engine.evaluate(last_user_msg.content)
+    await fs.log_safety_event(
+        uid=uid,
+        source="chat",
+        tier=int(safety.tier),
+        deterministic_tier=int(safety.deterministic_tier),
+        muril_tier=int(safety.muril_tier) if safety.muril_tier is not None else None,
+        confidence=safety.confidence,
+        should_interrupt=safety.should_interrupt,
+    )
+
+    if body.retain_encrypted and last_user_msg.content_ciphertext and last_user_msg.content_iv:
+        await fs.ensure_user_profile(uid, user.get("name", ""))
+        try:
+            decode_client_ciphertext(last_user_msg.content_ciphertext, last_user_msg.content_iv)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+
+        conv_id = body.conversation_id or uuid.uuid4()
+        now = datetime.now(timezone.utc)
+        await fs.set_doc(
+            f"users/{uid}/conversations/{conv_id}",
+            {
+                "id": str(conv_id),
+                "user_id": uid,
+                "title": "Companion Conversation",
+                "language": body.language,
+                "created_at": now,
+                "updated_at": now,
+            },
+            merge=True,
+        )
+        msg_id = uuid.uuid4()
+        await fs.set_doc(
+            f"users/{uid}/conversations/{conv_id}/messages/{msg_id}",
+            {
+                "id": str(msg_id),
+                "conversation_id": str(conv_id),
+                "user_id": uid,
+                "role": "user",
+                "content_ciphertext": last_user_msg.content_ciphertext,
+                "content_iv": last_user_msg.content_iv,
+                "safety_tier": int(safety.tier),
+                "created_at": now,
+            },
+        )
+
+    # 2. Tier 3 Acute Crisis — Interrupt LLM & stream deterministic crisis response
+    if safety.should_interrupt:
+        async def crisis_stream():
+            yield safety.crisis_message or ""
+
+        return StreamingResponse(
+            crisis_stream(),
+            media_type="text/plain; charset=utf-8",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Neeva-Safety-Tier": "3",
+                "X-Neeva-Crisis-Interrupt": "true",
+            },
+        )
+
+    # 3. Cloud DLP PII Redaction before sending messages to Gemini 2.5 Flash
+    scrubbed_messages: list[dict] = []
+    for m in body.messages:
+        clean_text, _ = await redact_pii(m.content)
+        scrubbed_messages.append({"role": m.role, "content": clean_text})
+
+    # 4. Build culturally aware & language-aware companion system prompt
+    comp = CompanionConfig(
+        name=body.companion.name,
+        vibe=body.companion.vibe,
+        length=body.companion.length,
+        avatar=body.companion.avatar,
+        emoji=body.companion.emoji,
+        approach=body.companion.approach,
+        tone=body.companion.tone,
+        notes=body.companion.notes,
+    )
+    sys_prompt = build_system_prompt(comp, body.language, body.script)
+
+    if safety.tier == SafetyTier.TIER2_PASSIVE_DISTRESS:
+        sys_prompt += (
+            "\n\n[SAFETY CONTEXT — TIER 2 PASSIVE DISTRESS]: The user expressed emotional exhaustion "
+            "or passive distress. Respond with deep empathy and emotional validation first. "
+            "Gently offer a grounding exercise or 4-7-8 breathing (inhale 4s, hold 7s, exhale 8s), "
+            "and remind them that support resources like Tele-MANAS (14416) and iCall (9152987821) are always available."
+        )
+
+    async def ai_stream():
+        try:
+            async for delta in stream_chat(sys_prompt, scrubbed_messages):
+                yield delta
+        except Exception as exc:
+            logger.warning("Gemini chat stream error: %s", type(exc).__name__)
+            yield "\n\n_(The connection dropped for a moment. Please send that again.)_"
+
+    return StreamingResponse(
+        ai_stream(),
+        media_type="text/plain; charset=utf-8",
+        headers={
+            "Cache-Control": "no-store",
+            "X-Neeva-Safety-Tier": str(int(safety.tier)),
+            "X-Neeva-Crisis-Interrupt": "false",
+        },
+    )
+
+
+@router.get("/conversations")
+async def list_conversations(
+    user: dict = Depends(get_current_user),
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    rows = await fs.list_collection(
+        f"users/{user['uid']}/conversations",
+        order_by=[("updated_at", True)],
+        limit=100,
+    )
+    return [
+        {
+            "id": str(c["id"]),
+            "title": c.get("title"),
+            "language": c.get("language", "en"),
+            "created_at": c["created_at"].isoformat() if hasattr(c["created_at"], "isoformat") else str(c["created_at"]),
+            "updated_at": c["updated_at"].isoformat() if hasattr(c["updated_at"], "isoformat") else str(c["updated_at"]),
+        }
+        for c in rows
+    ]
+
+
+@router.get("/conversations/{conversation_id}")
+async def get_conversation(
+    conversation_id: uuid.UUID,
+    user: dict = Depends(get_current_user),
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    uid = user["uid"]
+    conv = await fs.get_doc(f"users/{uid}/conversations/{conversation_id}")
+    if conv is None:
+        raise HTTPException(status_code=404, detail="Conversation not found.")
+
+    msgs = await fs.list_collection(
+        f"users/{uid}/conversations/{conversation_id}/messages",
+        order_by=[("created_at", False)],
+        limit=200,
+    )
+    return {
+        "id": str(conv["id"]),
+        "title": conv.get("title"),
+        "language": conv.get("language", "en"),
+        "messages": [
+            {
+                "id": str(m["id"]),
+                "role": m["role"],
+                "content_ciphertext": m.get("content_ciphertext"),
+                "content_iv": m.get("content_iv"),
+                "safety_tier": m.get("safety_tier"),
+                "created_at": m["created_at"].isoformat() if hasattr(m["created_at"], "isoformat") else str(m["created_at"]),
+            }
+            for m in msgs
+        ],
+    }
+
+
+@router.delete("/conversations/{conversation_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_conversation(
+    conversation_id: uuid.UUID,
+    user: dict = Depends(get_current_user),
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    existed = await fs.delete_doc(f"users/{user['uid']}/conversations/{conversation_id}")
+    if not existed:
+        raise HTTPException(status_code=404, detail="Conversation not found.")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

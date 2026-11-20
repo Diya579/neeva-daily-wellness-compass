@@ -1,0 +1,181 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function hasRole(roleName) {
+      return isAuthenticated() && request.auth.token.role == roleName;
+    }
+
+    function isModeratorOrAdmin() {
+      return hasRole('moderator') || hasRole('admin');
+    }
+
+    function isValidLanguage(lang) {
+      return lang in ['en', 'hinglish', 'hi', 'gu', 'mr', 'bn', 'ta', 'te'];
+    }
+
+    function isValidGoal(goal) {
+      return goal in ['stress', 'focus', 'community', 'sleep'];
+    }
+
+    function isValidMood(mood) {
+      return mood in ['peaceful', 'joyful', 'tired', 'anxious', 'overwhelmed'];
+    }
+
+    // ------------------------------------------------------------------------
+    // 1. User Profiles & Strict User-Isolated Subcollections
+    //    Prevents privilege escalation (clients cannot set their own `role`)
+    //    and prevents IDOR / cross-user access.
+    // ------------------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if isOwner(uid) || hasRole('admin');
+      allow create: if isOwner(uid)
+        && (!('role' in request.resource.data) || request.resource.data.role == 'user')
+        && (!('goal' in request.resource.data) || isValidGoal(request.resource.data.goal))
+        && (!('preferred_language' in request.resource.data) || isValidLanguage(request.resource.data.preferred_language));
+      allow update: if isOwner(uid)
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'id', 'created_at']))
+        && (!('goal' in request.resource.data) || isValidGoal(request.resource.data.goal))
+        && (!('preferred_language' in request.resource.data) || isValidLanguage(request.resource.data.preferred_language));
+      allow delete: if false; // Account deletion is coordinated via trusted backend Admin SDK
+
+      match /preferences/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /settings/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /mood_logs/{moodId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && isValidMood(request.resource.data.mood)
+          && request.resource.data.intensity is int
+          && request.resource.data.intensity >= 1
+          && request.resource.data.intensity <= 10;
+        allow delete: if isOwner(uid);
+      }
+
+      match /mood_streaks/{docId} {
+        allow read: if isOwner(uid);
+        allow write: if false; // Computed server-side in IST timezone
+      }
+
+      match /journal_entries/{entryId} {
+        allow read: if isOwner(uid);
+        // Enforce ciphertext-only storage: raw plaintext field is prohibited in Firestore
+        allow create, update: if isOwner(uid)
+          && !('plaintext' in request.resource.data)
+          && !('text' in request.resource.data)
+          && request.resource.data.content_ciphertext is string
+          && request.resource.data.content_iv is string;
+        allow delete: if isOwner(uid);
+      }
+
+      match /journal_analysis/{entryId} {
+        allow read: if isOwner(uid);
+        allow delete: if isOwner(uid);
+        allow create, update: if false; // Written only by backend Gemini analysis service
+      }
+
+      match /conversations/{convId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid);
+
+        match /messages/{msgId} {
+          allow read: if isOwner(uid);
+          allow create: if isOwner(uid)
+            && !('plaintext' in request.resource.data);
+          allow update, delete: if false;
+        }
+      }
+
+      match /cbt_exercises/{recordId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /wellness_toolkit/{activityId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid);
+        allow update, delete: if false;
+      }
+
+      match /trusted_contacts/{contactId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // Safety events & crisis intervention records are write-only by backend Admin SDK
+      match /safety_events/{eventId} {
+        allow read: if isOwner(uid) || hasRole('admin');
+        allow write: if false;
+      }
+
+      match /crisis_interventions/{interventionId} {
+        allow read: if isOwner(uid) || hasRole('admin');
+        allow write: if false;
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // 2. Anonymous Community Collections
+    //    Clients never access `anonymous_identities` directly; all community
+    //    posts go through the backend for Cloud DLP PII redaction & 3-tier safety.
+    // ------------------------------------------------------------------------
+    match /community_posts/{postId} {
+      allow read: if isAuthenticated() && resource.data.status == 'visible';
+      allow write: if false; // Enforced via backend API (DLP + Safety Engine + Gemma 2B Moderation)
+
+      match /replies/{replyId} {
+        allow read: if isAuthenticated() && resource.data.status == 'visible';
+        allow write: if false;
+      }
+
+      match /supports/{supportUid} {
+        allow read: if isAuthenticated();
+        allow write: if false;
+      }
+    }
+
+    match /anonymous_identities/{uid} {
+      allow read: if isOwner(uid) || isModeratorOrAdmin();
+      allow write: if false;
+    }
+
+    match /user_reports/{reportId} {
+      allow read: if isModeratorOrAdmin() || (isAuthenticated() && resource.data.reporter_id == request.auth.uid);
+      allow write: if false;
+    }
+
+    match /community_moderation/{logId} {
+      allow read: if isModeratorOrAdmin();
+      allow write: if false;
+    }
+
+    match /moderator_actions/{actionId} {
+      allow read: if isModeratorOrAdmin();
+      allow write: if false;
+    }
+
+    // ------------------------------------------------------------------------
+    // 3. Isolated Payment Demonstration State
+    //    Strictly separated from real user profiles and real payment records.
+    // ------------------------------------------------------------------------
+    match /payment_demo_state/{demoId} {
+      allow read, write: if false; // Demo state only via isolated demo or backend sandbox
+    }
+  }
+}
+

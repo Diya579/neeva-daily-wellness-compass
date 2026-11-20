@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neeva — Subscription & Checkout Demonstration (Isolated Sandbox)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Strict Isolation & Non-Billing Banner -->
+  <div class="demo-isolation-banner" role="region" aria-label="Demonstration disclaimer">
+    <span class="demo-pill">Isolated Demo Sandbox</span>
+    <span>FICTIONAL DEMONSTRATION ONLY · No real payment gateway · Not connected to production frontend or Firebase accounts</span>
+  </div>
+
+  <!-- Sticky Header matching Neeva AppShell / Landing -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#plans" class="brand-mark" id="nav-home-link">
+        <span class="brand-logo-circle">✿</span>
+        <span class="brand-wordmark">neeva</span>
+        <span class="demo-pill" style="margin-left: 0.35rem;">₹99 demo</span>
+      </a>
+      <span class="route-badge" id="current-step-badge">/subscription-demo</span>
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="demo-pill" style="background: #F2DDD0; color: #5C3422; border: 1px solid #183024;">Tele-MANAS 14416 · 24×7</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Heading -->
+    <div class="hero-block">
+      <p class="eyebrow">Care that fits every pocket · Visual & Functional Demo</p>
+      <h1 class="hero-title">
+        Two chais a month. <span class="serif-italic highlight">Real care.</span>
+      </h1>
+      <p class="hero-sub">
+        Explore Neeva's subscription plans, apply campus coupon codes, and walk through our deterministic checkout simulation using fictional placeholder credentials.
+      </p>
+    </div>
+
+    <!-- Interactive State Switcher & Simulation Control Bar -->
+    <div class="demo-toolbar" aria-label="Demo state controls">
+      <div>
+        <span class="eyebrow" style="color: var(--ink);">Interactive Demo State Switcher:</span>
+      </div>
+      <div class="toolbar-buttons">
+        <button type="button" class="chip-btn active" data-goto="plans" id="tab-plans">1. Plan Selection</button>
+        <button type="button" class="chip-btn" data-goto="checkout" id="tab-checkout">2. Checkout &amp; Summary</button>
+        <button type="button" class="chip-btn" data-goto="processing" id="tab-processing">3. Processing State</button>
+        <button type="button" class="chip-btn" data-goto="success" id="tab-success">4. Success Screen</button>
+        <button type="button" class="chip-btn" data-goto="failed" id="tab-failed">5. Failed / Retry Screen</button>
+      </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 1 & 2: PLAN SELECTION, COMPARISON & CHECKOUT                  -->
+    <!-- ================================================================== -->
+    <section id="view-main">
+      <!-- Monthly / Yearly Billing Toggle -->
+      <div class="billing-toggle-wrap">
+        <div class="billing-toggle" role="group" aria-label="Billing cycle toggle">
+          <button type="button" class="billing-option active" id="btn-cycle-monthly" data-cycle="monthly">
+            Monthly billing
+          </button>
+          <button type="button" class="billing-option" id="btn-cycle-yearly" data-cycle="yearly">
+            Yearly billing <span class="save-badge">2 months free</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3 Subscription Plans -->
+      <div class="plans-grid" id="plans-container">
+        <!-- Student Plan -->
+        <div class="plan-card tone-sage" data-plan-id="student" id="card-plan-student">
+          <div>
+            <p class="eyebrow">Campus ID Verified (Demo)</p>
+            <h2 class="plan-name">Neeva Student</h2>
+            <div class="plan-price-row">
+              <span class="plan-price" data-price-display="student">₹49</span>
+              <span class="plan-period" data-period-display="student">/month</span>
+            </div>
+            <p style="font-size: 0.85rem;">Built for hostel nights, exam stress, and placement season.</p>
+            <ul class="plan-features">
+              <li><span class="check-dot">✓</span> Unlimited AI companion chat (8 Indian languages)</li>
+              <li><span class="check-dot">✓</span> Encrypted journal with CBT theme read-backs</li>
+              <li><span class="check-dot">✓</span> Campus Wellness &amp; Exam Anxiety peer circles</li>
+              <li><span class="check-dot">✓</span> Pomodoro focus timer with rain &amp; chai-shop audio</li>
+            </ul>
+          </div>
+          <button type="button" class="btn-primary press select-plan-btn" data-select="student">
+            Select Student Plan
+          </button>
+        </div>
+
+        <!-- Neeva Plus (Flagship ₹99) -->
+        <div class="plan-card tone-rose selected" data-plan-id="plus" id="card-plan-plus">
+          <span class="popular-sticker">most loved · ₹99</span>
+          <div>
+            <p class="eyebrow">One plan · Everything included</p>
+            <h2 class="plan-name">Neeva Plus</h2>
+            <div class="plan-price-row">
+              <span class="plan-price" data-price-display="plus">₹99</span>
+              <span class="plan-period" data-period-display="plus">/month</span>
+            </div>
+            <p style="font-size: 0.85rem;">Complete pocket wellness space — less than two chais a month.</p>
+            <ul class="plan-features">
+              <li><span class="check-dot">✓</span> Custom companion personality, tone &amp; approach</li>
+              <li><span class="check-dot">✓</span> Deep reflective journal analysis + CBT thought records</li>
+              <li><span class="check-dot">✓</span> All 8 anonymous moderated peer circles</li>
+              <li><span class="check-dot">✓</span> Mood weather analytics + CSV &amp; JSON export</li>
+            </ul>
+          </div>
+          <button type="button" class="btn-primary btn-zest press select-plan-btn" data-select="plus">
+            Selected · Continue to Checkout
+          </button>
+        </div>
+
+        <!-- Supporter / Gift Pack -->
+        <div class="plan-card tone-lilac" data-plan-id="supporter" id="card-plan-supporter">
+          <div>
+            <p class="eyebrow">You + 1 Friend</p>
+            <h2 class="plan-name">Neeva Duo Pass</h2>
+            <div class="plan-price-row">
+              <span class="plan-price" data-price-display="supporter">₹149</span>
+              <span class="plan-period" data-period-display="supporter">/month</span>
+            </div>
+            <p style="font-size: 0.85rem;">Your full Neeva Plus space plus a gift pass for a friend who needs it.</p>
+            <ul class="plan-features">
+              <li><span class="check-dot">✓</span> 2 independent private Neeva Plus memberships</li>
+              <li><span class="check-dot">✓</span> Zero shared data — complete privacy isolation</li>
+              <li><span class="check-dot">✓</span> Sponsor a student seat in Campus Circles</li>
+              <li><span class="check-dot">✓</span> Priority feature previews</li>
+            </ul>
+          </div>
+          <button type="button" class="btn-primary press select-plan-btn" data-select="supporter">
+            Select Duo Pass
+          </button>
+        </div>
+      </div>
+
+      <!-- Plan Comparison Table -->
+      <div class="comparison-panel">
+        <p class="eyebrow">Transparent comparison</p>
+        <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 0.2rem;">
+          Every plan includes <span class="serif-italic">24×7 crisis safety &amp; zero judgement.</span>
+        </h3>
+        <table class="comparison-table" aria-label="Subscription plan comparison">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Neeva Student (₹49/mo)</th>
+              <th>Neeva Plus (₹99/mo)</th>
+              <th>Neeva Duo Pass (₹149/mo)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AI Companion (8 Indian Languages + Hinglish)</strong></td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+              <td>Unlimited (2 seats)</td>
+            </tr>
+            <tr>
+              <td><strong>Encrypted Journal + CBT Reframe Analysis</strong></td>
+              <td>Included</td>
+              <td>Included</td>
+              <td>Included</td>
+            </tr>
+            <tr>
+              <td><strong>Anonymous Peer Support Circles</strong></td>
+              <td>Campus &amp; Anxiety Circles</td>
+              <td>All 8 Circles</td>
+              <td>All 8 Circles + 1 Gift Pass</td>
+            </tr>
+            <tr>
+              <td><strong>3-Tier Crisis Safety &amp; Helplines (14416 / 112)</strong></td>
+              <td>Always free &amp; active</td>
+              <td>Always free &amp; active</td>
+              <td>Always free &amp; active</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Checkout & Order Summary Section -->
+      <div class="checkout-grid" id="checkout-section">
+        <!-- Left: Fictional Checkout Form -->
+        <div class="panel-card">
+          <p class="eyebrow">Step 2 · Fictional Demo Checkout</p>
+          <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0.25rem 0 1rem;">
+            Simulated Subscriber Details <span class="serif-italic">(Pre-filled Demo Data)</span>
+          </h2>
+
+          <form id="demo-checkout-form">
+            <div class="form-group">
+              <label class="form-label" for="demo-name">Fictional Display Name / Alias</label>
+              <input class="form-input" id="demo-name" type="text" value="Aarav Sharma (DEMO ACCOUNT)" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="demo-email">Fictional Email Address (No real emails sent)</label>
+              <input class="form-input" id="demo-email" type="email" value="aarav.demo@campus.example.edu" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="demo-campus">Fictional Campus / City Note</label>
+              <input class="form-input" id="demo-campus" type="text" value="Mumbai · Hostel 4 Sandbox" />
+            </div>
+
+            <div class="form-group" style="margin-top: 1.4rem;">
+              <label class="form-label">Simulated Payment Method (No real credentials accepted)</label>
+              <div class="method-tabs" role="tablist">
+                <button type="button" class="method-tab active" data-method="upi" id="method-upi">UPI Sandbox</button>
+                <button type="button" class="method-tab" data-method="card" id="method-card">Demo Card</button>
+                <button type="button" class="method-tab" data-method="netbanking" id="method-netbanking">NetBanking Mock</button>
+              </div>
+
+              <div id="method-panel-upi" class="method-panel" style="background: var(--muted); padding: 1rem; border-radius: 1rem; border: 1.5px solid var(--ink);">
+                <label class="form-label" for="demo-vpa">Fictional Demo UPI ID</label>
+                <input class="form-input" id="demo-vpa" type="text" value="neeva.demo@okaxis-sandbox" readonly />
+                <p style="font-size: 0.78rem; color: var(--muted-foreground); margin-top: 0.4rem;">
+                  Read-only fictional UPI handle so real banking identifiers cannot be entered.
+                </p>
+              </div>
+
+              <div id="method-panel-card" class="method-panel hidden" style="background: var(--muted); padding: 1rem; border-radius: 1rem; border: 1.5px solid var(--ink);">
+                <label class="form-label">Fictional Sandbox Card Token</label>
+                <input class="form-input" type="text" value="DEMO-CARD-XXXX-XXXX-4242 (FICTIONAL)" readonly />
+                <p style="font-size: 0.78rem; color: var(--muted-foreground); margin-top: 0.4rem;">
+                  Card number &amp; CVV inputs are disabled by design in this demonstration.
+                </p>
+              </div>
+
+              <div id="method-panel-netbanking" class="method-panel hidden" style="background: var(--muted); padding: 1rem; border-radius: 1rem; border: 1.5px solid var(--ink);">
+                <label class="form-label">Fictional Bank Sandbox</label>
+                <input class="form-input" type="text" value="Neeva Reserve Sandbox Bank (NRB-DEMO)" readonly />
+              </div>
+            </div>
+
+            <!-- Deterministic Outcome Selector -->
+            <div class="form-group" style="background: var(--sand); padding: 0.9rem 1rem; border-radius: 1.1rem; border: 1.5px solid var(--ink);">
+              <label class="form-label">Simulation Outcome Mode (Deterministic Demo Control)</label>
+              <div style="display: flex; gap: 1rem; margin-top: 0.35rem; font-size: 0.88rem; font-weight: 700;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                  <input type="radio" name="sim_outcome" value="success" id="radio-sim-success" checked />
+                  Simulate Approved Payment
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                  <input type="radio" name="sim_outcome" value="failed" id="radio-sim-failed" />
+                  Simulate Declined Payment
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary btn-zest pop press" id="btn-submit-payment" style="margin-top: 0.6rem;">
+              Run Simulated Payment · <span id="btn-pay-amount">₹99</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Live Order Summary & Coupon Engine -->
+        <div class="panel-card" style="background-color: var(--rose);">
+          <p class="eyebrow">Live Order Summary</p>
+          <h3 style="font-size: 1.4rem; font-weight: 800; margin-top: 0.2rem;" id="summary-plan-title">
+            Neeva Plus · Monthly
+          </h3>
+          <p style="font-size: 0.83rem; color: var(--rose-foreground); margin-bottom: 1rem;" id="summary-plan-desc">
+            Unlimited companion chats, encrypted journaling, CBT tools &amp; 8 peer circles.
+          </p>
+
+          <!-- Coupon Input -->
+          <div style="background: var(--card); padding: 1rem; border-radius: 1.25rem; border: 1.5px solid var(--ink); margin-bottom: 1rem;">
+            <label class="form-label" for="coupon-input">Demo Coupon Code (Try: NEEVA50, CAMPUS20, CHAI10)</label>
+            <div class="coupon-box">
+              <input class="form-input" id="coupon-input" type="text" placeholder="Enter NEEVA50" style="text-transform: uppercase;" />
+              <button type="button" class="btn-secondary press" id="btn-apply-coupon">Apply</button>
+            </div>
+            <p id="coupon-feedback" style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;"></p>
+          </div>
+
+          <div style="background: var(--card); padding: 1.2rem; border-radius: 1.25rem; border: 1.5px solid var(--ink);">
+            <div class="summary-row">
+              <span>Base Plan Subtotal</span>
+              <strong id="sum-subtotal">₹99.00</strong>
+            </div>
+            <div class="summary-row" id="row-cycle-discount">
+              <span>Yearly Billing Discount (2 mo free)</span>
+              <strong id="sum-cycle-discount">-₹0.00</strong>
+            </div>
+            <div class="summary-row" id="row-coupon-discount">
+              <span>Coupon Discount (<span id="sum-coupon-code">NONE</span>)</span>
+              <strong id="sum-coupon-discount">-₹0.00</strong>
+            </div>
+            <div class="summary-row">
+              <span>Simulated GST (18% inclusive)</span>
+              <strong id="sum-tax">₹15.10</strong>
+            </div>
+            <div class="summary-total">
+              <span>Demo Total</span>
+              <span id="sum-total">₹99.00</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.73rem; color: var(--rose-foreground);">
+            ✓ Zero real money charged · ✓ Local browser state only · ✓ Cancel anytime
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 3: SIMULATED PAYMENT PROCESSING STATE                         -->
+    <!-- ================================================================== -->
+    <section id="view-processing" class="hidden" aria-live="polite">
+      <div class="state-card processing">
+        <div class="spinner-ring" role="status"></div>
+        <p class="eyebrow">Deterministic Sandbox Processing</p>
+        <h2 style="font-size: 1.85rem; font-weight: 800; margin-top: 0.4rem;">
+          Verifying fictional <span class="serif-italic">demo transaction…</span>
+        </h2>
+        <p style="margin-top: 0.65rem; font-size: 0.95rem;" id="processing-step-text">
+          Step 1/3: Validating fictional sandbox token (no external network call)…
+        </p>
+        <div style="margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary press" id="btn-cancel-processing">
+            ← Cancel &amp; Return to Checkout
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 4: SUCCESS SCREEN                                             -->
+    <!-- ================================================================== -->
+    <section id="view-success" class="hidden" aria-live="polite">
+      <div class="state-card success">
+        <span class="demo-pill" style="background: var(--zest); border: 1.5px solid var(--ink);">SIMULATED SUCCESS · ₹0 CHARGED</span>
+        <h2 style="font-size: 2.1rem; font-weight: 800; margin-top: 0.75rem;">
+          Welcome to your <span class="serif-italic highlight">Neeva space.</span>
+        </h2>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+          This is a simulated confirmation screen. No real payment was processed.
+        </p>
+
+        <div style="background: var(--card); border: 1.5px solid var(--ink); border-radius: 1.35rem; padding: 1.25rem; margin: 1.35rem 0; text-align: left; font-size: 0.88rem;">
+          <div class="summary-row">
+            <span>Demo Transaction ID</span>
+            <strong style="font-family: var(--font-mono);" id="rec-txn-id">DEMO-TXN-2026-8841</strong>
+          </div>
+          <div class="summary-row">
+            <span>Subscriber Alias</span>
+            <strong id="rec-subscriber">Aarav Sharma (DEMO ACCOUNT)</strong>
+          </div>
+          <div class="summary-row">
+            <span>Selected Plan</span>
+            <strong id="rec-plan">Neeva Plus (Monthly)</strong>
+          </div>
+          <div class="summary-row">
+            <span>Simulated Method</span>
+            <strong id="rec-method">UPI Sandbox (neeva.demo@okaxis-sandbox)</strong>
+          </div>
+          <div class="summary-row" style="border-bottom: none;">
+            <span>Simulated Amount Paid</span>
+            <strong id="rec-amount">₹99.00 (FICTIONAL)</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;">
+          <button type="button" class="btn-primary btn-zest pop press" id="btn-download-receipt" style="width: auto; padding: 0 1.4rem;">
+            Download Demo Receipt (JSON)
+          </button>
+          <button type="button" class="btn-secondary press" id="btn-back-from-success">
+            ← Back to Plan Selection
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 5: FAILED PAYMENT & RETRY FLOW SCREEN                         -->
+    <!-- ================================================================== -->
+    <section id="view-failed" class="hidden" aria-live="polite">
+      <div class="state-card failed">
+        <span class="demo-pill" style="background: var(--crisis); color: var(--crisis-foreground); border: 1.5px solid var(--ink);">SIMULATED DECLINE · DEMO STATE</span>
+        <h2 style="font-size: 2rem; font-weight: 800; margin-top: 0.75rem;">
+          That payment didn't <span class="serif-italic">go through.</span>
+        </h2>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem;">
+          Simulated error code: <strong style="font-family: var(--font-mono);">ERR_SANDBOX_BANK_TIMEOUT</strong>. No money was deducted.
+        </p>
+
+        <div style="background: var(--card); border: 1.5px solid var(--ink); border-radius: 1.35rem; padding: 1.15rem; margin: 1.25rem 0; text-align: left; font-size: 0.86rem;">
+          <p><strong>Why did this happen?</strong></p>
+          <p style="color: var(--muted-foreground); margin-top: 0.25rem;">
+            You selected the <em>"Simulate Declined Payment"</em> mode or switched directly to the Failed state to inspect Neeva's retry UX.
+          </p>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;">
+          <button type="button" class="btn-primary pop press" id="btn-retry-payment" style="width: auto; padding: 0 1.5rem;">
+            ↻ Retry with Approved Simulation
+          </button>
+          <button type="button" class="btn-secondary press" id="btn-change-method">
+            ← Change Payment Method
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      <strong>Neeva AI — Standalone Payment Demonstration</strong> · Isolated in <code>/payment-demo/</code> · Zero connection to production frontend or live payment gateways.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

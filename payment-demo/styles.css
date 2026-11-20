@@ -1,0 +1,593 @@
+/* ============================================================================
+ * Neeva AI — Standalone Payment Demonstration Stylesheet
+ * 100% Isolated from /frontend/ — Recreates Neeva's exact visual language:
+ * Plus Jakarta Sans, Instrument Serif, JetBrains Mono, OKLCH pastel tokens,
+ * 1.5px ink borders, hard offset pop shadows, and tactile press animations.
+ * ============================================================================ */
+
+:root {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --background: #FAF7F0;
+  --foreground: #183024;
+  --card: #FFFDF8;
+  --primary: #1B3628;
+  --primary-foreground: #FAF7F0;
+  --muted: #F1ECE1;
+  --muted-foreground: #50655A;
+  --ink: #183024;
+
+  --sand: #F3EDE0;
+  --sage: #D8E6D9;
+  --sage-foreground: #1E3F2B;
+  --rose: #F2DDD0;
+  --rose-foreground: #5C3422;
+  --lilac: #E6DCF2;
+  --lilac-foreground: #3D2856;
+  --periwinkle: #D4DAF0;
+  --zest: #DDF247;
+  --zest-foreground: #183123;
+  --crisis: #D94E34;
+  --crisis-soft: #FBE6E1;
+  --crisis-foreground: #FFF9F5;
+
+  --elev-pop: 3px 3px 0 0 var(--ink);
+  --elev-pop-lg: 6px 6px 0 0 var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Demo Top Isolation Banner */
+.demo-isolation-banner {
+  background-color: var(--ink);
+  color: var(--background);
+  padding: 0.55rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1.5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.demo-pill {
+  background-color: var(--zest);
+  color: var(--zest-foreground);
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Sticky Glass Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(250, 247, 240, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1.5px solid rgba(24, 48, 36, 0.12);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand-logo-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: var(--zest);
+  border: 1.5px solid var(--ink);
+  box-shadow: 2px 2px 0 0 var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.brand-wordmark {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.route-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+}
+
+/* Tactile Neeva Utilities */
+.pop {
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--elev-pop);
+}
+
+.pop-lg {
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--elev-pop-lg);
+}
+
+.press {
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.press:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--ink);
+}
+
+.press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 var(--ink);
+}
+
+.highlight {
+  background-image: linear-gradient(transparent 58%, var(--zest) 58%, var(--zest) 92%, transparent 92%);
+  padding-inline: 0.12em;
+}
+
+.serif-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+}
+
+/* Layout Containers */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.hero-block {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 2.25rem;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.75rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  margin-top: 0.6rem;
+}
+
+.hero-sub {
+  margin-top: 0.85rem;
+  font-size: 1.05rem;
+  color: var(--muted-foreground);
+}
+
+/* Quick Demo State Switcher Bar */
+.demo-toolbar {
+  background-color: var(--sand);
+  border: 1.5px solid var(--ink);
+  border-radius: 1.5rem;
+  padding: 0.75rem 1.1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.toolbar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip-btn {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.chip-btn.active {
+  background: var(--ink);
+  color: var(--background);
+}
+
+/* Billing Toggle */
+.billing-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.billing-toggle {
+  display: inline-flex;
+  background-color: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.3rem;
+  box-shadow: var(--elev-pop);
+  gap: 0.25rem;
+}
+
+.billing-option {
+  border: none;
+  background: transparent;
+  padding: 0.5rem 1.15rem;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.billing-option.active {
+  background-color: var(--ink);
+  color: var(--background);
+}
+
+.save-badge {
+  background-color: var(--zest);
+  color: var(--zest-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+}
+
+/* Plan Cards Grid */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.plan-card {
+  background-color: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: 1.85rem;
+  padding: 1.6rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: pointer;
+}
+
+.plan-card.tone-sage { background-color: var(--sage); }
+.plan-card.tone-rose { background-color: var(--rose); }
+.plan-card.tone-lilac { background-color: var(--lilac); }
+
+.plan-card.selected {
+  box-shadow: var(--elev-pop-lg);
+  transform: translate(-2px, -2px);
+}
+
+.popular-sticker {
+  position: absolute;
+  top: -12px;
+  right: 18px;
+  transform: rotate(3deg);
+  background-color: var(--zest);
+  color: var(--zest-foreground);
+  border: 1.5px solid var(--ink);
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.plan-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+}
+
+.plan-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0.85rem 0 0.5rem;
+}
+
+.plan-price {
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.plan-period {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.plan-features {
+  list-style: none;
+  margin: 1rem 0 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.check-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background-color: var(--zest);
+  border: 1.5px solid var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Comparison Table */
+.comparison-panel {
+  background-color: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: 1.85rem;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--elev-pop);
+  overflow-x: auto;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1.5px solid rgba(24, 48, 36, 0.12);
+}
+
+.comparison-table th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Checkout Two-Column Grid */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-card {
+  background-color: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: 1.85rem;
+  padding: 1.75rem;
+  box-shadow: var(--elev-pop);
+}
+
+.form-group {
+  margin-bottom: 1.1rem;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.7rem 0.95rem;
+  border-radius: 1rem;
+  border: 1.5px solid var(--ink);
+  background-color: var(--background);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.method-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.method-tab {
+  padding: 0.75rem 0.5rem;
+  border-radius: 1.1rem;
+  border: 1.5px solid var(--ink);
+  background-color: var(--background);
+  font-weight: 700;
+  font-size: 0.83rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.method-tab.active {
+  background-color: var(--zest);
+  box-shadow: 2px 2px 0 0 var(--ink);
+}
+
+/* Order Summary */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  font-size: 0.92rem;
+  border-bottom: 1px dashed rgba(24, 48, 36, 0.2);
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 0.9rem;
+  margin-top: 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.coupon-box {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.btn-primary {
+  width: 100%;
+  height: 48px;
+  border-radius: 999px;
+  background-color: var(--ink);
+  color: var(--background);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: 1.5px solid var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-zest {
+  background-color: var(--zest);
+  color: var(--zest-foreground);
+}
+
+.btn-secondary {
+  height: 42px;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  background-color: var(--card);
+  color: var(--ink);
+  font-weight: 700;
+  border: 1.5px solid var(--ink);
+}
+
+/* State Screens (Processing, Success, Failure) */
+.state-card {
+  max-width: 580px;
+  margin: 1.5rem auto;
+  border-radius: 2rem;
+  border: 1.5px solid var(--ink);
+  padding: 2.25rem;
+  text-align: center;
+  box-shadow: var(--elev-pop-lg);
+}
+
+.state-card.processing { background-color: var(--lilac); }
+.state-card.success { background-color: var(--sage); }
+.state-card.failed { background-color: var(--crisis-soft); }
+
+.spinner-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 4px solid rgba(24, 48, 36, 0.2);
+  border-top-color: var(--ink);
+  margin: 0 auto 1.25rem;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.site-footer {
+  border-top: 1.5px solid rgba(24, 48, 36, 0.12);
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+}
+
