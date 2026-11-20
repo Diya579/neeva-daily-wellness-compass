@@ -1,0 +1,17 @@
+.git
+.gitignore
+.pytest_cache
+__pycache__
+*.pyc
+frontend/
+docs/
+models/
+infrastructure/
+backend/data/
+backend/.env
+backend/tests/
+data/
+*.sqlite3*
+*.db*
+*.zip
+
