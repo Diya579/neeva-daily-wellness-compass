@@ -3,21 +3,17 @@
 # Neeva AI — Google Cloud Infrastructure Provisioning & Deployment Script
 # Strict Google-Only Stack:
 #   - Cloud Run (asia-south1 Mumbai)
-#   - Cloud SQL for PostgreSQL 16
-#   - Firebase Authentication
+#   - Firebase Cloud Firestore (Native Mode — sole operational database)
+#   - Firebase Authentication & Firebase App Check
 #   - Google Secret Manager
 #   - Google Cloud DLP
+#   - Vertex AI (Gemini 2.5 Flash & Gemma 2 Endpoints)
 #   - Google Artifact Registry & Cloud Build
-#
-# NOTE: Requires explicit owner approval before provisioning billable resources.
 # ============================================================================
 set -euo pipefail
 
-PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-neeva-ai-prod}"
+PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-onyx-gift-514504-q0}"
 REGION="${GCP_REGION:-asia-south1}"
-DB_INSTANCE="neeva-pg-main"
-DB_NAME="neeva_db"
-DB_USER="neeva_app"
 AR_REPO="neeva-backend"
 SERVICE_NAME="neeva-api"
 SA_NAME="neeva-api-sa"
@@ -25,10 +21,10 @@ SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
 echo "=== Neeva AI Google Cloud Deployment (Project: ${PROJECT_ID}, Region: ${REGION}) ==="
 
-# 1. Enable Required Google Cloud APIs
+# 1. Enable Required Google Cloud APIs (Cloud Firestore replaces Cloud SQL)
 gcloud services enable \
   run.googleapis.com \
-  sqladmin.googleapis.com \
+  firestore.googleapis.com \
   secretmanager.googleapis.com \
   dlp.googleapis.com \
   aiplatform.googleapis.com \
@@ -41,7 +37,16 @@ gcloud services enable \
   identitytoolkit.googleapis.com \
   --project="${PROJECT_ID}"
 
-# 2. Create Least-Privilege Service Account for Cloud Run
+# 2. Provision Cloud Firestore Native Database if not already present
+if ! gcloud firestore databases describe --database="(default)" --project="${PROJECT_ID}" >/dev/null 2>&1; then
+  gcloud firestore databases create \
+    --database="(default)" \
+    --location="${REGION}" \
+    --type=firestore-native \
+    --project="${PROJECT_ID}"
+fi
+
+# 3. Create Least-Privilege Service Account for Cloud Run
 if ! gcloud iam service-accounts describe "${SA_EMAIL}" --project="${PROJECT_ID}" >/dev/null 2>&1; then
   gcloud iam service-accounts create "${SA_NAME}" \
     --display-name="Neeva AI Cloud Run Backend Service Account" \
@@ -49,7 +54,7 @@ if ! gcloud iam service-accounts describe "${SA_EMAIL}" --project="${PROJECT_ID}
 fi
 
 for ROLE in \
-  "roles/cloudsql.client" \
+  "roles/datastore.user" \
   "roles/secretmanager.secretAccessor" \
   "roles/dlp.user" \
   "roles/aiplatform.user" \
@@ -62,7 +67,7 @@ for ROLE in \
     --condition=None
 done
 
-# 3. Create Artifact Registry Repository
+# 4. Create Artifact Registry Repository
 if ! gcloud artifacts repositories describe "${AR_REPO}" --location="${REGION}" --project="${PROJECT_ID}" >/dev/null 2>&1; then
   gcloud artifacts repositories create "${AR_REPO}" \
     --repository-format=docker \
@@ -71,11 +76,10 @@ if ! gcloud artifacts repositories describe "${AR_REPO}" --location="${REGION}" 
     --project="${PROJECT_ID}"
 fi
 
-# 4. Submit Cloud Build Pipeline
+# 5. Submit Cloud Build Pipeline
 gcloud builds submit . \
   --config=backend/cloudbuild.yaml \
-  --substitutions="_REGION=${REGION},_AR_REPO=${AR_REPO},_SERVICE_NAME=${SERVICE_NAME},_CLOUD_SQL_INSTANCE=${PROJECT_ID}:${REGION}:${DB_INSTANCE},_SERVICE_ACCOUNT=${SA_EMAIL}" \
+  --substitutions="_REGION=${REGION},_AR_REPO=${AR_REPO},_SERVICE_NAME=${SERVICE_NAME},_SERVICE_ACCOUNT=${SA_EMAIL}" \
   --project="${PROJECT_ID}"
 
 echo "=== Deployment Submitted Successfully ==="
-

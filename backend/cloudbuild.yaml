@@ -1,5 +1,6 @@
 # ============================================================================
 # Google Cloud Build — Neeva AI Backend CI/CD Pipeline
+# Operational Database: Firebase Cloud Firestore (Native Mode)
 # Builds container image, pushes to Google Artifact Registry, deploys to Cloud Run
 # ============================================================================
 
@@ -7,7 +8,6 @@ substitutions:
   _REGION: asia-south1
   _AR_REPO: neeva-backend
   _SERVICE_NAME: neeva-api
-  _CLOUD_SQL_INSTANCE: neeva-ai-prod:asia-south1:neeva-pg-main
   _SERVICE_ACCOUNT: neeva-api-sa@${PROJECT_ID}.iam.gserviceaccount.com
 
 steps:
@@ -19,7 +19,7 @@ steps:
     args:
       - '-c'
       - |
-        pip install --no-cache-dir -r requirements.txt aiosqlite
+        pip install --no-cache-dir -r requirements.txt
         pytest -q
 
   # 2. Build container image
@@ -42,7 +42,7 @@ steps:
       - '--all-tags'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/${_SERVICE_NAME}'
 
-  # 4. Deploy to Google Cloud Run (Mumbai asia-south1)
+  # 4. Deploy to Google Cloud Run (Mumbai asia-south1) connected to Cloud Firestore
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'deploy'
     entrypoint: 'gcloud'
@@ -54,9 +54,8 @@ steps:
       - '--region=${_REGION}'
       - '--platform=managed'
       - '--service-account=${_SERVICE_ACCOUNT}'
-      - '--add-cloudsql-instances=${_CLOUD_SQL_INSTANCE}'
-      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=${PROJECT_ID},FIREBASE_PROJECT_ID=${PROJECT_ID},ENVIRONMENT=production,DLP_REGION=${_REGION}'
-      - '--set-secrets=DATABASE_URL=neeva-database-url:latest,GEMINI_API_KEY=neeva-gemini-api-key:latest'
+      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=${PROJECT_ID},FIREBASE_PROJECT_ID=${PROJECT_ID},ENVIRONMENT=production,FIRESTORE_REQUIRE_LIVE=true,DLP_REGION=${_REGION},VERTEX_AI_REGION=${_REGION}'
+      - '--set-secrets=GEMINI_API_KEY=neeva-gemini-api-key:latest'
       - '--min-instances=1'
       - '--max-instances=20'
       - '--cpu=2'
@@ -70,4 +69,3 @@ images:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-

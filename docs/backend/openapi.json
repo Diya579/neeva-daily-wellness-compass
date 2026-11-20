@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Neeva AI Backend",
-    "description": "Google-Only Mental Wellness Platform Backend \u2014 Cloud Run, Cloud SQL for PostgreSQL, Firebase Authentication, Gemini 2.5 Flash, Google MuRIL ONNX, Gemma 2, and Google Cloud DLP.",
-    "version": "1.0.0"
+    "description": "Google-Only Mental Wellness Platform Backend \u2014 Cloud Run, Firebase Cloud Firestore, Firebase Authentication, Gemini 2.5 Flash (google-genai), Google MuRIL ONNX, Vertex AI Gemma 2 (9B-IT & 2B-IT), and Google Cloud DLP.",
+    "version": "2.0.0"
   },
   "paths": {
     "/api/v1/auth/register": {
@@ -620,7 +620,7 @@
           "profile"
         ],
         "summary": "Delete Account",
-        "description": "Purge user document tree in Cloud Firestore and record account deletion request.",
+        "description": "Recursively delete the entire user-owned document tree in Cloud Firestore\n(profile, preferences, settings, mood logs, streaks, journals, analyses, conversations,\nmessages, CBT exercises, wellness toolkit, trusted contacts, safety events, and community data).",
         "operationId": "delete_account_api_v1_account_delete",
         "parameters": [
           {
@@ -934,6 +934,80 @@
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "tags": [
+          "chat-frontend-compat"
+        ],
+        "summary": "Legacy Frontend Chat Endpoint",
+        "description": "Direct compatibility route for `fetch('/api/chat')` in `frontend/src/routes/_authenticated/chat.tsx`.",
+        "operationId": "legacy_frontend_chat_endpoint_api_chat_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -2504,6 +2578,79 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "wellness"
+        ],
+        "summary": "List Wellness Activities",
+        "operationId": "list_wellness_activities_api_v1_wellness_activities_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-firebase-appcheck",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Firebase-Appcheck"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/wellness/streak": {
@@ -3909,7 +4056,7 @@
           "models-and-dlp"
         ],
         "summary": "Infer Muril Distress",
-        "description": "Run MuRIL ONNX + deterministic 8-language distress classification with latency telemetry.",
+        "description": "Run distress classification across 8 Indian languages.\nExplicitly reports `inference_source` (`\"hybrid_deterministic_and_muril_onnx\"` when ONNX weights\nare loaded vs `\"deterministic_multilingual_rules\"` when ONNX artifact is absent).",
         "operationId": "infer_muril_distress_api_v1_models_muril_infer_post",
         "parameters": [
           {
@@ -4057,7 +4204,7 @@
           "models-and-dlp"
         ],
         "summary": "Moderate With Gemma 2B",
-        "description": "Community moderation & structured emotion tagging endpoint for Gemma 2 2B-IT (`google/gemma-2-2b-it`).\nCombines deterministic safety + PII detection with Gemma 2 2B-IT moderation taxonomy.",
+        "description": "Community moderation & structured emotion tagging endpoint for Gemma 2 2B-IT (`google/gemma-2-2b-it`).\nInvokes the real Vertex AI endpoint when `VERTEX_GEMMA_2B_ENDPOINT` is configured.\nClearly distinguishes `\"vertex_ai_gemma_2_2b_it\"` from `\"deterministic_fallback\"`.",
         "operationId": "moderate_with_gemma_2b_api_v1_models_gemma_2b_moderate_post",
         "parameters": [
           {
@@ -4205,7 +4352,7 @@
           "models-and-dlp"
         ],
         "summary": "Dlp Deidentify Endpoint",
-        "description": "De-identify/redact PII via Google Cloud DLP + deterministic Indian PII rules.",
+        "description": "De-identify/redact PII via Google Cloud DLP `content:deidentify` + deterministic Indian PII rules.",
         "operationId": "dlp_deidentify_endpoint_api_v1_dlp_deidentify_post",
         "parameters": [
           {
@@ -4333,6 +4480,18 @@
               }
             ],
             "title": "Duration Seconds"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
           }
         },
         "type": "object",
@@ -5711,6 +5870,11 @@
             ],
             "title": "Language",
             "default": "en"
+          },
+          "require_live": {
+            "type": "boolean",
+            "title": "Require Live",
+            "default": false
           }
         },
         "type": "object",

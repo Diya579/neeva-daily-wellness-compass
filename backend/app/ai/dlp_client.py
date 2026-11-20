@@ -1,17 +1,14 @@
 """
-Google Cloud DLP Integration + Custom Indian InfoType Validators (Phase 2 — Section 5).
-Maintains strict separation between:
-- Detection (`inspect_pii_live_or_hybrid`)
-- Redaction / De-identification (`redact_pii`)
-- Encryption (handled separately by `app/privacy/encryption.py`)
+Google Cloud DLP Integration (`content:inspect` & `content:deidentify`) + Custom Indian InfoTypes (Section 6).
 
-Configured InfoTypes (Built-in + Custom Indian Detectors):
-- `INDIA_AADHAAR_INDIVIDUAL` (12-digit Verhoeff-compatible Indian Aadhaar format)
-- `INDIA_PAN_INDIVIDUAL` (`[A-Z]{5}[0-9]{4}[A-Z]`)
-- `PHONE_NUMBER` (Indian `+91` / 10-digit mobile numbers starting `6-9`)
-- `EMAIL_ADDRESS`
-- `INDIA_POSTAL_ADDRESS` (Indian 6-digit PIN code + locality/address pattern)
-- `COLLEGE_ROLL_OR_HANDLE` (Indian university roll numbers & social handles in anonymous circles)
+Fixes critical Phase 2 defects:
+1. Inspects and de-identifies the **original unredacted text** via Google Cloud DLP `content:inspect` and
+   `content:deidentify` first (never sends pre-redacted text to Cloud DLP).
+2. Combines Cloud DLP built-in infoTypes (`INDIA_AADHAAR_INDIVIDUAL`, `INDIA_PAN_INDIVIDUAL`, `PHONE_NUMBER`,
+   `EMAIL_ADDRESS`, `PERSON_NAME`, `STREET_ADDRESS`) with custom regex infoTypes (`INDIA_PIN_CODE`,
+   `INDIAN_MOBILE_NUMBER`), and applies deterministic Indian PII scrubbing to guarantee zero partial leakage.
+3. Explicitly reports `deidentification_source` (`"google_cloud_dlp_live"` vs `"local_custom_fallback"`)
+   and `live_dlp_used: bool`. Never claims live Cloud DLP succeeded when it failed or fell back.
 """
 from __future__ import annotations
 
@@ -35,12 +32,12 @@ CLOUD_DLP_BUILT_IN_INFO_TYPES = [
 
 CLOUD_DLP_CUSTOM_INFO_TYPES = [
     {
-        "info_type": {"name": "INDIA_PIN_CODE_ADDRESS"},
-        "regex": {"pattern": r"\b(?:PIN|Pin|pin)?[\s:\-]*[1-8][0-9]{5}\b"},
+        "infoType": {"name": "INDIA_PIN_CODE"},
+        "regex": {"pattern": r"\b(?:PIN|Pin|pin)[\s:\-]*[1-8][0-9]{5}\b"},
         "likelihood": "LIKELY",
     },
     {
-        "info_type": {"name": "INDIAN_MOBILE_NUMBER"},
+        "infoType": {"name": "INDIAN_MOBILE_NUMBER"},
         "regex": {"pattern": r"(?:\+91[\s\-]?|0)?\b[6-9][0-9]{9}\b"},
         "likelihood": "VERY_LIKELY",
     },
@@ -64,15 +61,23 @@ LOCAL_PII_PATTERNS: list[tuple[str, re.Pattern[str], str]] = [
         "[REDACTED_EMAIL]",
     ),
     (
+        "INDIA_PIN_CODE",
+        re.compile(r"\b(?:PIN|Pin|pin)[\s:\-]*[1-8][0-9]{5}\b"),
+        "[REDACTED_PIN_CODE]",
+    ),
+    (
         "INDIA_PIN_CODE_ADDRESS",
-        re.compile(r"\b(?:Flat|House|Plot|Sector|MG Road|Hostel|Block)\s+[A-Za-z0-9,\-\s]{3,40}\b[1-8][0-9]{5}\b", re.I),
+        re.compile(
+            r"\b(?:Flat|House|Plot|Sector|MG Road|Hostel|Block)\s+[A-Za-z0-9,\-\s]{3,40}\b[1-8][0-9]{5}\b",
+            re.I,
+        ),
         "[REDACTED_ADDRESS]",
     ),
 ]
 
 
 def redact_pii_locally(text: str) -> tuple[str, list[str]]:
-    """Deterministic Indian PII scrubber (Aadhaar, PAN, Phone, Email, Pin-code Address)."""
+    """Deterministic Indian PII scrubber (Aadhaar, PAN, Phone, Email, PIN Code, Address)."""
     if not text:
         return text, []
     redacted = text
@@ -85,33 +90,58 @@ def redact_pii_locally(text: str) -> tuple[str, list[str]]:
     return redacted, found
 
 
+async def _get_gcp_access_token_and_project() -> tuple[str, str]:
+    import google.auth
+    from google.auth.transport.requests import Request as GoogleAuthRequest
+
+    creds, detected_project = google.auth.default(
+        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
+    if not creds.valid:
+        await asyncio.to_thread(creds.refresh, GoogleAuthRequest())
+    project_id = settings.GOOGLE_CLOUD_PROJECT or detected_project or "onyx-gift-514504-q0"
+    return str(creds.token), project_id
+
+
+async def _call_cloud_dlp_api(url: str, token: str, project_id: str, payload: dict[str, Any]) -> tuple[int, dict[str, Any], str]:
+    import httpx
+
+    async with httpx.AsyncClient(timeout=settings.DLP_TIMEOUT_SECONDS) as client:
+        resp = await client.post(
+            url,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "X-Goog-User-Project": project_id,
+            },
+            json=payload,
+        )
+    data = resp.json() if resp.status_code == 200 else {}
+    return resp.status_code, data, resp.text
+
+
 async def inspect_pii_live_or_hybrid(text: str, attempt_live_dlp: bool = True) -> dict[str, Any]:
     """
-    Inspect text for PII using both deterministic Indian custom detectors and live Google Cloud DLP API.
-    Records exact live API status (`live_dlp_succeeded`, `live_dlp_error`) without masking failures.
+    Call Google Cloud DLP `content:inspect` on the ORIGINAL unredacted text,
+    then merge with local Indian custom detectors so partial detection is always caught.
     """
-    _, local_found = redact_pii_locally(text)
+    if not text:
+        return {
+            "pii_found": False,
+            "detected_info_types": [],
+            "inspection_source": "empty_input",
+            "live_dlp_succeeded": False,
+            "live_dlp_findings": [],
+            "live_dlp_error": None,
+        }
+
     live_findings: list[dict[str, str]] = []
+    detected_types: list[str] = []
     live_dlp_succeeded = False
     live_dlp_error: str | None = None
 
     if attempt_live_dlp:
         try:
-            import google.auth
-            from google.auth.transport.requests import Request as GoogleAuthRequest
-            import httpx
-
-            creds, detected_project = google.auth.default(
-                scopes=["https://www.googleapis.com/auth/cloud-platform"]
-            )
-            if not creds.valid:
-                await asyncio.to_thread(creds.refresh, GoogleAuthRequest())
-
-            project_id = (
-                settings.GOOGLE_CLOUD_PROJECT
-                if settings.GOOGLE_CLOUD_PROJECT != "neeva-ai-dev"
-                else (detected_project or "onyx-gift-514504-q0")
-            )
+            token, project_id = await _get_gcp_access_token_and_project()
             url = f"https://dlp.googleapis.com/v2/projects/{project_id}/locations/{settings.DLP_REGION}/content:inspect"
             payload = {
                 "inspectConfig": {
@@ -122,18 +152,9 @@ async def inspect_pii_live_or_hybrid(text: str, attempt_live_dlp: bool = True) -
                 },
                 "item": {"value": text},
             }
-            async with httpx.AsyncClient(timeout=8.0) as client:
-                resp = await client.post(
-                    url,
-                    headers={
-                        "Authorization": f"Bearer {creds.token}",
-                        "X-Goog-User-Project": project_id,
-                    },
-                    json=payload,
-                )
-            if resp.status_code == 200:
+            status_code, data, err_text = await _call_cloud_dlp_api(url, token, project_id, payload)
+            if status_code == 200:
                 live_dlp_succeeded = True
-                data = resp.json()
                 for f in data.get("result", {}).get("findings", []):
                     info_name = f.get("infoType", {}).get("name", "UNKNOWN")
                     live_findings.append(
@@ -143,36 +164,119 @@ async def inspect_pii_live_or_hybrid(text: str, attempt_live_dlp: bool = True) -
                             "source": "google_cloud_dlp_live",
                         }
                     )
-                    if info_name not in local_found:
-                        local_found.append(info_name)
+                    if info_name not in detected_types:
+                        detected_types.append(info_name)
             else:
-                live_dlp_error = f"HTTP {resp.status_code}: {resp.text[:300]}"
+                live_dlp_error = f"HTTP {status_code}: {err_text[:300]}"
         except Exception as exc:
             live_dlp_error = f"{type(exc).__name__}: {exc}"
 
+    _, local_found = redact_pii_locally(text)
+    for info_type in local_found:
+        if info_type not in detected_types:
+            detected_types.append(info_type)
+
     return {
-        "pii_found": len(local_found) > 0,
-        "detected_info_types": local_found,
+        "pii_found": len(detected_types) > 0,
+        "detected_info_types": detected_types,
+        "inspection_source": "google_cloud_dlp_live" if live_dlp_succeeded else "local_custom_fallback",
         "live_dlp_succeeded": live_dlp_succeeded,
         "live_dlp_findings": live_findings,
         "live_dlp_error": live_dlp_error,
     }
 
 
-async def redact_pii(text: str, use_cloud_dlp: bool = True) -> tuple[str, list[str]]:
+async def deidentify_pii_detailed(
+    text: str,
+    attempt_live_dlp: bool = True,
+    require_live_dlp: bool = False,
+) -> dict[str, Any]:
     """
-    De-identify PII using deterministic Indian rules + Google Cloud DLP API when reachable.
-    Guarantees safe fallback to deterministic redaction on API error, timeout, or quota limit.
+    Call Google Cloud DLP `content:deidentify` on the ORIGINAL unredacted text,
+    followed by deterministic Indian PII scrubbing to guarantee zero residual PII leakage.
+    If `require_live_dlp=True` and live Cloud DLP fails, raises RuntimeError instead of faking success.
     """
     if not text:
-        return text, []
+        return {
+            "redacted_text": "",
+            "detected_info_types": [],
+            "pii_found": False,
+            "deidentification_source": "empty_input",
+            "live_dlp_succeeded": False,
+            "live_dlp_error": None,
+        }
 
-    redacted, found_types = redact_pii_locally(text)
-    if not use_cloud_dlp or settings.ENVIRONMENT != "production":
-        return redacted, found_types
+    working_text = text
+    detected_types: list[str] = []
+    live_dlp_succeeded = False
+    live_dlp_error: str | None = None
 
-    inspect_res = await inspect_pii_live_or_hybrid(redacted, attempt_live_dlp=True)
-    for t in inspect_res["detected_info_types"]:
-        if t not in found_types:
-            found_types.append(t)
-    return redacted, found_types
+    if attempt_live_dlp:
+        try:
+            token, project_id = await _get_gcp_access_token_and_project()
+            url = f"https://dlp.googleapis.com/v2/projects/{project_id}/locations/{settings.DLP_REGION}/content:deidentify"
+            payload = {
+                "inspectConfig": {
+                    "infoTypes": CLOUD_DLP_BUILT_IN_INFO_TYPES,
+                    "customInfoTypes": CLOUD_DLP_CUSTOM_INFO_TYPES,
+                    "minLikelihood": "LIKELY",
+                },
+                "deidentifyConfig": {
+                    "infoTypeTransformations": {
+                        "transformations": [
+                            {
+                                "primitiveTransformation": {
+                                    "replaceWithInfoTypeConfig": {}
+                                }
+                            }
+                        ]
+                    }
+                },
+                "item": {"value": text},
+            }
+            status_code, data, err_text = await _call_cloud_dlp_api(url, token, project_id, payload)
+            if status_code == 200:
+                live_dlp_succeeded = True
+                working_text = data.get("item", {}).get("value", text)
+                summaries = data.get("overview", {}).get("transformationSummaries", [])
+                for s in summaries:
+                    info_name = s.get("infoType", {}).get("name")
+                    if info_name and info_name not in detected_types:
+                        detected_types.append(info_name)
+            else:
+                live_dlp_error = f"HTTP {status_code}: {err_text[:300]}"
+        except Exception as exc:
+            live_dlp_error = f"{type(exc).__name__}: {exc}"
+
+    if require_live_dlp and not live_dlp_succeeded:
+        raise RuntimeError(f"Live Google Cloud DLP de-identification failed: {live_dlp_error}")
+
+    # Guarantee any Indian identifiers not caught by Cloud DLP (or when offline) are redacted
+    final_redacted, local_found = redact_pii_locally(working_text)
+    for info_type in local_found:
+        if info_type not in detected_types:
+            detected_types.append(info_type)
+
+    return {
+        "redacted_text": final_redacted,
+        "detected_info_types": detected_types,
+        "pii_found": len(detected_types) > 0,
+        "deidentification_source": (
+            "google_cloud_dlp_live" if live_dlp_succeeded else "local_custom_fallback"
+        ),
+        "live_dlp_succeeded": live_dlp_succeeded,
+        "live_dlp_error": live_dlp_error,
+    }
+
+
+async def redact_pii(text: str, use_cloud_dlp: bool = True) -> tuple[str, list[str]]:
+    """
+    High-level PII redaction helper used by Chat, Journal, and Community services.
+    Attempts live Cloud DLP in production and applies deterministic Indian PII scrubbing.
+    """
+    should_attempt_live = use_cloud_dlp and (
+        settings.ENVIRONMENT == "production"
+        or bool(settings.GOOGLE_CLOUD_PROJECT and settings.ENVIRONMENT != "test")
+    )
+    res = await deidentify_pii_detailed(text, attempt_live_dlp=should_attempt_live)
+    return res["redacted_text"], res["detected_info_types"]

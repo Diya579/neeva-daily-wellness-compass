@@ -44,7 +44,7 @@ Classify the following community post and tag its primary emotions from: {taxono
 Return ONLY valid JSON with keys:
 - "decision": "visible" | "hidden" | "removed"
 - "reason": short explanation
-- "emotions": [{"name": string, "intensity": 0-100}]
+- "emotions": [{{"name": string, "intensity": 0-100}}]
 
 Post:
 {text}<end_of_turn>

@@ -11,7 +11,6 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-import app.models  # noqa: F401 — ensure all ORM models are registered
 from app.api import (
     auth,
     chat,
@@ -28,7 +27,7 @@ from app.api import (
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.core.rate_limit import limiter
-from app.database.session import Base, engine
+from app.database.firestore_db import get_firestore_repo
 
 logger = logging.getLogger(__name__)
 
@@ -36,22 +35,27 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging(settings)
-    if settings.ENVIRONMENT == "development" and "sqlite" in settings.DATABASE_URL:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-    logger.info("Neeva AI Backend started (env=%s).", settings.ENVIRONMENT)
+    settings.validate_production_readiness()
+    # Initialize operational Firestore repository (fails closed in production if live Firestore is unreachable)
+    fs_repo = get_firestore_repo()
+    logger.info(
+        "Neeva AI Backend started (env=%s, firestore_mode=%s, project=%s).",
+        settings.ENVIRONMENT,
+        fs_repo.mode,
+        fs_repo.project_id,
+    )
     yield
-    await engine.dispose()
-    logger.info("DB engine disposed.")
+    logger.info("Neeva AI Backend shutdown complete.")
 
 
 app = FastAPI(
     title="Neeva AI Backend",
     description=(
-        "Google-Only Mental Wellness Platform Backend — Cloud Run, Cloud SQL for PostgreSQL, "
-        "Firebase Authentication, Gemini 2.5 Flash, Google MuRIL ONNX, Gemma 2, and Google Cloud DLP."
+        "Google-Only Mental Wellness Platform Backend — Cloud Run, Firebase Cloud Firestore, "
+        "Firebase Authentication, Gemini 2.5 Flash (google-genai), Google MuRIL ONNX, "
+        "Vertex AI Gemma 2 (9B-IT & 2B-IT), and Google Cloud DLP."
     ),
-    version="1.0.0",
+    version="2.0.0",
     docs_url="/docs",
     openapi_url="/openapi.json",
     lifespan=lifespan,
@@ -83,7 +87,6 @@ app.add_middleware(
 
 @app.middleware("http")
 async def security_and_request_id_middleware(request: Request, call_next):
-    # Enforce request body size limit (protects against payload DoS)
     content_length = request.headers.get("content-length")
     if content_length and int(content_length) > settings.MAX_REQUEST_BYTES:
         return JSONResponse(
@@ -131,12 +134,13 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 # ---------------------------------------------------------------------------
-# Versioned API Routers (/api/v1/*)
+# Versioned API Routers (/api/v1/*) & Frozen Frontend Compatibility (/api/chat)
 # ---------------------------------------------------------------------------
 
 app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(chat.router)
+app.include_router(chat.legacy_chat_router)
 app.include_router(safety.router)
 app.include_router(journal.router)
 app.include_router(mood.router)
@@ -149,4 +153,11 @@ app.include_router(models_dlp.router)
 
 @app.get("/health", tags=["health"])
 async def health_check():
-    return {"status": "ok", "version": "1.0.0", "service": "neeva-ai-backend"}
+    fs = get_firestore_repo()
+    return {
+        "status": "ok",
+        "version": "2.0.0",
+        "service": "neeva-ai-backend",
+        "operational_database": "cloud_firestore",
+        "firestore_mode": fs.mode,
+    }

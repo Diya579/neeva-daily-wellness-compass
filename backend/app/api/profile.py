@@ -1,10 +1,8 @@
 """
 Profile, Trusted Contacts & Account Management API backed by Cloud Firestore (`users/{uid}`).
+Performs complete recursive subcollection deletion on `DELETE /api/v1/account`.
 """
 from __future__ import annotations
-
-import uuid
-from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, Field
@@ -89,18 +87,10 @@ async def delete_account(
     user: dict = Depends(get_current_user),
     fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
 ):
-    """Purge user document tree in Cloud Firestore and record account deletion request."""
-    uid = user["uid"]
-    now = datetime.now(timezone.utc)
-    await fs.delete_doc(f"users/{uid}")
-    await fs.set_doc(
-        f"account_deletions/{uid}",
-        {
-            "id": str(uuid.uuid4()),
-            "user_id": uid,
-            "status": "completed",
-            "scheduled_for": (now + timedelta(days=30)).isoformat(),
-            "created_at": now.isoformat(),
-        },
-    )
+    """
+    Recursively delete the entire user-owned document tree in Cloud Firestore
+    (profile, preferences, settings, mood logs, streaks, journals, analyses, conversations,
+    messages, CBT exercises, wellness toolkit, trusted contacts, safety events, and community data).
+    """
+    await fs.delete_user_account_completely(user["uid"])
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -1,38 +1,92 @@
 """
 Secured Model Inference (MuRIL, Gemma 2 9B-IT, Gemma 2 2B-IT) and Google Cloud DLP Endpoints
-(Phase 2 — Sections 2, 3, 4, 5).
-Exposes authenticated server-side endpoints for:
-- `GET  /api/v1/models/status`
-- `POST /api/v1/models/muril/infer`
-- `POST /api/v1/models/gemma-9b/infer`
-- `POST /api/v1/models/gemma-2b/moderate`
-- `POST /api/v1/dlp/inspect`
-- `POST /api/v1/dlp/deidentify`
+(Sections 6, 7, 8, 9).
+
+Strict anti-fabrication rules enforced here:
+1. Never labels deterministic fallback as MuRIL, Gemma 2 2B-IT, Gemma 2 9B-IT, or live Cloud DLP inference.
+2. When `VERTEX_GEMMA_2B_ENDPOINT` is configured, performs real authenticated Vertex AI prediction requests
+   with timeout, retry, and structured JSON output validation.
+3. Explicitly reports `inference_source` (`"muril_onnx_runtime"`, `"vertex_ai_gemma_2_2b_it"`,
+   `"vertex_ai_gemma_2_9b_it"`, or `"deterministic_fallback"`) and `live_inference_performed: bool`.
 """
 from __future__ import annotations
 
+import asyncio
+import json
+import logging
 import time
 import unicodedata
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from app.ai.dlp_client import inspect_pii_live_or_hybrid, redact_pii
+from app.ai.dlp_client import (
+     _get_gcp_access_token_and_project,
+    deidentify_pii_detailed,
+    inspect_pii_live_or_hybrid,
+    redact_pii,
+)
 from app.ai.gemini import validate_ai_response
 from app.core.config import settings
 from app.core.security import get_current_user
 from app.database.firestore_db import FirestoreOperationalRepository, get_firestore_repo
-from app.safety.crisis_patterns import SafetyTier, classify_safety
+from app.safety.crisis_patterns import SafetyTier
 from app.safety.engine import get_safety_engine
 from app.safety.muril import MuRILClassifier
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["models-and-dlp"])
 
 
 class TextInferenceRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=8000)
     language: Optional[str] = Field(default="en")
+    require_live: bool = False
+
+
+async def _invoke_vertex_ai_endpoint(
+    endpoint_id_or_url: str,
+    instances: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """
+    Perform a real authenticated Vertex AI `:predict` call with timeout and exponential-backoff retries.
+    """
+    import httpx
+
+    token, project_id = await _get_gcp_access_token_and_project()
+    region = settings.VERTEX_AI_REGION
+    if endpoint_id_or_url.startswith("https://"):
+        url = endpoint_id_or_url
+    elif endpoint_id_or_url.startswith("projects/"):
+        url = f"https://{region}-aiplatform.googleapis.com/v1/{endpoint_id_or_url}:predict"
+    else:
+        url = (
+            f"https://{region}-aiplatform.googleapis.com/v1/projects/{project_id}"
+            f"/locations/{region}/endpoints/{endpoint_id_or_url}:predict"
+        )
+
+    last_err: Optional[str] = None
+    for attempt in range(2):
+        try:
+            async with httpx.AsyncClient(timeout=settings.VERTEX_TIMEOUT_SECONDS) as client:
+                resp = await client.post(
+                    url,
+                    headers={
+                        "Authorization": f"Bearer {token}",
+                        "Content-Type": "application/json",
+                    },
+                    json={"instances": instances},
+                )
+            if resp.status_code == 200:
+                return resp.json()
+            last_err = f"HTTP {resp.status_code}: {resp.text[:300]}"
+        except Exception as exc:
+            last_err = f"{type(exc).__name__}: {exc}"
+        if attempt == 0:
+            await asyncio.sleep(0.25)
+
+    raise RuntimeError(f"Vertex AI endpoint call failed ({url}): {last_err}")
 
 
 @router.get("/models/status")
@@ -44,21 +98,21 @@ async def get_models_and_dlp_status(
     return {
         "firestore_database_mode": fs.mode,
         "firebase_project_id": fs.project_id,
-        "muril": {
-            "checkpoint": "google/muril-base-cased",
-            "onnx_path": settings.MURIL_ONNX_PATH,
-            "onnx_weights_loaded": muril.available,
-            "supported_languages": ["en", "hinglish", "hi", "gu", "mr", "bn", "ta", "te"],
+        "gemini_2_5_flash": {
+            "model_id": settings.GEMINI_MODEL,
+            "api_key_configured": bool(settings.GEMINI_API_KEY),
+            "vertex_project_configured": bool(settings.GOOGLE_CLOUD_PROJECT),
         },
+        "muril": muril.readiness_report(),
         "gemma_2_9b_it": {
-            "base_model": "google/gemma-2-9b-it",
+            "intended_model": "google/gemma-2-9b-it",
+            "vertex_endpoint_configured": bool(settings.VERTEX_GEMMA_9B_ENDPOINT),
             "vertex_endpoint": settings.VERTEX_GEMMA_9B_ENDPOINT or None,
-            "live_endpoint_configured": bool(settings.VERTEX_GEMMA_9B_ENDPOINT),
         },
         "gemma_2_2b_it": {
-            "base_model": "google/gemma-2-2b-it",
+            "intended_model": "google/gemma-2-2b-it",
+            "vertex_endpoint_configured": bool(settings.VERTEX_GEMMA_2B_ENDPOINT),
             "vertex_endpoint": settings.VERTEX_GEMMA_2B_ENDPOINT or None,
-            "live_endpoint_configured": bool(settings.VERTEX_GEMMA_2B_ENDPOINT),
         },
         "cloud_dlp": {
             "project_id": settings.GOOGLE_CLOUD_PROJECT,
@@ -72,19 +126,36 @@ async def infer_muril_distress(
     body: TextInferenceRequest,
     user: dict = Depends(get_current_user),
 ):
-    """Run MuRIL ONNX + deterministic 8-language distress classification with latency telemetry."""
+    """
+    Run distress classification across 8 Indian languages.
+    Explicitly reports `inference_source` (`"hybrid_deterministic_and_muril_onnx"` when ONNX weights
+    are loaded vs `"deterministic_multilingual_rules"` when ONNX artifact is absent).
+    """
     t0 = time.perf_counter()
     normalized = unicodedata.normalize("NFKC", body.text).strip()
     if not normalized:
         raise HTTPException(status_code=400, detail="Input text cannot be empty after normalization.")
 
     engine = get_safety_engine()
+    muril_loaded = bool(engine._muril and engine._muril.available)
+    if body.require_live and not muril_loaded:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "MURIL_ONNX_ARTIFACT_NOT_LOADED",
+                "intended_checkpoint": settings.MURIL_HF_CHECKPOINT,
+                "onnx_path": settings.MURIL_ONNX_PATH,
+                "load_error": engine._muril.load_error if engine._muril else "Not initialized",
+            },
+        )
+
     res = await engine.evaluate(normalized)
     latency_ms = round((time.perf_counter() - t0) * 1000.0, 3)
 
     return {
-        "model": "google/muril-base-cased",
-        "onnx_loaded": engine._muril.available if engine._muril else False,
+        "intended_checkpoint": settings.MURIL_HF_CHECKPOINT,
+        "muril_model_loaded": muril_loaded,
+        "inference_source": res.inference_source,
         "tier": int(res.tier),
         "deterministic_tier": int(res.deterministic_tier),
         "muril_tier": int(res.muril_tier) if res.muril_tier is not None else None,
@@ -118,7 +189,9 @@ async def infer_gemma_9b(
 
     if safety.should_interrupt or safety.tier == SafetyTier.TIER3_ACUTE:
         return {
-            "model": "google/gemma-2-9b-it",
+            "intended_model": "google/gemma-2-9b-it",
+            "inference_source": "safety_engine_tier3_interrupt",
+            "live_inference_performed": False,
             "interrupted_by_safety_engine": True,
             "tier": 3,
             "response": safety.crisis_message,
@@ -131,7 +204,8 @@ async def infer_gemma_9b(
             status_code=503,
             detail={
                 "status": "VERTEX_ENDPOINT_NOT_PROVISIONED",
-                "model": "google/gemma-2-9b-it",
+                "intended_model": "google/gemma-2-9b-it",
+                "live_inference_performed": False,
                 "message": (
                     "Vertex AI GPU endpoint for Gemma 2 9B-IT is not provisioned to prevent unapproved GPU billing. "
                     "Safety engine and PII scrubbing succeeded."
@@ -141,18 +215,31 @@ async def infer_gemma_9b(
             },
         )
 
-    # When VERTEX_GEMMA_9B_ENDPOINT is configured, invoke Vertex AI PredictionServiceClient
-    from google.cloud import aiplatform
-
-    endpoint = aiplatform.Endpoint(settings.VERTEX_GEMMA_9B_ENDPOINT)
-    pred = endpoint.predict(instances=[{"prompt": scrubbed, "max_tokens": 512}])
-    raw_text = str(pred.predictions[0]) if pred.predictions else ""
-    return {
-        "model": "google/gemma-2-9b-it",
-        "interrupted_by_safety_engine": False,
-        "tier": int(safety.tier),
-        "response": validate_ai_response(raw_text),
-    }
+    try:
+        pred_data = await _invoke_vertex_ai_endpoint(
+            settings.VERTEX_GEMMA_9B_ENDPOINT,
+            instances=[{"prompt": scrubbed, "max_tokens": 512, "temperature": 0.4}],
+        )
+        predictions = pred_data.get("predictions") or []
+        raw_text = str(predictions[0]) if predictions else ""
+        return {
+            "intended_model": "google/gemma-2-9b-it",
+            "inference_source": "vertex_ai_gemma_2_9b_it",
+            "live_inference_performed": True,
+            "interrupted_by_safety_engine": False,
+            "tier": int(safety.tier),
+            "response": validate_ai_response(raw_text),
+        }
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail={
+                "status": "VERTEX_INFERENCE_FAILED",
+                "intended_model": "google/gemma-2-9b-it",
+                "live_inference_performed": False,
+                "error": str(exc),
+            },
+        )
 
 
 @router.post("/models/gemma-2b/moderate")
@@ -162,7 +249,8 @@ async def moderate_with_gemma_2b(
 ):
     """
     Community moderation & structured emotion tagging endpoint for Gemma 2 2B-IT (`google/gemma-2-2b-it`).
-    Combines deterministic safety + PII detection with Gemma 2 2B-IT moderation taxonomy.
+    Invokes the real Vertex AI endpoint when `VERTEX_GEMMA_2B_ENDPOINT` is configured.
+    Clearly distinguishes `"vertex_ai_gemma_2_2b_it"` from `"deterministic_fallback"`.
     """
     engine = get_safety_engine()
     safety = await engine.evaluate(body.text)
@@ -170,23 +258,83 @@ async def moderate_with_gemma_2b(
 
     if safety.tier == SafetyTier.TIER3_ACUTE:
         return {
-            "model": "google/gemma-2-2b-it",
+            "intended_model": "google/gemma-2-2b-it",
+            "inference_source": "safety_engine_tier3_interrupt",
+            "live_inference_performed": False,
             "decision": "removed",
             "reason": "Tier 3 acute self-harm content detected; routed to crisis intervention.",
             "safety_tier": 3,
             "pii_detected": pii_types,
+            "redacted_text": scrubbed,
             "emotions": [{"name": "Sadness", "intensity": 95}],
         }
+
+    # Attempt real Vertex AI Gemma 2 2B-IT inference if endpoint is configured
+    vertex_error: Optional[str] = None
+    if settings.VERTEX_GEMMA_2B_ENDPOINT:
+        try:
+            import sys
+            from pathlib import Path
+
+            gemma_dir = str(Path(__file__).resolve().parents[3] / "models" / "gemma")
+            if gemma_dir not in sys.path:
+                sys.path.insert(0, gemma_dir)
+            from gemma2_2b_moderation_tagger import (
+                build_gemma2b_moderation_prompt,
+                validate_moderation_output,
+            )
+
+            prompt = build_gemma2b_moderation_prompt(scrubbed)
+            pred_data = await _invoke_vertex_ai_endpoint(
+                settings.VERTEX_GEMMA_2B_ENDPOINT,
+                instances=[{"prompt": prompt, "max_tokens": 256, "temperature": 0.1}],
+            )
+            predictions = pred_data.get("predictions") or []
+            raw_pred = predictions[0] if predictions else {}
+            if isinstance(raw_pred, str):
+                raw_pred = json.loads(raw_pred)
+            validated = validate_moderation_output(raw_pred if isinstance(raw_pred, dict) else {})
+            return {
+                "intended_model": "google/gemma-2-2b-it",
+                "inference_source": "vertex_ai_gemma_2_2b_it",
+                "live_inference_performed": True,
+                "decision": validated["decision"],
+                "reason": validated["reason"],
+                "safety_tier": int(safety.tier),
+                "pii_detected": pii_types,
+                "redacted_text": scrubbed,
+                "emotions": validated["emotions"],
+            }
+        except Exception as exc:
+            vertex_error = f"{type(exc).__name__}: {exc}"
+            logger.warning("Vertex AI Gemma 2 2B-IT call failed (%s); using deterministic fallback.", vertex_error)
+
+    if body.require_live:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "VERTEX_GEMMA_2B_UNAVAILABLE",
+                "intended_model": "google/gemma-2-2b-it",
+                "live_inference_performed": False,
+                "vertex_endpoint_configured": bool(settings.VERTEX_GEMMA_2B_ENDPOINT),
+                "vertex_error": vertex_error,
+            },
+        )
 
     from app.ai.journal_analysis import analyze_locally
 
     local_emo = analyze_locally(scrubbed)
     decision = "hidden" if len(pii_types) >= 3 else "visible"
     return {
-        "model": "google/gemma-2-2b-it",
-        "live_endpoint_active": bool(settings.VERTEX_GEMMA_2B_ENDPOINT),
+        "intended_model": "google/gemma-2-2b-it",
+        "inference_source": "deterministic_fallback",
+        "live_inference_performed": False,
+        "vertex_endpoint_configured": bool(settings.VERTEX_GEMMA_2B_ENDPOINT),
+        "vertex_error": vertex_error,
         "decision": decision,
-        "reason": "PII scrubbed and safety verified" if pii_types else "Clean peer-support content",
+        "reason": "PII scrubbed and safety verified (deterministic fallback)"
+        if pii_types
+        else "Clean peer-support content (deterministic fallback)",
         "safety_tier": int(safety.tier),
         "pii_detected": pii_types,
         "redacted_text": scrubbed,
@@ -200,7 +348,16 @@ async def dlp_inspect_endpoint(
     user: dict = Depends(get_current_user),
 ):
     """Inspect text for Indian & general PII via Google Cloud DLP + custom infoType validators."""
-    return await inspect_pii_live_or_hybrid(body.text)
+    res = await inspect_pii_live_or_hybrid(body.text, attempt_live_dlp=True)
+    if body.require_live and not res["live_dlp_succeeded"]:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "CLOUD_DLP_LIVE_UNAVAILABLE",
+                "error": res["live_dlp_error"],
+            },
+        )
+    return res
 
 
 @router.post("/dlp/deidentify")
@@ -208,11 +365,15 @@ async def dlp_deidentify_endpoint(
     body: TextInferenceRequest,
     user: dict = Depends(get_current_user),
 ):
-    """De-identify/redact PII via Google Cloud DLP + deterministic Indian PII rules."""
-    redacted, info_types = await redact_pii(body.text, use_cloud_dlp=True)
-    return {
-        "redacted_text": redacted,
-        "detected_info_types": info_types,
-        "pii_found": len(info_types) > 0,
-    }
-
+    """De-identify/redact PII via Google Cloud DLP `content:deidentify` + deterministic Indian PII rules."""
+    try:
+        return await deidentify_pii_detailed(
+            body.text,
+            attempt_live_dlp=True,
+            require_live_dlp=body.require_live,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={"status": "CLOUD_DLP_LIVE_DEIDENTIFY_FAILED", "error": str(exc)},
+        )

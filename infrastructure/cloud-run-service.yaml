@@ -1,6 +1,7 @@
 # ============================================================================
 # Google Cloud Run Service Specification (Knative v1)
-# Region: asia-south1 (Mumbai) — Primary API + Optional L4 GPU Inference Worker
+# Region: asia-south1 (Mumbai)
+# Operational Database: Firebase Cloud Firestore (Native Mode)
 # ============================================================================
 apiVersion: serving.knative.dev/v1
 kind: Service
@@ -18,7 +19,6 @@ spec:
       annotations:
         autoscaling.knative.dev/minScale: "1"
         autoscaling.knative.dev/maxScale: "20"
-        run.googleapis.com/cloudsql-instances: PROJECT_ID:asia-south1:neeva-pg-main
         run.googleapis.com/cpu-throttling: "false"
         run.googleapis.com/startup-cpu-boost: "true"
     spec:
@@ -38,15 +38,16 @@ spec:
               value: "PROJECT_ID"
             - name: ENVIRONMENT
               value: "production"
+            - name: FIRESTORE_REQUIRE_LIVE
+              value: "true"
+            - name: FIREBASE_APP_CHECK_ENFORCE
+              value: "true"
             - name: DLP_REGION
+              value: "asia-south1"
+            - name: VERTEX_AI_REGION
               value: "asia-south1"
             - name: GEMINI_MODEL
               value: "gemini-2.5-flash"
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: neeva-database-url
-                  key: latest
             - name: GEMINI_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -68,4 +69,3 @@ spec:
               path: /health
               port: 8080
             periodSeconds: 15
-

@@ -151,9 +151,9 @@ async def test_models_and_dlp_endpoints(client: AsyncClient):
     r_status = await client.get("/api/v1/models/status", headers=ALICE_HEADERS)
     assert r_status.status_code == 200
     st = r_status.json()
-    assert st["muril"]["checkpoint"] == "google/muril-base-cased"
-    assert st["gemma_2_9b_it"]["base_model"] == "google/gemma-2-9b-it"
-    assert st["gemma_2_2b_it"]["base_model"] == "google/gemma-2-2b-it"
+    assert st["muril"]["intended_checkpoint"] == "google/muril-base-cased"
+    assert st["gemma_2_9b_it"]["intended_model"] == "google/gemma-2-9b-it"
+    assert st["gemma_2_2b_it"]["intended_model"] == "google/gemma-2-2b-it"
 
     # MuRIL inference across languages
     for lang, text, expected_tier in [

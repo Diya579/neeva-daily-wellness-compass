@@ -1,7 +1,16 @@
 """
-Chat & Conversation Persistence API backed by Cloud Firestore
-(`users/{uid}/conversations/{conv_id}` and `users/{uid}/conversations/{conv_id}/messages/{msg_id}`).
-Enforces the Three-Tier Safety Engine and logs safety events + crisis interventions in Firestore.
+Chat & Conversation Persistence API backed by Cloud Firestore (Sections 4, 5, 11).
+Mounted at both:
+- `POST /api/v1/chat` (versioned REST endpoint)
+- `POST /api/chat` (direct wire-compatible route expected by `frontend/src/routes/_authenticated/chat.tsx`)
+
+Guarantees:
+1. Authoritative Three-Tier Safety Engine runs BEFORE any PII scrubbing or Gemini initialization.
+2. Tier 3 acute crisis immediately interrupts generation — Gemini is NEVER invoked during Tier 3.
+3. Multi-turn context escalation is evaluated across prior user messages in the conversation.
+4. All user messages are PII-redacted via Google Cloud DLP + Indian custom detectors before reaching Gemini.
+5. If Gemini fails to start, returns HTTP 502 (`{"error": "Neeva couldn't respond just now."}`) matching
+   the frozen frontend's error contract rather than fabricating a fake AI reply.
 """
 from __future__ import annotations
 
@@ -11,12 +20,12 @@ from datetime import datetime, timezone
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.ai.companion_prompt import CompanionConfig, build_system_prompt
 from app.ai.dlp_client import redact_pii
-from app.ai.gemini import stream_chat
+from app.ai.gemini import GeminiServiceUnavailableError, stream_chat
 from app.core.security import get_current_user
 from app.database.firestore_db import FirestoreOperationalRepository, get_firestore_repo
 from app.privacy.encryption import decode_client_ciphertext
@@ -25,6 +34,7 @@ from app.safety.engine import get_safety_engine
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
+legacy_chat_router = APIRouter(prefix="/api", tags=["chat-frontend-compat"])
 
 
 class CompanionPayload(BaseModel):
@@ -33,7 +43,9 @@ class CompanionPayload(BaseModel):
     length: Literal["short", "balanced", "deep"] = "balanced"
     avatar: Literal["bloom", "moon", "wave", "spark"] = "bloom"
     emoji: bool = True
-    approach: Literal["validate", "advise", "mix", "explore", "just_listen", "reframe", "guide_tool"] = "mix"
+    approach: Literal[
+        "validate", "advise", "mix", "explore", "just_listen", "reframe", "guide_tool"
+    ] = "mix"
     tone: Literal["gentle", "honest", "playful"] = "gentle"
     notes: str = Field(default="", max_length=400)
 
@@ -54,20 +66,22 @@ class ChatRequest(BaseModel):
     retain_encrypted: bool = False
 
 
-@router.post("/chat")
-async def chat_endpoint(
+async def _handle_chat_request(
     body: ChatRequest,
-    user: dict = Depends(get_current_user),
-    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
-):
+    user: dict,
+    fs: FirestoreOperationalRepository,
+) -> Response:
     uid = user["uid"]
-    last_user_msg = next((m for m in reversed(body.messages) if m.role == "user"), None)
-    if last_user_msg is None:
+    user_messages = [m for m in body.messages if m.role == "user"]
+    if not user_messages:
         raise HTTPException(status_code=400, detail="At least one user message is required.")
 
-    # 1. Deterministic + MuRIL Safety Check BEFORE LLM Inference + Firestore audit log
+    last_user_msg = user_messages[-1]
+    prior_user_texts = [m.content for m in user_messages[:-1]]
+
+    # 1. Deterministic + MuRIL + Multi-turn Context Safety Check BEFORE LLM Inference
     engine = get_safety_engine()
-    safety = await engine.evaluate(last_user_msg.content)
+    safety = await engine.evaluate(last_user_msg.content, prior_user_messages=prior_user_texts)
     await fs.log_safety_event(
         uid=uid,
         source="chat",
@@ -114,7 +128,7 @@ async def chat_endpoint(
             },
         )
 
-    # 2. Tier 3 Acute Crisis — Interrupt LLM & stream deterministic crisis response
+    # 2. Tier 3 Acute Crisis — Interrupt immediately (Gemini is NEVER called)
     if safety.should_interrupt:
         async def crisis_stream():
             yield safety.crisis_message or ""
@@ -129,7 +143,7 @@ async def chat_endpoint(
             },
         )
 
-    # 3. Cloud DLP PII Redaction before sending messages to Gemini 2.5 Flash
+    # 3. Scrub PII before sending messages to Gemini 2.5 Flash
     scrubbed_messages: list[dict] = []
     for m in body.messages:
         clean_text, _ = await redact_pii(m.content)
@@ -153,15 +167,41 @@ async def chat_endpoint(
             "\n\n[SAFETY CONTEXT — TIER 2 PASSIVE DISTRESS]: The user expressed emotional exhaustion "
             "or passive distress. Respond with deep empathy and emotional validation first. "
             "Gently offer a grounding exercise or 4-7-8 breathing (inhale 4s, hold 7s, exhale 8s), "
-            "and remind them that support resources like Tele-MANAS (14416) and iCall (9152987821) are always available."
+            "encourage reaching out to a trusted person, and remind them that support resources "
+            "like Tele-MANAS (14416) and iCall (9152987821) are always available."
+        )
+        if safety.contextual_escalation:
+            sys_prompt += (
+                "\n[CONTEXTUAL ESCALATION NOTE]: The user has expressed persistent distress across "
+                "multiple consecutive messages. Prioritise immediate grounding and warmly encourage "
+                "calling Tele-MANAS (14416) or a trusted contact right now."
+            )
+
+    # 5. Pre-flight check & stream initiation so connection failures return HTTP 502 instead of fake replies
+    gen = stream_chat(sys_prompt, scrubbed_messages)
+    try:
+        first_chunk = await gen.__anext__()
+    except StopAsyncIteration:
+        first_chunk = ""
+    except (GeminiServiceUnavailableError, Exception) as exc:
+        logger.warning("Gemini chat failed to start: %s", type(exc).__name__)
+        return JSONResponse(
+            status_code=502,
+            content={"error": "Neeva couldn't respond just now."},
+            headers={
+                "X-Neeva-Safety-Tier": str(int(safety.tier)),
+                "X-Neeva-Crisis-Interrupt": "false",
+            },
         )
 
     async def ai_stream():
+        if first_chunk:
+            yield first_chunk
         try:
-            async for delta in stream_chat(sys_prompt, scrubbed_messages):
+            async for delta in gen:
                 yield delta
         except Exception as exc:
-            logger.warning("Gemini chat stream error: %s", type(exc).__name__)
+            logger.warning("Gemini chat stream interrupted: %s", type(exc).__name__)
             yield "\n\n_(The connection dropped for a moment. Please send that again.)_"
 
     return StreamingResponse(
@@ -171,8 +211,28 @@ async def chat_endpoint(
             "Cache-Control": "no-store",
             "X-Neeva-Safety-Tier": str(int(safety.tier)),
             "X-Neeva-Crisis-Interrupt": "false",
+            "X-Neeva-Contextual-Escalation": str(safety.contextual_escalation).lower(),
         },
     )
+
+
+@router.post("/chat")
+async def chat_endpoint(
+    body: ChatRequest,
+    user: dict = Depends(get_current_user),
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    return await _handle_chat_request(body, user, fs)
+
+
+@legacy_chat_router.post("/chat")
+async def legacy_frontend_chat_endpoint(
+    body: ChatRequest,
+    user: dict = Depends(get_current_user),
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    """Direct compatibility route for `fetch('/api/chat')` in `frontend/src/routes/_authenticated/chat.tsx`."""
+    return await _handle_chat_request(body, user, fs)
 
 
 @router.get("/conversations")
@@ -190,8 +250,12 @@ async def list_conversations(
             "id": str(c["id"]),
             "title": c.get("title"),
             "language": c.get("language", "en"),
-            "created_at": c["created_at"].isoformat() if hasattr(c["created_at"], "isoformat") else str(c["created_at"]),
-            "updated_at": c["updated_at"].isoformat() if hasattr(c["updated_at"], "isoformat") else str(c["updated_at"]),
+            "created_at": c["created_at"].isoformat()
+            if hasattr(c["created_at"], "isoformat")
+            else str(c["created_at"]),
+            "updated_at": c["updated_at"].isoformat()
+            if hasattr(c["updated_at"], "isoformat")
+            else str(c["updated_at"]),
         }
         for c in rows
     ]
@@ -224,7 +288,9 @@ async def get_conversation(
                 "content_ciphertext": m.get("content_ciphertext"),
                 "content_iv": m.get("content_iv"),
                 "safety_tier": m.get("safety_tier"),
-                "created_at": m["created_at"].isoformat() if hasattr(m["created_at"], "isoformat") else str(m["created_at"]),
+                "created_at": m["created_at"].isoformat()
+                if hasattr(m["created_at"], "isoformat")
+                else str(m["created_at"]),
             }
             for m in msgs
         ],
