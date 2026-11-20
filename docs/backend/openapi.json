@@ -12,7 +12,7 @@
           "auth"
         ],
         "summary": "Register User",
-        "description": "Create a Firebase Auth user and initialize their Cloud Firestore profile & subcollections.",
+        "description": "Register a user locally in durable SQLite WAL storage and issue a zero-cost JWT.",
         "operationId": "register_user_api_v1_auth_register_post",
         "requestBody": {
           "content": {
@@ -46,13 +46,53 @@
         }
       }
     },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login User",
+        "description": "Authenticate email & password against durable SQLite WAL storage and return a signed JWT.",
+        "operationId": "login_user_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/verify-session": {
       "post": {
         "tags": [
           "auth"
         ],
         "summary": "Verify Session",
-        "description": "Verify current Firebase ID token and ensure user document exists in Cloud Firestore.",
+        "description": "Verify current token and ensure user profile exists in durable SQLite WAL storage.",
         "operationId": "verify_session_api_v1_auth_verify_session_post",
         "parameters": [
           {
@@ -218,6 +258,7 @@
           "auth"
         ],
         "summary": "Logout User",
+        "description": "Durably revoke the active JWT and user tokens in SQLite WAL.",
         "operationId": "logout_user_api_v1_auth_logout_post",
         "parameters": [
           {
@@ -4278,7 +4319,7 @@
           "models-and-dlp"
         ],
         "summary": "Dlp Inspect Endpoint",
-        "description": "Inspect text for Indian & general PII via Google Cloud DLP + custom infoType validators.",
+        "description": "Inspect text for Indian & general PII (local deterministic default in \u20b90 mode; opt-in Cloud DLP when enabled).",
         "operationId": "dlp_inspect_endpoint_api_v1_dlp_inspect_post",
         "parameters": [
           {
@@ -4352,7 +4393,7 @@
           "models-and-dlp"
         ],
         "summary": "Dlp Deidentify Endpoint",
-        "description": "De-identify/redact PII via Google Cloud DLP `content:deidentify` + deterministic Indian PII rules.",
+        "description": "De-identify/redact PII (local deterministic default in \u20b90 mode; opt-in Cloud DLP when enabled).",
         "operationId": "dlp_deidentify_endpoint_api_v1_dlp_deidentify_post",
         "parameters": [
           {
@@ -4982,6 +5023,28 @@
           "updated_at"
         ],
         "title": "JournalResponse"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "minLength": 5,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
       },
       "MessagePayload": {
         "properties": {

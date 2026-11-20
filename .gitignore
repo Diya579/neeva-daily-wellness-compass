@@ -9,3 +9,5 @@ Thumbs.db
 .vscode/
 *.zip
 .neeva_local_firestore.sqlite3*
+backend/data/
+data/

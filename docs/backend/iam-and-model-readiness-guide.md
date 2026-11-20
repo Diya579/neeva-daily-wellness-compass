@@ -47,3 +47,4 @@ Returns exact truth-in-telemetry fields:
 - `muril.model_loaded`: `true` only when `models/muril/muril_distress.onnx` weights are loaded in ONNX Runtime (`active_inference_backend: "muril_onnx_runtime"` vs `"deterministic_multilingual_rules"`).
 - `gemma_2_2b_it.vertex_endpoint_configured`: `true` when `VERTEX_GEMMA_2B_ENDPOINT` is set; `/api/v1/models/gemma-2b/moderate` returns `inference_source: "vertex_ai_gemma_2_2b_it"` and `live_inference_performed: true` only when the actual Vertex AI `:predict` call succeeds.
 - `gemma_2_9b_it.vertex_endpoint_configured`: `true` when `VERTEX_GEMMA_9B_ENDPOINT` is set; `/api/v1/models/gemma-9b/infer` enforces Tier 3 safety lockdown first and returns HTTP `503 VERTEX_ENDPOINT_NOT_PROVISIONED` when unprovisioned.
+

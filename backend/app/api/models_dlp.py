@@ -94,14 +94,24 @@ async def get_models_and_dlp_status(
     user: dict = Depends(get_current_user),
     fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
 ):
+    from app.ai.providers import get_ai_providers_status
+
     muril = MuRILClassifier()
     return {
+        "zero_cost_mode": settings.ZERO_COST_MODE,
+        "permitted_expenditure_inr": 0,
+        "paid_cloud_services_disabled": True,
+        "database_mode": settings.DATABASE_MODE,
         "firestore_database_mode": fs.mode,
-        "firebase_project_id": fs.project_id,
+        "sqlite_wal_db_path": str(fs.db_path),
+        "auth_mode": settings.AUTH_MODE,
+        "ai_providers": get_ai_providers_status(),
+        "firebase_project_id": fs.project_id or None,
         "gemini_2_5_flash": {
             "model_id": settings.GEMINI_MODEL,
+            "optional_free_tier_enabled": settings.ENABLE_OPTIONAL_GEMINI_FREE_TIER,
             "api_key_configured": bool(settings.GEMINI_API_KEY),
-            "vertex_project_configured": bool(settings.GOOGLE_CLOUD_PROJECT),
+            "paid_vertex_ai_disabled": True,
         },
         "muril": muril.readiness_report(),
         "gemma_2_9b_it": {
@@ -114,9 +124,10 @@ async def get_models_and_dlp_status(
             "vertex_endpoint_configured": bool(settings.VERTEX_GEMMA_2B_ENDPOINT),
             "vertex_endpoint": settings.VERTEX_GEMMA_2B_ENDPOINT or None,
         },
-        "cloud_dlp": {
-            "project_id": settings.GOOGLE_CLOUD_PROJECT,
-            "region": settings.DLP_REGION,
+        "pii_protection": {
+            "default_engine": "local_deterministic_indian_pii_scrubber",
+            "optional_cloud_dlp_enabled": settings.ENABLE_OPTIONAL_CLOUD_DLP,
+            "cost_inr": 0,
         },
     }
 
@@ -347,8 +358,9 @@ async def dlp_inspect_endpoint(
     body: TextInferenceRequest,
     user: dict = Depends(get_current_user),
 ):
-    """Inspect text for Indian & general PII via Google Cloud DLP + custom infoType validators."""
-    res = await inspect_pii_live_or_hybrid(body.text, attempt_live_dlp=True)
+    """Inspect text for Indian & general PII (local deterministic default in ₹0 mode; opt-in Cloud DLP when enabled)."""
+    attempt_live = body.require_live or settings.ENABLE_OPTIONAL_CLOUD_DLP
+    res = await inspect_pii_live_or_hybrid(body.text, attempt_live_dlp=attempt_live)
     if body.require_live and not res["live_dlp_succeeded"]:
         raise HTTPException(
             status_code=503,
@@ -365,11 +377,12 @@ async def dlp_deidentify_endpoint(
     body: TextInferenceRequest,
     user: dict = Depends(get_current_user),
 ):
-    """De-identify/redact PII via Google Cloud DLP `content:deidentify` + deterministic Indian PII rules."""
+    """De-identify/redact PII (local deterministic default in ₹0 mode; opt-in Cloud DLP when enabled)."""
+    attempt_live = body.require_live or settings.ENABLE_OPTIONAL_CLOUD_DLP
     try:
         return await deidentify_pii_detailed(
             body.text,
-            attempt_live_dlp=True,
+            attempt_live_dlp=attempt_live,
             require_live_dlp=body.require_live,
         )
     except RuntimeError as exc:

@@ -153,12 +153,14 @@ def analyze_locally(text: str) -> dict:
 
 async def analyze_journal_entry(text: str, prompt: str = "") -> tuple[dict, str]:
     """
-    Analyze journal entry with Gemini 2.5 Flash; falls back to `analyze_locally` if offline or unconfigured.
-    Returns `(analysis_dict, source)` where source is `"ai"` or `"offline"`.
+    Analyze journal entry in Zero-Cost Mode:
+    - Uses optional free-tier Gemini ONLY if `settings.ENABLE_OPTIONAL_GEMINI_FREE_TIER` and
+      `settings.GEMINI_API_KEY` are explicitly configured.
+    - Otherwise uses the deterministic local CBT reflection engine and honestly returns `source="offline"`.
     """
     from app.core.config import settings
 
-    if not settings.GEMINI_API_KEY and settings.ENVIRONMENT != "production":
+    if not settings.ENABLE_OPTIONAL_GEMINI_FREE_TIER or not settings.GEMINI_API_KEY:
         return analyze_locally(text), "offline"
 
     try:
@@ -171,6 +173,6 @@ async def analyze_journal_entry(text: str, prompt: str = "") -> tuple[dict, str]
         raw["summary"] = validate_ai_response(str(raw.get("summary", "")))
         return raw, "ai"
     except Exception as exc:
-        logger.warning("Gemini journal analysis failed (%s); using offline fallback.", exc)
+        logger.warning("Optional free-tier Gemini journal analysis unavailable (%s); using offline fallback.", exc)
         return analyze_locally(text), "offline"
 

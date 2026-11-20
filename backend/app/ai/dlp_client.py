@@ -269,14 +269,17 @@ async def deidentify_pii_detailed(
     }
 
 
-async def redact_pii(text: str, use_cloud_dlp: bool = True) -> tuple[str, list[str]]:
+async def redact_pii(text: str, use_cloud_dlp: bool = False) -> tuple[str, list[str]]:
     """
     High-level PII redaction helper used by Chat, Journal, and Community services.
-    Attempts live Cloud DLP in production and applies deterministic Indian PII scrubbing.
+    In Zero-Cost Mode (default), uses deterministic local Indian PII detection and redaction
+    (Aadhaar, PAN, +91 Phone, Email, 6-digit PIN Code, Street Address) with zero paid Cloud DLP calls.
     """
-    should_attempt_live = use_cloud_dlp and (
-        settings.ENVIRONMENT == "production"
-        or bool(settings.GOOGLE_CLOUD_PROJECT and settings.ENVIRONMENT != "test")
+    should_attempt_live = (
+        use_cloud_dlp
+        and settings.ENABLE_OPTIONAL_CLOUD_DLP
+        and not settings.ZERO_COST_MODE
+        and bool(settings.GOOGLE_CLOUD_PROJECT)
     )
     res = await deidentify_pii_detailed(text, attempt_live_dlp=should_attempt_live)
     return res["redacted_text"], res["detected_info_types"]
