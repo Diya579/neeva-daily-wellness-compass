@@ -202,6 +202,7 @@ function ChatRoom() {
           language,
           script,
           companion,
+          history: chat.slice(-10).map(({ role, content: c }) => ({ role, content: c })),
           token,
           abortController: ctrl,
         });

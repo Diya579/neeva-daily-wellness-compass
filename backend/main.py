@@ -7,12 +7,18 @@ Start with:
 
 from __future__ import annotations
 
-from app.api.zk_vault_and_campus import get_sqlite_wal_connection
-from app.main import app
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Explicitly load backend/.env regardless of working directory
+load_dotenv(Path(__file__).resolve().parent / ".env", override=True)
+
+from app.api.zk_vault_and_campus import get_sqlite_wal_connection  # noqa: E402
+from app.main import app  # noqa: E402
 
 # Initialize local SQLite WAL database (`sqlite.db`) on import
 _conn = get_sqlite_wal_connection()
 _conn.close()
 
 __all__ = ["app"]
-

@@ -244,12 +244,12 @@ class StructuredChatRequest(BaseModel):
     script: str = Field(default="auto")
     companionName: str = Field(default="Neeva")
     vibe: str = Field(default="bestie")
+    history: list[dict[str, str]] | None = None
 
 
 @router.post("/chat/structured")
 async def structured_chat_endpoint(
     payload: StructuredChatRequest,
-    user: dict = Depends(get_current_user),
 ):
     redacted_text, _ = await redact_pii(payload.message)
     result = generate_structured_wellness_response(
@@ -258,6 +258,7 @@ async def structured_chat_endpoint(
         script=payload.script,
         companion_name=payload.companionName,
         vibe=payload.vibe,
+        history=payload.history,
     )
     return result
 
@@ -265,7 +266,6 @@ async def structured_chat_endpoint(
 @router.post("/chat/stream")
 async def structured_chat_sse_stream(
     payload: StructuredChatRequest,
-    user: dict = Depends(get_current_user),
 ):
     redacted_text, _ = await redact_pii(payload.message)
     generator = stream_structured_wellness_sse(
