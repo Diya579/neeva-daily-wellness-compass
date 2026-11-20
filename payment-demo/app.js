@@ -168,23 +168,81 @@
     }
   }
 
-  function runSimulatedPayment(forceSuccess) {
+  async function runSimulatedPayment(forceSuccess) {
     switchView("processing");
     const stepText = document.getElementById("processing-step-text");
-    stepText.textContent = "Step 1/3: Validating fictional sandbox token (no external network call)…";
+    stepText.textContent = "Step 1/3: Connecting to Neeva FastAPI Demo Checkout (SQLite WAL)…";
+
+    const shouldSucceed =
+      forceSuccess === true ||
+      (forceSuccess === undefined && document.getElementById("radio-sim-success").checked);
+
+    const nameInput = document.getElementById("demo-name");
+    const subscriberName = nameInput ? nameInput.value : "Aarav Sharma (DEMO)";
+    const storedSession = (() => {
+      try {
+        return JSON.parse(window.localStorage.getItem("neeva:local-auth:session") || "null");
+      } catch {
+        return null;
+      }
+    })();
+    const userId = storedSession?.user?.id || "demo_user";
 
     setTimeout(() => {
       if (state.currentView !== "processing") return;
-      stepText.textContent = "Step 2/3: Running deterministic payment simulation…";
-    }, 350);
+      stepText.textContent = "Step 2/3: Recording demo subscription in local SQLite WAL vault…";
+    }, 300);
+
+    let backendReceipt = null;
+    try {
+      const res = await fetch("/api/v1/payment-demo/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          subscriberName,
+          planId: state.selectedPlanId,
+          billingCycle: state.billingCycle,
+          couponCode: state.appliedCoupon ? state.appliedCoupon.code : null,
+          paymentMethod: state.paymentMethod,
+          simulateSuccess: shouldSucceed,
+        }),
+      });
+      if (res.ok) {
+        backendReceipt = await res.json();
+      }
+    } catch {
+      /* standalone fallback if opened without backend */
+    }
 
     setTimeout(() => {
       if (state.currentView !== "processing") return;
-      const shouldSucceed =
-        forceSuccess === true ||
-        (forceSuccess === undefined && document.getElementById("radio-sim-success").checked);
-      state.lastTransactionId = "DEMO-TXN-2026-" + Math.floor(1000 + Math.random() * 9000);
+      state.lastTransactionId =
+        backendReceipt?.transactionId ||
+        "DEMO-TXN-2026-" + Math.floor(1000 + Math.random() * 9000);
+
       if (shouldSucceed) {
+        try {
+          const calc = calculatePricing();
+          window.localStorage.setItem(
+            "neeva:demo-subscription",
+            JSON.stringify({
+              active: true,
+              planId: calc.plan.id,
+              planName: calc.plan.name,
+              billingCycle: state.billingCycle,
+              finalTotal: backendReceipt?.finalTotal ?? calc.finalTotal,
+              priceLabel:
+                state.billingCycle === "yearly"
+                  ? `₹${backendReceipt?.finalTotal ?? calc.finalTotal}/year`
+                  : `₹${backendReceipt?.finalTotal ?? calc.finalTotal}/month`,
+              transactionId: state.lastTransactionId,
+              syncedToBackend: Boolean(backendReceipt),
+            })
+          );
+        } catch {
+          /* ignore storage errors */
+        }
         switchView("success");
       } else {
         switchView("failed");

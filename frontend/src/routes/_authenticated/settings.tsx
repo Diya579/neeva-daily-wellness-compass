@@ -233,13 +233,21 @@ function SettingsPage() {
       </Panel>
 
       <Panel>
-        <PanelTitle eyebrow="Account" title={email} />
-        <button
-          onClick={() => void signOut()}
-          className="inline-flex h-10 items-center gap-2 rounded-full border-[1.5px] border-ink px-4 text-sm font-bold hover:bg-muted"
-        >
-          <LogOut className="size-4" /> Sign out
-        </button>
+        <PanelTitle eyebrow="Account & Subscription" title={email} />
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href="/payment-demo/"
+            className="pop press inline-flex h-10 items-center gap-2 rounded-full bg-zest px-4 text-sm font-bold text-zest-foreground"
+          >
+            Manage Plan &amp; Demo Checkout (₹49–₹149) →
+          </a>
+          <button
+            onClick={() => void signOut()}
+            className="inline-flex h-10 items-center gap-2 rounded-full border-[1.5px] border-ink px-4 text-sm font-bold hover:bg-muted"
+          >
+            <LogOut className="size-4" /> Sign out
+          </button>
+        </div>
       </Panel>
       <div className="overflow-hidden rounded-2xl">
         <SecurityBanner />

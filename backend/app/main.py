@@ -4,10 +4,12 @@ import logging
 import uuid
 from contextlib import asynccontextmanager
 
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -18,6 +20,7 @@ from app.api import (
     journal,
     models_dlp,
     mood,
+    payment_demo,
     privacy,
     profile,
     safety,
@@ -151,6 +154,16 @@ app.include_router(wellness.router)
 app.include_router(community.router)
 app.include_router(privacy.router)
 app.include_router(models_dlp.router)
+app.include_router(payment_demo.router)
+
+# Mount the Payment Demo UI at /payment-demo/ when the directory exists
+_PAYMENT_DEMO_DIR = Path(__file__).resolve().parents[2] / "payment-demo"
+if _PAYMENT_DEMO_DIR.is_dir():
+    app.mount(
+        "/payment-demo",
+        StaticFiles(directory=str(_PAYMENT_DEMO_DIR), html=True),
+        name="payment-demo",
+    )
 
 
 @app.get("/health", tags=["health"])

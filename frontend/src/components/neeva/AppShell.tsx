@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
@@ -53,9 +53,42 @@ export function useSignOut() {
   };
 }
 
+function useDemoSubscription(userId: string) {
+  const [plan, setPlan] = useState<{ planName: string; priceLabel: string; active: boolean }>({
+    planName: "Neeva Plus",
+    priceLabel: "₹99/month",
+    active: false,
+  });
+
+  useEffect(() => {
+    try {
+      const cached = window.localStorage.getItem("neeva:demo-subscription");
+      if (cached) {
+        const parsed = JSON.parse(cached) as { planName?: string; priceLabel?: string; active?: boolean };
+        if (parsed.planName && parsed.priceLabel) {
+          setPlan({ planName: parsed.planName, priceLabel: parsed.priceLabel, active: Boolean(parsed.active) });
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    fetch(`/api/v1/payment-demo/subscription?userId=${encodeURIComponent(userId || "demo_user")}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { active?: boolean; planName?: string; priceLabel?: string } | null) => {
+        if (data?.active && data.planName && data.priceLabel) {
+          setPlan({ planName: data.planName, priceLabel: data.priceLabel, active: true });
+        }
+      })
+      .catch(() => undefined);
+  }, [userId]);
+
+  return plan;
+}
+
 function ProfileMenu() {
-  const { profile, email, goal } = useProfile();
+  const { userId, profile, email, goal } = useProfile();
   const { points, moods } = useNeeva();
+  const demoPlan = useDemoSubscription(userId);
   const signOut = useSignOut();
   const name = profile.display_name || email.split("@")[0] || "You";
   const initial = name.slice(0, 1).toUpperCase();
@@ -81,9 +114,12 @@ function ProfileMenu() {
             </span>
           </span>
         </DropdownMenuLabel>
-        <div className="mx-2 mb-2 rounded-xl bg-zest px-3 py-2 text-xs font-semibold text-zest-foreground">
-          Neeva Plus · ₹99/month
-        </div>
+        <a
+          href="/payment-demo/"
+          className="mx-2 mb-2 block rounded-xl bg-zest px-3 py-2 text-xs font-semibold text-zest-foreground transition-opacity hover:opacity-90"
+        >
+          {demoPlan.planName} · {demoPlan.priceLabel} {demoPlan.active ? "(Demo Active)" : "· View Plans →"}
+        </a>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="rounded-xl">
           <Link to="/settings">
@@ -164,15 +200,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <Settings className="size-[18px]" strokeWidth={2} /> Settings
           </Link>
-          <div className="relative overflow-hidden rounded-3xl border-[1.5px] border-ink bg-rose p-4">
+          <a
+            href="/payment-demo/"
+            className="relative block overflow-hidden rounded-3xl border-[1.5px] border-ink bg-rose p-4 transition-transform duration-300 hover:-translate-y-0.5"
+          >
             <p className="font-display text-2xl leading-tight text-rose-foreground">
               Care that fits <em>every</em> pocket.
             </p>
             <p className="mt-1 text-xs text-rose-foreground/80">
-              Unlimited chats, journaling & circles. ₹99/month.
+              Unlimited chats, journaling & circles. ₹99/month →
             </p>
             <span className="absolute -right-3 -top-3 size-12 animate-spin-slow rounded-full border-[1.5px] border-dashed border-ink/40" />
-          </div>
+          </a>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
