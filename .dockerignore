@@ -1,0 +1,16 @@
+.git
+.pytest_cache
+__pycache__
+*.pyc
+frontend/node_modules
+frontend/dist
+frontend/.env
+frontend/.env.local
+backend/.env
+backend/data
+data
+*.sqlite3*
+*.db*
+*.zip
+docs
+models
