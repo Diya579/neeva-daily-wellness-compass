@@ -15,6 +15,7 @@ import uuid
 from datetime import datetime, timezone
 from email.message import EmailMessage
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
@@ -55,11 +56,21 @@ class VerifyOtpRequest(BaseModel):
     otp: str = Field(..., min_length=6, max_length=6)
 
 
+class GoogleAuthRequest(BaseModel):
+    access_token: str | None = Field(default=None, max_length=4096)
+    id_token: str | None = Field(default=None, max_length=4096)
+
+
+DEFAULT_GOOGLE_CLIENT_ID = (
+    "44448480206-qiqpquprjfiq9t7bfe9ipo8155rhqu0b.apps.googleusercontent.com"
+)
+
+
 def _send_smtp_verification_email(to_email: str, otp: str, purpose: str) -> bool:
-    """Send a real verification email if SMTP_HOST/SMTP_USER/SMTP_PASS are configured."""
+    """Send a real verification email via Gmail/SMTP when SMTP_HOST/SMTP_USER/SMTP_PASS are configured."""
     host = os.getenv("SMTP_HOST", "").strip()
     user = os.getenv("SMTP_USER", "").strip()
-    password = os.getenv("SMTP_PASS", "").strip()
+    password = os.getenv("SMTP_PASS", "").replace(" ", "").strip()
     port = int(os.getenv("SMTP_PORT", "587") or "587")
     from_addr = os.getenv("SMTP_FROM", user or "noreply@neeva.in").strip()
     if not host or not user or not password:
@@ -67,21 +78,45 @@ def _send_smtp_verification_email(to_email: str, otp: str, purpose: str) -> bool
     try:
         msg = EmailMessage()
         msg["Subject"] = f"Your Neeva verification code: {otp}"
-        msg["From"] = from_addr
+        msg["From"] = f"Neeva Wellness <{from_addr}>"
         msg["To"] = to_email
-        action_lbl = "Google sign-in" if purpose == "google_signin" else "sign-up"
+        action_lbl = "Google sign-in" if purpose == "google_signin" else "account sign-up"
         msg.set_content(
             f"Hi,\n\nYour 6-digit Neeva {action_lbl} verification code is: {otp}\n\n"
             "This code expires in 10 minutes. If you did not request this, you can safely ignore this email.\n\n"
-            "— Neeva Daily Wellness Compass"
+            "— Neeva: Daily Wellness Compass"
         )
-        with smtplib.SMTP(host, port, timeout=10) as server:
+        msg.add_alternative(
+            f"""\
+            <html>
+              <body style="font-family: 'Segoe UI', Arial, sans-serif; background:#FAF7F0; color:#183024; padding:24px;">
+                <div style="max-width:460px; margin:0 auto; background:#FFFFFF; border:1.5px solid #183024; border-radius:18px; padding:24px;">
+                  <h2 style="margin:0 0 8px 0; color:#183024;">Verify your Neeva email</h2>
+                  <p style="margin:0 0 18px 0; color:#50655A; font-size:14px;">
+                    Enter this 6-digit code to complete your {action_lbl}:
+                  </p>
+                  <div style="background:#E6F4EA; border:1.5px solid #183024; border-radius:12px; padding:14px; text-align:center; font-size:28px; font-weight:800; letter-spacing:8px; color:#137333;">
+                    {otp}
+                  </div>
+                  <p style="margin:18px 0 0 0; color:#50655A; font-size:12px;">
+                    This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.
+                  </p>
+                </div>
+              </body>
+            </html>
+            """,
+            subtype="html",
+        )
+        with smtplib.SMTP(host, port, timeout=12) as server:
+            server.ehlo()
             server.starttls()
+            server.ehlo()
             server.login(user, password)
             server.send_message(msg)
+        logger.info("Sent real SMTP verification OTP to %s", to_email)
         return True
     except Exception as exc:
-        logger.warning("SMTP delivery failed for %s: %s", to_email, exc)
+        logger.error("SMTP delivery failed for %s: %s", to_email, exc)
         return False
 
 
@@ -226,21 +261,136 @@ async def send_email_otp(
         },
     )
 
+    smtp_configured = bool(
+        os.getenv("SMTP_HOST", "").strip()
+        and os.getenv("SMTP_USER", "").strip()
+        and os.getenv("SMTP_PASS", "").strip()
+    )
     sent_via_smtp = _send_smtp_verification_email(norm_email, otp, body.purpose)
+    if smtp_configured and not sent_via_smtp:
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to deliver verification email via SMTP. Please try again in a moment.",
+        )
+
     response: dict = {
         "status": "otp_sent",
         "email": norm_email,
         "expires_in_seconds": 600,
         "delivery_mode": "smtp_email" if sent_via_smtp else "in_app_demo",
         "message": (
-            f"We sent a 6-digit verification code to {norm_email}."
+            f"We sent a 6-digit verification code to {norm_email}. Please check your inbox (and spam folder)."
             if sent_via_smtp
-            else f"Verification code generated for {norm_email} (configure SMTP_HOST/SMTP_USER/SMTP_PASS for live inbox delivery)."
+            else f"Verification code generated for {norm_email} (local test mode)."
         ),
     }
     if not sent_via_smtp:
         response["demo_otp"] = otp
     return response
+
+
+@router.get("/config")
+async def get_auth_config():
+    """Return public OAuth & email delivery capabilities for the frontend."""
+    client_id = os.getenv("GOOGLE_OAUTH_CLIENT_ID", DEFAULT_GOOGLE_CLIENT_ID).strip() or DEFAULT_GOOGLE_CLIENT_ID
+    smtp_enabled = bool(
+        os.getenv("SMTP_HOST", "").strip()
+        and os.getenv("SMTP_USER", "").strip()
+        and os.getenv("SMTP_PASS", "").strip()
+    )
+    return {
+        "google_client_id": client_id,
+        "smtp_enabled": smtp_enabled,
+    }
+
+
+@router.post("/google")
+async def google_oauth_signin(
+    body: GoogleAuthRequest,
+    fs: FirestoreOperationalRepository = Depends(get_firestore_repo),
+):
+    """Verify a real Google Identity Services access_token or id_token and issue a Neeva JWT."""
+    email = ""
+    display_name = ""
+    email_verified = False
+    google_sub = ""
+
+    if body.access_token:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                headers={"Authorization": f"Bearer {body.access_token}"},
+            )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid or expired Google OAuth access token.")
+        info = resp.json()
+        email = _normalize_email(str(info.get("email", "")))
+        display_name = str(info.get("name") or info.get("given_name") or email.split("@")[0])[:40]
+        email_verified = bool(info.get("email_verified", False))
+        google_sub = str(info.get("sub", ""))
+    elif body.id_token:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(
+                "https://oauth2.googleapis.com/tokeninfo",
+                params={"id_token": body.id_token},
+            )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid or expired Google ID token.")
+        info = resp.json()
+        expected_aud = os.getenv("GOOGLE_OAUTH_CLIENT_ID", DEFAULT_GOOGLE_CLIENT_ID).strip()
+        if expected_aud and info.get("aud") != expected_aud:
+            raise HTTPException(status_code=401, detail="Google ID token audience mismatch.")
+        email = _normalize_email(str(info.get("email", "")))
+        display_name = str(info.get("name") or email.split("@")[0])[:40]
+        email_verified = str(info.get("email_verified", "")).lower() == "true"
+        google_sub = str(info.get("sub", ""))
+    else:
+        raise HTTPException(status_code=400, detail="Either access_token or id_token is required.")
+
+    if not email or not email_verified:
+        raise HTTPException(status_code=401, detail="Google account email is not verified.")
+
+    account = await fs.get_doc(f"auth_accounts/{email}")
+    now = datetime.now(timezone.utc)
+    if account is None:
+        uid = f"google_{google_sub[:16]}" if google_sub else f"google_uid_{uuid.uuid4().hex[:16]}"
+        pw_hash, pw_salt = hash_password_pbkdf2(secrets.token_urlsafe(32))
+        await fs.set_doc(
+            f"auth_accounts/{email}",
+            {
+                "uid": uid,
+                "email": email,
+                "display_name": display_name,
+                "password_hash": pw_hash,
+                "password_salt": pw_salt,
+                "role": "user",
+                "email_verified": True,
+                "auth_provider": "google_oauth",
+                "created_at": now,
+                "updated_at": now,
+            },
+        )
+    else:
+        uid = account["uid"]
+        display_name = account.get("display_name") or display_name
+
+    profile = await fs.ensure_user_profile(uid, display_name, role="user")
+    token = create_local_jwt(
+        uid=uid,
+        email=email,
+        display_name=profile["display_name"],
+        role=profile["role"],
+    )
+    return {
+        "uid": uid,
+        "email": email,
+        "display_name": profile["display_name"],
+        "role": profile["role"],
+        "email_verified": True,
+        "access_token": token,
+        "token_type": "bearer",
+        "auth_provider": "google_oauth",
+    }
 
 
 @router.post("/verify-otp")

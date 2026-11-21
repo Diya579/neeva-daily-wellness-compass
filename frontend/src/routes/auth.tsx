@@ -3,7 +3,54 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowLeft, KeyRound, Loader2, MailCheck, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { requestEmailOtp, supabase, verifyEmailOtp } from "@/integrations/supabase/client";
+import {
+  completeGoogleOAuthSignIn,
+  GOOGLE_OAUTH_CLIENT_ID,
+  requestEmailOtp,
+  supabase,
+  verifyEmailOtp,
+} from "@/integrations/supabase/client";
+
+declare global {
+  interface Window {
+    google?: {
+      accounts?: {
+        oauth2?: {
+          initTokenClient: (config: {
+            client_id: string;
+            scope: string;
+            prompt?: string;
+            callback: (response: { access_token?: string; error?: string; error_description?: string }) => void;
+            error_callback?: (error: { type?: string; message?: string }) => void;
+          }) => { requestAccessToken: (overrideConfig?: { prompt?: string }) => void };
+        };
+      };
+    };
+  }
+}
+
+let gisScriptPromise: Promise<void> | null = null;
+function loadGoogleIdentityScript(): Promise<void> {
+  if (typeof window === "undefined") return Promise.reject(new Error("Browser required"));
+  if (window.google?.accounts?.oauth2) return Promise.resolve();
+  if (gisScriptPromise) return gisScriptPromise;
+  gisScriptPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://accounts.google.com/gsi/client"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("Failed to load Google Sign-In")));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Google Identity Services"));
+    document.head.appendChild(script);
+  });
+  return gisScriptPromise;
+}
 import { safeRedirect, useAuthSession } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
 import side from "@/assets/window-calm.jpg";
@@ -228,13 +275,48 @@ function AuthPage() {
   };
 
   /**
-   * Secondary Entry: Opens the Google account & email verification gate before entering the dashboard.
+   * Secondary Entry: Opens the REAL Google Identity Services Account Chooser popup,
+   * then cryptographically verifies the Google OAuth token on our backend.
    */
-  const enterGoogleSignIn = () => {
-    setSent(null);
-    setPendingAuth(null);
-    setOtpInput("");
-    setMode("google");
+  const enterGoogleSignIn = async () => {
+    setBusy(true);
+    try {
+      await loadGoogleIdentityScript();
+      const oauth2 = window.google?.accounts?.oauth2;
+      if (!oauth2) {
+        throw new Error("Google Sign-In could not initialize. Please check popup blockers and try again.");
+      }
+      const tokenClient = oauth2.initTokenClient({
+        client_id: GOOGLE_OAUTH_CLIENT_ID,
+        scope: "openid email profile",
+        prompt: "select_account",
+        callback: async (tokenResponse) => {
+          try {
+            if (tokenResponse.error || !tokenResponse.access_token) {
+              throw new Error(tokenResponse.error_description || tokenResponse.error || "Google sign-in cancelled.");
+            }
+            const { user } = await completeGoogleOAuthSignIn({
+              accessToken: tokenResponse.access_token,
+            });
+            toast.success(`Signed in with Google (${user.email})`);
+          } catch (err) {
+            toast.error((err as Error).message || "Google sign-in failed");
+          } finally {
+            setBusy(false);
+          }
+        },
+        error_callback: (err) => {
+          setBusy(false);
+          if (err?.type !== "popup_closed") {
+            toast.error(err?.message || "Google sign-in popup was blocked or closed.");
+          }
+        },
+      });
+      tokenClient.requestAccessToken({ prompt: "select_account" });
+    } catch (err) {
+      toast.error((err as Error).message || "Google sign-in failed");
+      setBusy(false);
+    }
   };
 
   return (
@@ -308,7 +390,7 @@ function AuthPage() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={enterGoogleSignIn}
+                onClick={() => void enterGoogleSignIn()}
                 className="flex h-11 w-full items-center justify-center gap-2.5 rounded-2xl border border-[#747775] bg-[#FFFFFF] px-3 text-sm font-medium text-[#1F1F1F] disabled:opacity-60"
               >
                 <GoogleG /> Continue with Google

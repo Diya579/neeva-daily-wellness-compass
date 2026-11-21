@@ -191,6 +191,63 @@ export async function requestEmailOtp(
   }
 }
 
+export const GOOGLE_OAUTH_CLIENT_ID =
+  "44448480206-qiqpquprjfiq9t7bfe9ipo8155rhqu0b.apps.googleusercontent.com";
+
+export async function completeGoogleOAuthSignIn(params: {
+  accessToken?: string;
+  idToken?: string;
+}): Promise<{ user: LocalUser; session: LocalSession }> {
+  const res = await fetch(`${getApiBaseUrl()}/api/v1/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      access_token: params.accessToken,
+      id_token: params.idToken,
+    }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(typeof body?.detail === "string" ? body.detail : "Google sign-in verification failed.");
+  }
+
+  const userId = String(body.uid);
+  const email = String(body.email);
+  const displayName = String(body.display_name || email.split("@")[0] || "Neeva Member");
+  const token = String(body.access_token);
+
+  const user: LocalUser = {
+    id: userId,
+    email,
+    user_metadata: { display_name: displayName },
+  };
+  const session: LocalSession = {
+    access_token: token,
+    token_type: "bearer",
+    user,
+  };
+
+  const profiles = readProfilesMap();
+  if (!profiles[userId]) {
+    profiles[userId] = defaultProfile(userId, displayName);
+    writeProfilesMap(profiles);
+  }
+  if (typeof window !== "undefined") {
+    try {
+      const usersRaw = window.localStorage.getItem(USERS_STORAGE_KEY);
+      const users = usersRaw ? (JSON.parse(usersRaw) as Record<string, { id: string; displayName: string }>) : {};
+      users[email] = { id: userId, displayName };
+      window.localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  writeStoredSession(session);
+  emitAuthChange("SIGNED_IN", session);
+  return { user, session };
+}
+
 export async function verifyEmailOtp(email: string, otp: string): Promise<boolean> {
   const normEmail = email.trim().toLowerCase();
   const cleanOtp = otp.trim();

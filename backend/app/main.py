@@ -104,6 +104,7 @@ async def security_and_request_id_middleware(request: Request, call_next):
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
     return response
 
 
