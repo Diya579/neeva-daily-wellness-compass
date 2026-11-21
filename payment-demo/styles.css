@@ -49,6 +49,8 @@ html, body {
   color: var(--foreground);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Demo Top Isolation Banner */
@@ -95,7 +97,15 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .brand-mark {
@@ -295,9 +305,14 @@ html, body {
 /* Plan Cards Grid */
 .plans-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 1.25rem;
   margin-bottom: 2.5rem;
+}
+
+.plans-grid > *,
+.checkout-grid > * {
+  min-width: 0;
 }
 
 .plan-card {
@@ -589,5 +604,100 @@ html, body {
   text-align: center;
   font-size: 0.82rem;
   color: var(--muted-foreground);
+}
+
+/* Mobile Responsive Hardening (Zero Horizontal Overflow on 320px-640px screens) */
+@media (max-width: 640px) {
+  .demo-isolation-banner {
+    font-size: 0.68rem;
+    padding: 0.5rem 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .header-inner {
+    padding: 0.7rem 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .route-badge {
+    display: none;
+  }
+
+  .container {
+    padding: 1.25rem 0.9rem 3rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-sub {
+    font-size: 0.92rem;
+  }
+
+  .demo-toolbar {
+    padding: 0.7rem 0.85rem;
+    border-radius: 1.15rem;
+  }
+
+  .toolbar-buttons {
+    width: 100%;
+  }
+
+  .chip-btn {
+    font-size: 0.68rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .billing-toggle {
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 1.25rem;
+    max-width: 100%;
+  }
+
+  .billing-option {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-card,
+  .panel-card,
+  .comparison-panel {
+    padding: 1.15rem;
+    border-radius: 1.35rem;
+  }
+
+  .plan-card.selected {
+    transform: none;
+    box-shadow: var(--elev-pop);
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .method-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .coupon-box {
+    flex-direction: column;
+  }
+
+  .coupon-box .btn-secondary {
+    width: 100%;
+  }
+
+  .state-card {
+    padding: 1.4rem 1rem;
+    border-radius: 1.4rem;
+  }
 }
 

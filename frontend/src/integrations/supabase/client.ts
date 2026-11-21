@@ -111,25 +111,120 @@ function writeProfilesMap(map: Record<string, ProfileRow>): void {
 async function tryBackendAuth(
   endpoint: "/api/v1/auth/register" | "/api/v1/auth/login",
   payload: Record<string, unknown>
-): Promise<{ uid: string; email: string; access_token: string; display_name?: string } | null> {
+): Promise<{
+  ok: boolean;
+  status: number;
+  detail?: string;
+  data?: { uid: string; email: string; access_token: string; display_name?: string };
+} | null> {
   try {
     const res = await fetch(`${getApiBaseUrl()}${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    const body = await res.json().catch(() => ({}));
     if (res.ok) {
-      return (await res.json()) as {
-        uid: string;
-        email: string;
-        access_token: string;
-        display_name?: string;
+      return {
+        ok: true,
+        status: res.status,
+        data: body as { uid: string; email: string; access_token: string; display_name?: string },
       };
     }
+    return {
+      ok: false,
+      status: res.status,
+      detail: typeof body?.detail === "string" ? body.detail : "Authentication failed.",
+    };
   } catch {
     /* backend offline — fall back to local edge auth */
   }
   return null;
+}
+
+const LOCAL_OTP_STORAGE_KEY = "neeva:local-auth:pending-otps";
+
+export async function requestEmailOtp(
+  email: string,
+  purpose: "signup" | "google_signin" = "signup"
+): Promise<{
+  email: string;
+  deliveryMode: "smtp_email" | "in_app_demo";
+  message: string;
+  demoOtp?: string;
+}> {
+  const normEmail = email.trim().toLowerCase();
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/v1/auth/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: normEmail, purpose }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(typeof body?.detail === "string" ? body.detail : "Could not send verification code.");
+    }
+    return {
+      email: normEmail,
+      deliveryMode: body.delivery_mode === "smtp_email" ? "smtp_email" : "in_app_demo",
+      message: body.message || `Verification code sent to ${normEmail}.`,
+      demoOtp: typeof body.demo_otp === "string" ? body.demo_otp : undefined,
+    };
+  } catch (err) {
+    if (err instanceof Error && !/fetch|network|failed/i.test(err.message)) {
+      throw err;
+    }
+    // Local offline fallback OTP
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    if (typeof window !== "undefined") {
+      const raw = window.sessionStorage.getItem(LOCAL_OTP_STORAGE_KEY);
+      const map = raw ? (JSON.parse(raw) as Record<string, { code: string; exp: number }>) : {};
+      map[normEmail] = { code, exp: Date.now() + 10 * 60 * 1000 };
+      window.sessionStorage.setItem(LOCAL_OTP_STORAGE_KEY, JSON.stringify(map));
+    }
+    return {
+      email: normEmail,
+      deliveryMode: "in_app_demo",
+      message: `Verification code generated for ${normEmail}.`,
+      demoOtp: code,
+    };
+  }
+}
+
+export async function verifyEmailOtp(email: string, otp: string): Promise<boolean> {
+  const normEmail = email.trim().toLowerCase();
+  const cleanOtp = otp.trim();
+  if (!/^\d{6}$/.test(cleanOtp)) {
+    throw new Error("Please enter the 6-digit verification code.");
+  }
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/v1/auth/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: normEmail, otp: cleanOtp }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(typeof body?.detail === "string" ? body.detail : "Invalid verification code.");
+    }
+    return true;
+  } catch (err) {
+    if (err instanceof Error && !/fetch|network|failed/i.test(err.message)) {
+      throw err;
+    }
+    if (typeof window !== "undefined") {
+      const raw = window.sessionStorage.getItem(LOCAL_OTP_STORAGE_KEY);
+      const map = raw ? (JSON.parse(raw) as Record<string, { code: string; exp: number }>) : {};
+      const entry = map[normEmail];
+      if (!entry || Date.now() > entry.exp || entry.code !== cleanOtp) {
+        throw new Error("Invalid or expired verification code.");
+      }
+      delete map[normEmail];
+      window.sessionStorage.setItem(LOCAL_OTP_STORAGE_KEY, JSON.stringify(map));
+      return true;
+    }
+    throw new Error("Could not verify code.");
+  }
 }
 
 export const supabase = {
@@ -167,20 +262,44 @@ export const supabase = {
       email: string;
       password: string;
       options?: { emailRedirectTo?: string; data?: { display_name?: string } };
-    }): Promise<{ data: { user: LocalUser; session: LocalSession }; error: Error | null }> {
+    }): Promise<{ data: { user: LocalUser | null; session: LocalSession | null }; error: Error | null }> {
       const email = params.email.trim().toLowerCase();
       const displayName = params.options?.data?.display_name?.trim() || email.split("@")[0] || "Friend";
 
-      const backendResult = await tryBackendAuth("/api/v1/auth/register", {
+      const backendResp = await tryBackendAuth("/api/v1/auth/register", {
         email,
         password: params.password,
         display_name: displayName,
       });
 
+      // If backend explicitly rejected (e.g., 409 Conflict — already exists), try login for seamless Google/guest re-entry or surface error
+      let backendData = backendResp?.ok ? backendResp.data : undefined;
+      if (backendResp && !backendResp.ok) {
+        if (backendResp.status === 409) {
+          const loginResp = await tryBackendAuth("/api/v1/auth/login", {
+            email,
+            password: params.password,
+          });
+          if (loginResp?.ok && loginResp.data) {
+            backendData = loginResp.data;
+          } else {
+            return {
+              data: { user: null, session: null },
+              error: new Error(backendResp.detail || "An account with this email already exists. Please log in."),
+            };
+          }
+        } else {
+          return {
+            data: { user: null, session: null },
+            error: new Error(backendResp.detail || "Registration failed."),
+          };
+        }
+      }
+
       const userId =
-        backendResult?.uid ||
+        backendData?.uid ||
         `usr_${Array.from(email).reduce((acc, c) => ((acc << 5) - acc + c.charCodeAt(0)) | 0, 0).toString(36).replace("-", "")}`;
-      const token = backendResult?.access_token || `neeva_local_jwt_${userId}_${Date.now()}`;
+      const token = backendData?.access_token || `neeva_local_jwt_${userId}_${Date.now()}`;
 
       const user: LocalUser = {
         id: userId,
@@ -218,18 +337,32 @@ export const supabase = {
     async signInWithPassword(params: {
       email: string;
       password: string;
-    }): Promise<{ data: { user: LocalUser; session: LocalSession }; error: Error | null }> {
+    }): Promise<{ data: { user: LocalUser | null; session: LocalSession | null }; error: Error | null }> {
       const email = params.email.trim().toLowerCase();
-      const backendResult = await tryBackendAuth("/api/v1/auth/login", {
+      const backendResp = await tryBackendAuth("/api/v1/auth/login", {
         email,
         password: params.password,
       });
+
+      if (backendResp && !backendResp.ok) {
+        return {
+          data: { user: null, session: null },
+          error: new Error(backendResp.detail || "Invalid email or password."),
+        };
+      }
+      const backendData = backendResp?.data;
 
       let storedDisplayName = email.split("@")[0] || "Friend";
       if (typeof window !== "undefined") {
         try {
           const usersRaw = window.localStorage.getItem(USERS_STORAGE_KEY);
           const users = usersRaw ? (JSON.parse(usersRaw) as Record<string, { id: string; displayName: string }>) : {};
+          if (!backendData && !users[email]) {
+            return {
+              data: { user: null, session: null },
+              error: new Error("No account found for this email. Please sign up first."),
+            };
+          }
           if (users[email]?.displayName) storedDisplayName = users[email]!.displayName;
         } catch {
           /* ignore */
@@ -237,14 +370,14 @@ export const supabase = {
       }
 
       const userId =
-        backendResult?.uid ||
+        backendData?.uid ||
         `usr_${Array.from(email).reduce((acc, c) => ((acc << 5) - acc + c.charCodeAt(0)) | 0, 0).toString(36).replace("-", "")}`;
-      const token = backendResult?.access_token || `neeva_local_jwt_${userId}_${Date.now()}`;
+      const token = backendData?.access_token || `neeva_local_jwt_${userId}_${Date.now()}`;
 
       const user: LocalUser = {
         id: userId,
         email,
-        user_metadata: { display_name: backendResult?.display_name || storedDisplayName },
+        user_metadata: { display_name: backendData?.display_name || storedDisplayName },
       };
       const session: LocalSession = {
         access_token: token,

@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, KeyRound, Loader2, MailCheck, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { requestEmailOtp, supabase, verifyEmailOtp } from "@/integrations/supabase/client";
 import { safeRedirect, useAuthSession } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
 import side from "@/assets/window-calm.jpg";
@@ -74,10 +74,22 @@ function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { session, ready } = useAuthSession();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">(search.mode ?? "signup");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot" | "google" | "verify_otp">(
+    search.mode ?? "signup"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [otpInput, setOtpInput] = useState("");
+  const [pendingAuth, setPendingAuth] = useState<{
+    flow: "signup" | "google";
+    email: string;
+    password: string;
+    displayName: string;
+    deliveryMode: "smtp_email" | "in_app_demo";
+    message: string;
+    demoOtp?: string;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
   const dest = safeRedirect(search.redirect);
@@ -94,18 +106,61 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email,
+        const cleanEmail = email.trim().toLowerCase();
+        if (password.length < 8) {
+          throw new Error("Password must be at least 8 characters.");
+        }
+        const otpRes = await requestEmailOtp(cleanEmail, "signup");
+        setPendingAuth({
+          flow: "signup",
+          email: cleanEmail,
           password,
+          displayName: name.trim() || cleanEmail.split("@")[0] || "Friend",
+          deliveryMode: otpRes.deliveryMode,
+          message: otpRes.message,
+          demoOtp: otpRes.demoOtp,
+        });
+        setOtpInput("");
+        setMode("verify_otp");
+        toast.success(`Verification code sent to ${cleanEmail}`);
+      } else if (mode === "google") {
+        const cleanEmail = email.trim().toLowerCase();
+        if (!cleanEmail || !cleanEmail.includes("@")) {
+          throw new Error("Please enter your Google email address to continue.");
+        }
+        const otpRes = await requestEmailOtp(cleanEmail, "google_signin");
+        setPendingAuth({
+          flow: "google",
+          email: cleanEmail,
+          password: `google_verified_${cleanEmail}_neeva_2026`,
+          displayName: name.trim() || cleanEmail.split("@")[0] || "Neeva Member",
+          deliveryMode: otpRes.deliveryMode,
+          message: otpRes.message,
+          demoOtp: otpRes.demoOtp,
+        });
+        setOtpInput("");
+        setMode("verify_otp");
+        toast.success(`Google email verification code sent to ${cleanEmail}`);
+      } else if (mode === "verify_otp") {
+        if (!pendingAuth) {
+          setMode("signup");
+          return;
+        }
+        await verifyEmailOtp(pendingAuth.email, otpInput);
+        const { error } = await supabase.auth.signUp({
+          email: pendingAuth.email,
+          password: pendingAuth.password,
           options: {
             emailRedirectTo: window.location.origin + dest,
-            data: { display_name: name.trim() },
+            data: { display_name: pendingAuth.displayName },
           },
         });
         if (error) throw error;
-        if (!data.session) {
-          setSent("Check your inbox to confirm your email, then come back and sign in.");
-        }
+        toast.success(
+          pendingAuth.flow === "google"
+            ? "Email verified · Signed in with Google"
+            : "Email verified · Welcome to Neeva!"
+        );
       } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -123,9 +178,30 @@ function AuthPage() {
     }
   };
 
+  const resendOtp = async () => {
+    if (!pendingAuth) return;
+    setBusy(true);
+    try {
+      const otpRes = await requestEmailOtp(
+        pendingAuth.email,
+        pendingAuth.flow === "google" ? "google_signin" : "signup"
+      );
+      setPendingAuth({
+        ...pendingAuth,
+        deliveryMode: otpRes.deliveryMode,
+        message: otpRes.message,
+        demoOtp: otpRes.demoOtp,
+      });
+      toast.success(`New verification code sent to ${pendingAuth.email}`);
+    } catch (err) {
+      toast.error((err as Error).message || "Could not resend code");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   /**
-   * Primary Zero-Knowledge Entry: Firebase Anonymous Auth / Random Non-PII Guest ID.
-   * Restores or generates a pseudonymous handle with zero personal identifiers.
+   * Primary Zero-Knowledge Entry: Random Non-PII Guest ID (no email collected).
    */
   const enterAnonymousSanctuary = async () => {
     setBusy(true);
@@ -152,27 +228,13 @@ function AuthPage() {
   };
 
   /**
-   * Secondary Entry: Sign in with Google (Firebase Auth Provider).
+   * Secondary Entry: Opens the Google account & email verification gate before entering the dashboard.
    */
-  const enterGoogleSignIn = async () => {
-    setBusy(true);
-    try {
-      const userEmail =
-        email.trim() && email.includes("@")
-          ? email.trim().toLowerCase()
-          : `member_${generateAnonymousStudentHandle().slice(-6)}@neeva.in`;
-      const { error } = await supabase.auth.signUp({
-        email: userEmail,
-        password: `google_sso_${userEmail}_firebase`,
-        options: { data: { display_name: name.trim() || "Neeva Member" } },
-      });
-      if (error) throw error;
-      toast.success("Signed in with Google");
-    } catch (err) {
-      toast.error((err as Error).message || "Google sign-in failed");
-    } finally {
-      setBusy(false);
-    }
+  const enterGoogleSignIn = () => {
+    setSent(null);
+    setPendingAuth(null);
+    setOtpInput("");
+    setMode("google");
   };
 
   return (
@@ -215,17 +277,25 @@ function AuthPage() {
               ? "Make your space."
               : mode === "signin"
                 ? "Welcome back."
-                : "Reset password"}
+                : mode === "google"
+                  ? "Continue with Google"
+                  : mode === "verify_otp"
+                    ? "Verify your email."
+                    : "Reset password"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "signup"
-              ? "Takes 20 seconds. No real name needed."
+              ? "Takes 20 seconds. We'll verify your email before opening your sanctuary."
               : mode === "signin"
                 ? "Pick up right where you left off."
-                : "We'll email you a reset link."}
+                : mode === "google"
+                  ? "Confirm your Google email address — we'll send a 6-digit verification code."
+                  : mode === "verify_otp"
+                    ? `Enter the 6-digit code sent to ${pendingAuth?.email ?? "your email"}.`
+                    : "We'll email you a reset link."}
           </p>
 
-          {mode !== "forgot" && (
+          {(mode === "signup" || mode === "signin") && (
             <div className="mt-6 space-y-2.5">
               <button
                 type="button"
@@ -238,7 +308,7 @@ function AuthPage() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void enterGoogleSignIn()}
+                onClick={enterGoogleSignIn}
                 className="flex h-11 w-full items-center justify-center gap-2.5 rounded-2xl border border-[#747775] bg-[#FFFFFF] px-3 text-sm font-medium text-[#1F1F1F] disabled:opacity-60"
               >
                 <GoogleG /> Continue with Google
@@ -251,7 +321,7 @@ function AuthPage() {
             </div>
           )}
 
-          {mode !== "forgot" && (
+          {(mode === "signup" || mode === "signin") && (
             <div className="inline-flex w-full rounded-full border-[1.5px] border-ink p-1">
               {(["signup", "signin"] as const).map((m) => (
                 <button
@@ -283,6 +353,106 @@ function AuthPage() {
             <div className="mt-6 rounded-2xl border-[1.5px] border-ink bg-sage p-4 text-sm font-medium">
               {sent}
             </div>
+          ) : mode === "verify_otp" && pendingAuth ? (
+            <form onSubmit={submit} className="mt-6 space-y-3.5">
+              <div className="rounded-2xl border-[1.5px] border-ink/20 bg-sage/60 p-3.5 text-xs font-medium text-foreground">
+                <div className="flex items-center gap-2 font-bold">
+                  <MailCheck className="size-4 text-sage-foreground" />
+                  <span>
+                    {pendingAuth.deliveryMode === "smtp_email"
+                      ? "Verification email sent"
+                      : "Email verification required"}
+                  </span>
+                </div>
+                <p className="mt-1 text-muted-foreground">{pendingAuth.message}</p>
+                {pendingAuth.demoOtp && (
+                  <p className="mt-2 rounded-xl border border-ink/20 bg-card px-3 py-2 font-mono text-xs font-bold text-foreground">
+                    Verification code (Demo/Local mode):{" "}
+                    <span className="tracking-widest text-sm">{pendingAuth.demoOtp}</span>
+                  </p>
+                )}
+              </div>
+
+              <div className="relative">
+                <KeyRound className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\d{6}"
+                  maxLength={6}
+                  required
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="Enter 6-digit code"
+                  autoComplete="one-time-code"
+                  className="h-12 w-full rounded-2xl border-[1.5px] border-ink/25 bg-card pl-11 pr-4 font-mono text-lg font-bold tracking-[0.35em] outline-none focus:border-ink"
+                />
+              </div>
+
+              <button
+                disabled={busy || otpInput.length !== 6}
+                className="pop press flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-zest text-sm font-bold text-zest-foreground disabled:opacity-60"
+              >
+                {busy && <Loader2 className="size-4 animate-spin" />}
+                Verify &amp; Enter Sanctuary
+              </button>
+
+              <div className="flex items-center justify-between pt-1 text-xs font-semibold">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void resendOtp()}
+                  className="text-foreground underline-offset-4 hover:underline disabled:opacity-60"
+                >
+                  Resend verification code
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => {
+                    setMode(pendingAuth.flow === "google" ? "google" : "signup");
+                    setPendingAuth(null);
+                    setOtpInput("");
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Change email
+                </button>
+              </div>
+            </form>
+          ) : mode === "google" ? (
+            <form onSubmit={submit} className="mt-6 space-y-3">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={40}
+                placeholder="Your name (optional)"
+                className="h-12 w-full rounded-2xl border-[1.5px] border-ink/20 bg-card px-4 text-[15px] outline-none focus:border-ink"
+              />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your Google email (e.g. name@gmail.com)"
+                autoComplete="email"
+                className="h-12 w-full rounded-2xl border-[1.5px] border-ink/20 bg-card px-4 text-[15px] outline-none focus:border-ink"
+              />
+              <button
+                disabled={busy}
+                className="pop press flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-zest text-sm font-bold text-zest-foreground disabled:opacity-60"
+              >
+                {busy ? <Loader2 className="size-4 animate-spin" /> : <GoogleG />}
+                Send Google Verification Code
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("signup")}
+                className="mt-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
+              >
+                ← Back to all sign-in options
+              </button>
+            </form>
           ) : (
             <form onSubmit={submit} className="mt-5 space-y-3">
               {mode === "signup" && (
@@ -307,10 +477,10 @@ function AuthPage() {
                 <input
                   type="password"
                   required
-                  minLength={6}
+                  minLength={mode === "signup" ? 8 : 6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password (6+ characters)"
+                  placeholder={mode === "signup" ? "Password (8+ characters)" : "Password"}
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                   className="h-12 w-full rounded-2xl border-[1.5px] border-ink/20 bg-card px-4 text-[15px] outline-none focus:border-ink"
                 />
@@ -321,7 +491,7 @@ function AuthPage() {
               >
                 {busy && <Loader2 className="size-4 animate-spin" />}
                 {mode === "signup"
-                  ? "Create account"
+                  ? "Send verification code"
                   : mode === "signin"
                     ? "Log in"
                     : "Send reset link"}
